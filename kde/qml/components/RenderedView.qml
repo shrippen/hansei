@@ -15,6 +15,8 @@ Item {
     property var file: null
     property var store
     property bool sideBySide: false
+    // The Markdown source instead of the rendered note, changed lines marked.
+    property bool raw: false
 
     // Line numbers that changed, per side.
     readonly property var changedNew: marks(false)
@@ -39,10 +41,10 @@ Item {
             for (i = 1; i < lines.length && lines[i] !== "---"; i++) {
                 const m = lines[i].match(/^([^\s:#][^:]*):\s*(.*)$/)
                 if (m) {
-                    props.push({ key: m[1], value: m[2], start: i + 1, end: i + 1 })
+                    props.push({ key: m[1], value: yamlValue(m[2]), start: i + 1, end: i + 1 })
                 } else if (props.length > 0 && lines[i].trim() !== "") {
                     const p = props[props.length - 1]
-                    p.value += (p.value ? ", " : "") + lines[i].trim().replace(/^-\s*/, "")
+                    p.value += (p.value ? ", " : "") + yamlValue(lines[i].trim().replace(/^-\s*/, ""))
                     p.end = i + 1
                 }
             }
@@ -74,7 +76,20 @@ Item {
         return { props: props, blocks: blocks }
     }
 
+    // A YAML value as Obsidian shows it: no quotes, lists as comma separated text.
+    function yamlValue(v) {
+        let t = v.trim()
+        if (t.startsWith("[") && t.endsWith("]")) {
+            t = t.slice(1, -1).split(",").map(x => yamlValue(x)).join(", ")
+        }
+        return t.replace(/^(["'])(.*)\1$/, "$2")
+    }
+
+    // Obsidian Markdown to the CommonMark Qt renders: callouts, highlights, embeds and wikilinks.
     function links(md) {
+        md = md.replace(/^>\s*\[!(\w+)\][+-]?\s*(.*)$/gm, (all, kind, title) => "> **" + (title || kind.charAt(0).toUpperCase() + kind.slice(1)) + "**  ")
+        md = md.replace(/==([^=\n]+)==/g, "**$1**")
+        md = md.replace(/!\[\[([^\]|]+)(\|[^\]]*)?\]\]/g, (all, target) => "[" + i18n("Embedded: %1", target) + "](" + root.store.obsidianUrl(target.trim()) + ")")
         return md.replace(/!?\[\[([^\]|#]+)(#[^\]|]*)?(\|([^\]]+))?\]\]/g, (all, target, anchor, bar, alias) =>
             "[" + (alias || target + (anchor || "")) + "](" + root.store.obsidianUrl(target.trim()) + ")")
     }
@@ -99,6 +114,7 @@ Item {
             Layout.fillHeight: true
             label: i18n("Before")
             note: root.parse(root.file ? root.file.base : "")
+            source: root.file ? root.file.base : ""
             changed: root.changedOld
             tone: KanteStyle.negativeTextColor
             onContentYChanged: if (!syncing) after.follow(this)
@@ -110,6 +126,7 @@ Item {
             Layout.fillHeight: true
             label: root.sideBySide ? i18n("After") : ""
             note: root.parse(root.file ? root.file.content : "")
+            source: root.file ? root.file.content : ""
             changed: root.changedNew
             tone: KanteStyle.positiveTextColor
             onContentYChanged: if (!syncing && root.sideBySide) before.follow(this)
@@ -121,6 +138,7 @@ Item {
 
         property string label
         property var note: ({ props: [], blocks: [] })
+        property string source
         property var changed: ({})
         property color tone
         property bool syncing: false
@@ -147,9 +165,32 @@ Item {
 
             SectionLabel { visible: note.label !== ""; text: note.label }
 
+            // Source view: every line, changed ones marked at the margin.
+            Repeater {
+                model: root.raw ? note.source.split("\n") : []
+                delegate: RowLayout {
+                    required property string modelData
+                    required property int index
+                    Layout.fillWidth: true
+                    spacing: Kirigami.Units.smallSpacing
+                    Rectangle {
+                        Layout.fillHeight: true
+                        implicitWidth: 3
+                        color: note.changed[index + 1] ? note.tone : "transparent"
+                    }
+                    QQC2.Label {
+                        text: parent.modelData === "" ? " " : parent.modelData
+                        font: KanteStyle.monoFont(Kirigami.Theme.defaultFont.pointSize * 0.92)
+                        wrapMode: Text.WrapAnywhere
+                        textFormat: Text.PlainText
+                        Layout.fillWidth: true
+                    }
+                }
+            }
+
             // Properties like Obsidian shows them.
             QQC2.Control {
-                visible: note.note.props.length > 0
+                visible: !root.raw && note.note.props.length > 0
                 Layout.fillWidth: true
                 padding: Kirigami.Units.smallSpacing
                 background: Surface { fill: KanteStyle.sunkenColor }
@@ -178,7 +219,7 @@ Item {
                             Layout.column: 1
                             text: modelData.key
                             color: KanteStyle.mutedTextColor
-                            font: KanteStyle.monoFont(Kirigami.Theme.smallFont.pointSize)
+                            font: Kirigami.Theme.smallFont
                         }
                     }
                     Repeater {
@@ -193,6 +234,7 @@ Item {
                             textFormat: Text.MarkdownText
                             wrapMode: Text.Wrap
                             linkColor: KanteStyle.infoColor
+                            palette.link: KanteStyle.infoColor
                             onLinkActivated: link => Qt.openUrlExternally(link)
                         }
                     }
@@ -200,7 +242,7 @@ Item {
             }
 
             Repeater {
-                model: note.note.blocks
+                model: root.raw ? [] : note.note.blocks
                 delegate: RowLayout {
                     required property var modelData
                     readonly property bool marked: root.touched(note.changed, modelData.start, modelData.end)
@@ -217,6 +259,7 @@ Item {
                         textFormat: Text.MarkdownText
                         wrapMode: Text.Wrap
                         linkColor: KanteStyle.infoColor
+                            palette.link: KanteStyle.infoColor
                         onLinkActivated: link => Qt.openUrlExternally(link)
                         HoverHandler { cursorShape: parent.hoveredLink ? Qt.PointingHandCursor : Qt.ArrowCursor }
                     }

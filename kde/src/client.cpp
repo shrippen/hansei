@@ -10,6 +10,7 @@
 #include <QJSEngine>
 #include <QJsonDocument>
 #include <QJsonObject>
+#include <QKeySequence>
 #include <QProcess>
 #include <QStandardPaths>
 
@@ -262,4 +263,9 @@ QString Client::startFolder() const
         }
     }
     return QString();
+}
+
+QString Client::keyName(const QString &sequence) const
+{
+    return QKeySequence(sequence, QKeySequence::PortableText).toString(QKeySequence::NativeText);
 }

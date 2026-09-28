@@ -2,6 +2,7 @@ package tui
 
 import (
 	"fmt"
+	"path"
 	"strings"
 
 	"github.com/charmbracelet/lipgloss"
@@ -13,6 +14,9 @@ const (
 	boardColumns = 5
 	cardHeight   = 4
 	sparkRunes   = "▁▂▃▄▅▆▇█"
+	findingBar   = 20  // cells of a findings bar
+	wideStart    = 120 // columns from which the start page spells out its actions
+	emptyColumn  = 6   // width of a board column without cards
 	percent      = 100
 )
 
@@ -48,22 +52,26 @@ func (m *Model) viewStart() string {
 	for _, f := range h.Findings {
 		maxCount = max(maxCount, f.Count)
 	}
-	barW := max(10, w/4)
+	barW := min(findingBar, max(8, w/6))
 	for i, f := range h.Findings {
 		title := h.Titles[string(f.Rule)]
-		n := f.Count * barW / maxCount
-		bar := m.st.chipWarn.Render(strings.Repeat("█", n)) + m.st.filler.Render(strings.Repeat("░", barW-n))
+		n := max(1, f.Count*barW/maxCount)
+		bar := m.ruleStyle(string(f.Rule)).Render(strings.Repeat("█", n)) + m.st.filler.Render(strings.Repeat("░", barW-n))
 		open := "▸ "
 		if m.expanded == string(f.Rule) {
 			open = "▾ "
 		}
-		row := open + fmt.Sprintf("%-32s %5d  ", trunc(title, 32), f.Count) + bar + "  " + m.st.dim.Render(m.n("files", len(f.Paths)))
+		row := open + fmt.Sprintf("%-32s ", trunc(title, 32)) + bar + "  " + m.st.dim.Render(m.countText(f.Count, len(f.Paths)))
 		action := m.t("createBatch")
 		if h.Open[string(f.Rule)] != "" {
 			action = m.t("openBatch")
 		}
 		if i == m.row {
-			row = m.st.key.Render("▌ ") + m.st.strong.Render(row) + "  " + m.st.key.Render("⏎ "+action) + m.st.dim.Render("  ␣ "+m.t("details"))
+			hint := m.st.key.Render("⏎ "+action) + m.st.dim.Render("  ␣ "+m.t("details"))
+			if w < wideStart {
+				hint = m.st.key.Render("⏎")
+			}
+			row = m.st.key.Render("▌ ") + m.st.strong.Render(row) + "  " + hint
 		} else {
 			row = "  " + row
 		}
@@ -72,7 +80,7 @@ func (m *Model) viewStart() string {
 			lines = append(lines, m.findingLines(string(f.Rule), w)...)
 		}
 	}
-	foot := []string{m.status.VaultName, strings.Join(m.status.Allowed, ", "), m.n("files", m.status.Notes)}
+	foot := []string{m.status.VaultName, strings.Join(m.status.Allowed, ", "), m.n("notes", m.status.Notes)}
 	if ago := m.ago(h.Checked); ago != "" {
 		foot = append(foot, m.t("checked", ago))
 	}
@@ -80,9 +88,42 @@ func (m *Model) viewStart() string {
 	return strings.Join(lines, "\n")
 }
 
+// tile is a figure with a label; the text below wraps to two lines instead of being cut.
 func (m *Model) tile(label, big, sub string, w int) string {
 	box := lipgloss.NewStyle().Border(lipgloss.NormalBorder()).BorderForeground(m.st.p.border).Width(w-2).Padding(0, 1)
-	return box.Render(m.st.label.Render(strings.ToUpper(label)) + "\n" + m.st.title.Render(big) + "\n" + m.st.dim.Render(trunc(sub, w-4)))
+	// Styled text (the sparkline) must not be split: wrap only what does not fit.
+	lines := []string{sub}
+	if lipgloss.Width(sub) > w-4 {
+		lines = wrap(sub, w-4)
+	}
+	if len(lines) > 2 {
+		lines = append(lines[:1], trunc(strings.Join(lines[1:], " "), w-4))
+	}
+	for len(lines) < 2 {
+		lines = append(lines, "")
+	}
+	return box.Render(m.st.label.Render(strings.ToUpper(label)) + "\n" + m.st.title.Render(big) + "\n" + m.st.dim.Render(strings.Join(lines, "\n")))
+}
+
+// countText: "3 Befunde" or "3 Befunde in 2 Notizen", like the app.
+func (m *Model) countText(findings, notes int) string {
+	if findings == notes {
+		return m.n("findingsN", findings)
+	}
+	return m.t("inNotes", m.n("findingsN", findings), m.n("notes", notes))
+}
+
+// ruleStyle colours a check by how urgent it is, like the app.
+func (m *Model) ruleStyle(rule string) lipgloss.Style {
+	switch rule {
+	case "secret":
+		return m.st.chipFail
+	case "codename", "frontmatter":
+		return m.st.chipHl
+	case "review":
+		return m.st.chipInfo
+	}
+	return m.st.chipWarn
 }
 
 func (m *Model) spark(vals []float64) string {
@@ -100,6 +141,7 @@ func (m *Model) spark(vals []float64) string {
 type card struct {
 	id, rule    string
 	title, meta string
+	info        string
 	topic, note string
 	noteStyle   lipgloss.Style
 	bar         string
@@ -121,11 +163,13 @@ func (m *Model) boardColumns() []column {
 	}
 	for _, f := range m.home.Findings {
 		cols[0].cards = append(cols[0].cards, card{rule: string(f.Rule), title: m.home.Titles[string(f.Rule)],
-			meta: fmt.Sprintf("%d · %s", f.Count, m.n("files", len(f.Paths)))})
+			meta: m.countText(f.Count, len(f.Paths))})
 	}
 	for _, b := range m.batches {
 		c := card{id: b.ID, title: b.Title, topic: b.Topic,
-			meta: m.n("files", b.Counts.Files) + " · " + m.n("hunks", b.Counts.Hunks), bar: m.progressBar(b.Counts, 18)}
+			meta: m.n("doneFiles", b.Counts.Files) + " · " + m.n("hunks", b.Counts.Hunks), bar: m.progressBar(b.Counts, 18)}
+		// Age, provider and cost, like the app's cards.
+		c.info = strings.Join(nonEmpty(m.ago(b.Created), b.Provider, costText(b.Usage)), " · ")
 		i := -1
 		switch b.Column {
 		case "working":
@@ -142,7 +186,8 @@ func (m *Model) boardColumns() []column {
 			}
 		case "done":
 			i = 4
-			c.meta = b.Updated.Format("02.01. 15:04") + " · " + m.n("files", b.Counts.Files)
+			c.meta = b.Updated.Format("02.01. 15:04") + " · " + m.n("doneFiles", b.Counts.Files)
+			c.info = strings.Join(nonEmpty(b.Provider, costText(b.Usage)), " · ")
 		case "failed":
 			i = 1
 			c.note, c.noteStyle = trunc(b.Error, 40), m.st.chipFail
@@ -173,13 +218,31 @@ func (m *Model) viewBoard() string {
 	cols := m.boardColumns()
 	m.col = clamp(m.col, 0, len(cols)-1)
 	m.row = clamp(m.row, 0, len(cols[m.col].cards)-1)
-	cw := max(18, (m.w-boardColumns+1)/boardColumns)
+	// Empty columns shrink to a narrow strip; the others share the rest.
+	empty := 0
+	for i, c := range cols {
+		if len(c.cards) == 0 && i != m.col {
+			empty++
+		}
+	}
+	full := max(1, len(cols)-empty)
+	cwFull := max(18, (m.w-empty*emptyColumn-full+1)/full)
 	h := m.bodyHeight()
 
 	var rendered []string
 	for i, c := range cols {
+		cw := cwFull
+		if len(c.cards) == 0 && i != m.col {
+			cw = emptyColumn
+			strip := []string{c.style.Render("0"), c.style.Render(strings.Repeat("━", cw-1))}
+			for _, r := range []rune(strings.ToUpper(m.t(c.key))) {
+				strip = append(strip, m.st.dim.Render(string(r)))
+			}
+			rendered = append(rendered, fit(strings.Join(strip, "\n"), cw, h))
+			continue
+		}
 		var lines []string
-		head := c.style.Render(strings.ToUpper(m.t(c.key))) + m.st.dim.Render(fmt.Sprintf("  %d", len(c.cards)))
+		head := m.st.label.Render(strings.ToUpper(m.t(c.key))) + c.style.Render(fmt.Sprintf("  %d", len(c.cards)))
 		lines = append(lines, head, c.style.Render(strings.Repeat("━", cw-1)))
 		for j, cd := range c.cards {
 			lines = append(lines, m.renderCard(cd, cw-1, i == m.col && j == m.row)...)
@@ -203,6 +266,9 @@ func (m *Model) renderCard(c card, w int, selected bool) []string {
 		body = append(body, c.noteStyle.Render(trunc(c.note, w-4)))
 	}
 	body = append(body, m.st.dim.Render(trunc(c.meta, w-4)))
+	if c.info != "" {
+		body = append(body, m.st.dim.Render(trunc(c.info, w-4)))
+	}
 	if c.bar != "" {
 		body = append(body, c.bar)
 	}
@@ -248,52 +314,6 @@ func (m *Model) viewJournal() string {
 
 // ---------- Settings ----------
 
-func (m *Model) viewSettings() string {
-	s := m.settings
-	lines := []string{m.st.label.Render(strings.ToUpper(m.t("folders"))) + m.st.dim.Render("  "+s.Vault)}
-	for i, f := range s.Folders {
-		state := m.st.dim.Render("·")
-		switch {
-		case f.Blocked:
-			state = m.st.chipFail.Render("■ " + m.t("blocked"))
-		case f.Allowed:
-			state = m.st.chipOK.Render("✓ " + m.t("allowed"))
-		}
-		if f.LocalOnly {
-			state += m.st.chipWarn.Render(" · " + m.t("localOnly"))
-		}
-		rule := ""
-		if len(f.Rulebook) > 0 {
-			rule = m.st.dim.Render("  " + m.t("rulebook") + ": " + strings.Join(f.Rulebook, ", "))
-		}
-		indent := strings.Repeat("  ", f.Depth)
-		row := fmt.Sprintf("%-32s ", trunc(indent+f.Name+"/", 32)) + state + rule
-		lines = append(lines, m.selRow(i == m.si, row))
-	}
-
-	lines = append(lines, "", m.st.label.Render(strings.ToUpper(m.t("providers"))))
-	for j, p := range s.Providers {
-		key := m.st.chipFail.Render(m.t("noKey"))
-		if p.HasKey {
-			key = m.st.chipOK.Render(m.t("hasKey"))
-		}
-		def := ""
-		if p.Default {
-			def = m.st.key.Render(" · " + m.t("default"))
-		}
-		local := ""
-		if p.Local {
-			local = m.st.chipWarn.Render(" · " + m.t("localOnly"))
-		}
-		row := fmt.Sprintf("%-12s %-28s ", p.Name, trunc(p.Model+" "+p.BaseURL, 28)) + key + def + local
-		lines = append(lines, m.selRow(len(s.Folders)+j == m.si, row))
-	}
-
-	lines = append(lines, "", m.st.label.Render(strings.ToUpper(m.t("style")))+"  "+m.styleChoice(s.Style), m.st.dim.Render(m.t("styleNote")))
-	lines = append(lines, "", m.st.dim.Render(s.Path))
-	return strings.Join(lines, "\n")
-}
-
 func (m *Model) styleChoice(current string) string {
 	var parts []string
 	for _, s := range []string{styleSystem, styleKanteLight, styleKante} {
@@ -319,9 +339,26 @@ func (m *Model) selRow(selected bool, row string) string {
 func (m *Model) viewTask() string {
 	lines := []string{m.st.title.Render(m.t("newTask")), ""}
 	lines = append(lines, m.task.View(), "")
-	scopeLabel := m.st.label.Render(strings.ToUpper(m.t("scope")) + "  ")
-	lines = append(lines, scopeLabel+m.taskScope.View())
-	lines = append(lines, m.st.dim.Render("    "+strings.Join(m.status.Allowed, ", ")))
+	lines = append(lines, m.st.label.Render(strings.ToUpper(m.t("scope")))+m.st.dim.Render("  "+m.t("scopeAll")))
+	// The folders as a list with boxes; sub folders indented.
+	for i, f := range m.status.Scopes {
+		box := "[ ]"
+		switch {
+		case m.scopeSel[f]:
+			box = m.st.key.Render("[x]")
+		case m.scopeCovered(f):
+			box = m.st.dim.Render("[x]")
+		}
+		depth := strings.Count(f, "/")
+		name := strings.Repeat("  ", depth) + path.Base(f)
+		row := box + " " + name
+		if m.taskField == 1 && i == m.scopeRow {
+			row = m.st.key.Render("▌") + row
+		} else {
+			row = " " + row
+		}
+		lines = append(lines, row)
+	}
 
 	prov := ""
 	if m.taskProv < len(m.status.Providers) {

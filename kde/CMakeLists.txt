@@ -23,6 +23,7 @@ find_package(KF6 6.8 REQUIRED COMPONENTS I18n CoreAddons Notifications)
 ecm_find_qmlmodule(org.kde.kirigami REQUIRED)
 ecm_find_qmlmodule(org.kde.syntaxhighlighting REQUIRED)
 ecm_find_qmlmodule(Qt.labs.folderlistmodel REQUIRED)
+ecm_find_qmlmodule(org.kde.kirigamiaddons.settings REQUIRED)
 
 qt_add_executable(hansei-kde
     src/main.cpp

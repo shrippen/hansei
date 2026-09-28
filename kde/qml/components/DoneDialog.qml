@@ -34,13 +34,15 @@ Kirigami.Dialog {
 
     title: i18n("Batch finished")
     preferredWidth: Math.min(Kirigami.Units.gridUnit * 28, applicationWindow().width - Kirigami.Units.gridUnit * 2)
+    // Kirigami.Dialog does not size itself from a layout: the height comes from the content.
+    preferredHeight: form.implicitHeight + topPadding + bottomPadding + Kirigami.Units.gridUnit * 5
     padding: Kirigami.Units.gridUnit
     standardButtons: Kirigami.Dialog.NoButton
 
 
     ColumnLayout {
+        id: form
         spacing: Kirigami.Units.largeSpacing
-
         Kirigami.Heading {
             text: dialog.outcome ? dialog.outcome.batch.title : ""
             font: KanteStyle.titleFont(Kirigami.Theme.defaultFont.pointSize * 1.5)
@@ -131,5 +133,5 @@ Kirigami.Dialog {
     ]
 
     // After the content: the dialog sizes its first content child.
-    KanteScope { target: dialog.contentItem }
+    KanteDialogSkin { dialog: dialog }
 }

@@ -32,6 +32,8 @@ Kirigami.Page {
     title: i18n("History of change %1 · %2", hunkIndex + 1, store.fileName(path))
     padding: 0
     KantePageTitle { page: page }
+    // Kante: the page ground is Kante's ground, not the dialog tint KanteScope hands to the theme.
+    background: Rectangle { color: KanteStyle.themed ? KanteStyle.backgroundColor : Kirigami.Theme.backgroundColor }
 
     function load() {
         store.call("file", { id: batchID, path: path, mode: "split", context: 3 }, r => {
@@ -89,7 +91,7 @@ Kirigami.Page {
                         }
                         QQC2.Label {
                             text: ver.modelData.n === 0 ? i18n("before the batch") : page.authorName(ver.modelData.author) + (ver.modelData.created ? " · " + Qt.formatTime(new Date(ver.modelData.created), Qt.DefaultLocaleShortDate) : "")
-                            color: ver.highlighted ? KanteStyle.accentForegroundColor : KanteStyle.mutedTextColor
+                            color: ver.highlighted ? Kirigami.Theme.highlightedTextColor : KanteStyle.mutedTextColor
                             elide: Text.ElideRight
                             Layout.fillWidth: true
                         }
@@ -98,7 +100,7 @@ Kirigami.Page {
                             text: i18n("in use")
                             tone: ver.highlighted ? KanteStyle.accentForegroundColor : KanteStyle.positiveTextColor
                         }
-                        QQC2.ToolButton {
+                        KanteToolButton {
                             visible: page.file && ver.modelData.n > 0 && ver.modelData.n !== page.file.current
                             text: i18n("Use")
                             icon.name: "checkmark"
@@ -123,7 +125,7 @@ Kirigami.Page {
                     required property var modelData
                     width: ListView.view.width
                     padding: Kirigami.Units.largeSpacing
-                    background: Surface { bar: modelData.role === "user" ? KanteStyle.infoColor : KanteStyle.accentColor; fill: modelData.role === "user" ? KanteStyle.cardColor : KanteStyle.sunkenColor }
+                    background: Surface { fill: modelData.role === "user" ? KanteStyle.cardColor : KanteStyle.sunkenColor }
                     contentItem: ColumnLayout {
                         RowLayout {
                             SectionLabel { text: modelData.role === "user" ? i18n("You") : modelData.role === "system" ? i18n("Round") : i18n("AI") }
@@ -136,11 +138,13 @@ Kirigami.Page {
                         QQC2.Label { text: modelData.text; wrapMode: Text.Wrap; Layout.fillWidth: true }
                     }
                 }
-                Kirigami.PlaceholderMessage {
-                    anchors.centerIn: parent
-                    width: parent.width
+                // Empty: say so right under the heading, not in the middle of the column.
+                QQC2.Label {
                     visible: page.rounds.length === 0
+                    width: parent.width
                     text: i18n("No feedback on this change yet")
+                    color: KanteStyle.mutedTextColor
+                    wrapMode: Text.Wrap
                 }
             }
         }
@@ -155,7 +159,7 @@ Kirigami.Page {
                     text: page.from === 0 ? i18n("Vault → v%1", page.to) : i18n("v%1 → v%2", page.from, page.to)
                     Layout.fillWidth: true
                 }
-                QQC2.ToolButton {
+                KanteToolButton {
                     text: i18n("Whole file")
                     icon.name: "document-preview"
                     checkable: true

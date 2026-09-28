@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: hansei\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-28 02:11+0200\n"
+"POT-Creation-Date: 2026-09-28 11:09+0200\n"
 "PO-Revision-Date: 2026-09-28\n"
 "Last-Translator: shrippen\n"
 "Language-Team: German\n"
@@ -32,19 +32,19 @@ msgstr "Feedback offen"
 msgid "Done"
 msgstr "Übernommen"
 
-#: qml/BoardPage.qml:24 qml/components/KeysDialog.qml:25 qml/Main.qml:124
+#: qml/BoardPage.qml:24 qml/components/KeysDialog.qml:27 qml/Main.qml:187
 msgid "Workbench"
 msgstr "Werkbank"
 
-#: qml/BoardPage.qml:30 qml/Main.qml:145 qml/ReviewPage.qml:612
+#: qml/BoardPage.qml:32 qml/Main.qml:207 qml/ReviewPage.qml:734
 msgid "New task…"
 msgstr "Neuer Auftrag …"
 
-#: qml/BoardPage.qml:117
+#: qml/BoardPage.qml:119
 msgid "Accept all changes?"
 msgstr "Alle Änderungen annehmen?"
 
-#: qml/BoardPage.qml:118
+#: qml/BoardPage.qml:120
 msgid "Every open change of “%2” is accepted and written: one file."
 msgid_plural "Every open change of “%2” is accepted and written: %1 files."
 msgstr[0] ""
@@ -54,82 +54,96 @@ msgstr[1] ""
 "Alle offenen Änderungen von „%2“ werden angenommen und geschrieben: %1 "
 "Dateien."
 
-#: qml/BoardPage.qml:264
+#: qml/BoardPage.qml:160
+msgid "Topic:"
+msgstr "Thema:"
+
+#: qml/BoardPage.qml:168
+msgctxt "all topics"
+msgid "All"
+msgstr "Alle"
+
+#: qml/BoardPage.qml:280
 msgid "Drop to create the batch"
 msgstr "Loslassen erstellt den Batch"
 
-#: qml/BoardPage.qml:264
+#: qml/BoardPage.qml:280
 msgid "Drop to accept all changes"
 msgstr "Loslassen nimmt alle Änderungen an"
 
-#: qml/BoardPage.qml:303 qml/StartPage.qml:108
+#: qml/BoardPage.qml:319 qml/StartPage.qml:231
 msgid "one question"
 msgid_plural "%1 questions"
 msgstr[0] "eine Rückfrage"
 msgstr[1] "%1 Rückfragen"
 
-#: qml/BoardPage.qml:321
+#: qml/BoardPage.qml:334 qml/components/TaskDialog.qml:239
+#: qml/StartPage.qml:408
+msgid "Create batch"
+msgstr "Batch erstellen"
+
+#: qml/BoardPage.qml:339
+msgid "Create batch (or drag the card onto “AI working”)"
+msgstr "Batch erstellen (oder Karte auf „KI arbeitet“ ziehen)"
+
+#: qml/BoardPage.qml:350 qml/StartPage.qml:52 qml/StartPage.qml:53
 msgid "one finding"
 msgid_plural "%1 findings"
 msgstr[0] "ein Befund"
 msgstr[1] "%1 Befunde"
 
-#: qml/BoardPage.qml:321 qml/components/TaskDialog.qml:208
-#: qml/StartPage.qml:194 qml/StartPage.qml:264 qml/StartPage.qml:313
+#: qml/BoardPage.qml:350 qml/components/TaskDialog.qml:217 qml/StartPage.qml:53
+#: qml/StartPage.qml:334 qml/StartPage.qml:475
 msgid "one note"
 msgid_plural "%1 notes"
 msgstr[0] "eine Notiz"
 msgstr[1] "%1 Notizen"
 
-#: qml/BoardPage.qml:334 qml/components/TaskDialog.qml:229
-#: qml/StartPage.qml:270
-msgid "Create batch"
-msgstr "Batch erstellen"
-
-#: qml/BoardPage.qml:342
+#: qml/BoardPage.qml:365
 msgid "one note found"
 msgid_plural "%1 notes found"
 msgstr[0] "eine Notiz gefunden"
 msgstr[1] "%1 Notizen gefunden"
 
-#: qml/BoardPage.qml:343 qml/components/DoneDialog.qml:101
+#: qml/BoardPage.qml:366 qml/components/DoneDialog.qml:103
+#: qml/JournalPage.qml:142
 msgid "one file"
 msgid_plural "%1 files"
 msgstr[0] "eine Datei"
 msgstr[1] "%1 Dateien"
 
-#: qml/BoardPage.qml:343
+#: qml/BoardPage.qml:366 qml/StartPage.qml:180
 msgid "one change"
 msgid_plural "%1 changes"
 msgstr[0] "eine Änderung"
 msgstr[1] "%1 Änderungen"
 
-#: qml/BoardPage.qml:349 qml/components/BatchList.qml:76
+#: qml/BoardPage.qml:372 qml/components/BatchList.qml:76
 msgid "working…"
 msgstr "arbeitet …"
 
-#: qml/BoardPage.qml:349 qml/components/BatchList.qml:76
+#: qml/BoardPage.qml:372 qml/components/BatchList.qml:76
 msgid "AI: %1"
 msgstr "KI: %1"
 
-#: qml/BoardPage.qml:389 qml/components/Store.qml:191 qml/JournalPage.qml:169
-#: qml/ReviewPage.qml:58 qml/ReviewPage.qml:511
+#: qml/BoardPage.qml:412 qml/components/Store.qml:193 qml/JournalPage.qml:192
+#: qml/ReviewPage.qml:440 qml/ReviewPage.qml:631 qml/StartPage.qml:198
 msgid "Undo"
 msgstr "Rückgängig"
 
-#: qml/BoardPage.qml:398 qml/components/FeedbackPane.qml:189
+#: qml/BoardPage.qml:421 qml/components/FeedbackPane.qml:233
 msgid "Stop"
 msgstr "Abbrechen"
 
-#: qml/BoardPage.qml:407 qml/ReviewPage.qml:596
+#: qml/BoardPage.qml:430 qml/ReviewPage.qml:718
 msgid "Discard"
 msgstr "Verwerfen"
 
-#: qml/BoardPage.qml:421
+#: qml/BoardPage.qml:444
 msgid "Only the last 7 days"
 msgstr "Nur die letzten 7 Tage"
 
-#: qml/BoardPage.qml:421
+#: qml/BoardPage.qml:444
 msgid "Show one older"
 msgid_plural "Show %1 older"
 msgstr[0] "Eine ältere anzeigen"
@@ -139,38 +153,62 @@ msgstr[1] "%1 ältere anzeigen"
 msgid "Batches by topic"
 msgstr "Batches nach Thema"
 
-#: qml/components/BatchList.qml:53 qml/JournalPage.qml:116
+#: qml/components/BatchList.qml:52 qml/JournalPage.qml:138
 msgid "Batch"
 msgstr "Batch"
 
-#: qml/components/BatchList.qml:59
+#: qml/components/BatchList.qml:68
 msgid "Files %1/%2 · Changes %3/%4"
 msgstr "Dateien %1/%2 · Änderungen %3/%4"
 
-#: qml/components/BatchList.qml:84
+#: qml/components/BatchList.qml:84 qml/StartPage.qml:148
 msgid "One question from the AI"
 msgid_plural "%1 questions from the AI"
 msgstr[0] "Eine Rückfrage der KI"
 msgstr[1] "%1 Rückfragen der KI"
 
-#: qml/components/BatchList.qml:127 qml/ReviewPage.qml:384
-#: qml/ReviewPage.qml:393
+#: qml/components/BatchList.qml:107
+msgid "Written to the vault"
+msgstr "In den Tresor geschrieben"
+
+#: qml/components/BatchList.qml:108
+msgid "The note changed since the proposal"
+msgstr "Die Notiz wurde seit dem Vorschlag geändert"
+
+#: qml/components/BatchList.qml:109
+msgid "Everything rejected, nothing written"
+msgstr "Alles abgelehnt, nichts geschrieben"
+
+#: qml/components/BatchList.qml:110
+msgid "Reverted"
+msgstr "Zurückgesetzt"
+
+#: qml/components/BatchList.qml:111
+msgid "New version after your feedback"
+msgstr "Neue Version nach deinem Feedback"
+
+#: qml/components/BatchList.qml:111
+msgid "Open"
+msgstr "Offen"
+
+#: qml/components/BatchList.qml:135 qml/ReviewPage.qml:411
+#: qml/ReviewPage.qml:420
 msgid "one open"
 msgid_plural "%1 open"
 msgstr[0] "eine offen"
 msgstr[1] "%1 offen"
 
-#: qml/components/BatchList.qml:142
+#: qml/components/BatchList.qml:150
 msgid "Nothing to review"
 msgstr "Nichts zu prüfen"
 
-#: qml/components/BatchList.qml:143
+#: qml/components/BatchList.qml:151
 msgid "Start a task or create a batch from the findings on the start page."
 msgstr ""
 "Starte einen Auftrag oder erstelle einen Batch aus den Befunden auf der "
 "Startseite."
 
-#: qml/components/Brand.qml:22 qml/Main.qml:12 src/main.cpp:29
+#: qml/components/Brand.qml:22 qml/Main.qml:13 src/main.cpp:29
 msgid "Hansei"
 msgstr "Hansei"
 
@@ -192,53 +230,53 @@ msgstr "Klicken zeigt diesen Wert für 10 Sekunden"
 msgid "Batch finished"
 msgstr "Batch abgeschlossen"
 
-#: qml/components/DoneDialog.qml:53
+#: qml/components/DoneDialog.qml:55
 msgid "files"
 msgstr "Dateien"
 
-#: qml/components/DoneDialog.qml:53
+#: qml/components/DoneDialog.qml:55
 msgid "accepted"
 msgstr "angenommen"
 
-#: qml/components/DoneDialog.qml:53
+#: qml/components/DoneDialog.qml:55
 msgid "rejected"
 msgstr "abgelehnt"
 
-#: qml/components/DoneDialog.qml:78
+#: qml/components/DoneDialog.qml:80
 msgid "one hour"
 msgid_plural "%1 hours"
 msgstr[0] "eine Stunde"
 msgstr[1] "%1 Stunden"
 
-#: qml/components/DoneDialog.qml:78
+#: qml/components/DoneDialog.qml:80
 msgid "one minute"
 msgid_plural "%1 minutes"
 msgstr[0] "eine Minute"
 msgstr[1] "%1 Minuten"
 
-#: qml/components/DoneDialog.qml:89
+#: qml/components/DoneDialog.qml:91
 msgid "Conforms to rules %1 → %2 %"
 msgstr "Regelkonform %1 → %2 %"
 
-#: qml/components/DoneDialog.qml:90
+#: qml/components/DoneDialog.qml:92
 msgid "Conforms to rules: %1 %"
 msgstr "Regelkonform: %1 %"
 
-#: qml/components/DoneDialog.qml:97
+#: qml/components/DoneDialog.qml:99
 msgid "Next"
 msgstr "Als Nächstes"
 
-#: qml/components/DoneDialog.qml:107
+#: qml/components/DoneDialog.qml:109
 msgid "Learned: one rule suggestion from your feedback is waiting."
 msgid_plural "Learned: %1 rule suggestions from your feedback are waiting."
 msgstr[0] "Gelernt: Ein Regel-Vorschlag aus deinem Feedback wartet."
 msgstr[1] "Gelernt: %1 Regel-Vorschläge aus deinem Feedback warten."
 
-#: qml/components/DoneDialog.qml:116 qml/JournalPage.qml:126
+#: qml/components/DoneDialog.qml:118 qml/JournalPage.qml:148
 msgid "Undo batch"
 msgstr "Batch rückgängig"
 
-#: qml/components/DoneDialog.qml:124
+#: qml/components/DoneDialog.qml:126
 msgid "Next batch"
 msgstr "Nächster Batch"
 
@@ -246,7 +284,7 @@ msgstr "Nächster Batch"
 msgid "Edit change %1"
 msgstr "Änderung %1 bearbeiten"
 
-#: qml/components/EditDialog.qml:20 qml/components/HunkHeader.qml:150
+#: qml/components/EditDialog.qml:20 qml/components/HunkHeader.qml:151
 msgid "Edit"
 msgstr "Bearbeiten"
 
@@ -259,85 +297,101 @@ msgstr ""
 msgid "In the vault"
 msgstr "Im Tresor"
 
-#: qml/components/EditDialog.qml:115
+#: qml/components/EditDialog.qml:116
 msgid "(new lines)"
 msgstr "(neue Zeilen)"
 
-#: qml/components/EditDialog.qml:126
+#: qml/components/EditDialog.qml:127
 msgid "Your text"
 msgstr "Dein Text"
 
-#: qml/components/EditDialog.qml:143
+#: qml/components/EditDialog.qml:145
 msgid "Change against the vault"
 msgstr "Änderung gegenüber dem Tresor"
 
-#: qml/components/FeedbackPane.qml:82 qml/components/RejectDialog.qml:21
+#: qml/components/FeedbackPane.qml:84 qml/components/RejectDialog.qml:23
 msgid "Wrong fact"
 msgstr "Fakt falsch"
 
-#: qml/components/FeedbackPane.qml:83 qml/components/RejectDialog.qml:21
+#: qml/components/FeedbackPane.qml:85 qml/components/RejectDialog.qml:23
 msgid "Too long"
 msgstr "Zu ausführlich"
 
-#: qml/components/FeedbackPane.qml:84
+#: qml/components/FeedbackPane.qml:86
 msgid "Against the rulebook"
 msgstr "Passt nicht zum Regelwerk"
 
-#: qml/components/FeedbackPane.qml:85
+#: qml/components/FeedbackPane.qml:87
 msgid "Question"
 msgstr "Rückfrage"
 
-#: qml/components/FeedbackPane.qml:95
+#: qml/components/FeedbackPane.qml:97
 msgid "Feedback to the AI"
 msgstr "Feedback an die KI"
 
-#: qml/components/FeedbackPane.qml:104
+#: qml/components/FeedbackPane.qml:106
 msgctxt "thread filter"
 msgid "All"
 msgstr "Alle"
 
-#: qml/components/FeedbackPane.qml:104
+#: qml/components/FeedbackPane.qml:106
 msgctxt "thread filter"
 msgid "This file"
 msgstr "Diese Datei"
 
-#: qml/components/FeedbackPane.qml:104
+#: qml/components/FeedbackPane.qml:106
 msgctxt "thread filter"
 msgid "This change"
 msgstr "Diese Änderung"
 
-#: qml/components/FeedbackPane.qml:108
+#: qml/components/FeedbackPane.qml:110
 msgid "Which messages to show"
 msgstr "Welche Nachrichten angezeigt werden"
 
-#: qml/components/FeedbackPane.qml:123
+#: qml/components/FeedbackPane.qml:115
+msgid "Hide the conversation"
+msgstr "Gespräch ausblenden"
+
+#: qml/components/FeedbackPane.qml:150
+msgid "Rule suggestion: “%1”"
+msgstr "Regel-Vorschlag: „%1“"
+
+#: qml/components/FeedbackPane.qml:155
+msgid "Less"
+msgstr "Weniger"
+
+#: qml/components/FeedbackPane.qml:155
+msgid "Show"
+msgstr "Ansehen"
+
+#: qml/components/FeedbackPane.qml:161
 msgid "You gave this feedback once: “%2”. Make it a rule?"
 msgid_plural "You gave similar feedback %1 times: “%2”. Make it a rule?"
 msgstr[0] "Du hast dieses Feedback einmal gegeben: „%2“. Als Regel übernehmen?"
 msgstr[1] ""
 "Du hast %1-mal ähnliches Feedback gegeben: „%2“. Als Regel übernehmen?"
 
-#: qml/components/FeedbackPane.qml:124
+#: qml/components/FeedbackPane.qml:162
 msgid "→ %1"
 msgstr "→ %1"
 
-#: qml/components/FeedbackPane.qml:127
+#: qml/components/FeedbackPane.qml:170
 msgid "Propose as batch"
 msgstr "Als Batch vorschlagen"
 
-#: qml/components/FeedbackPane.qml:132
+#: qml/components/FeedbackPane.qml:175
 msgid "No"
 msgstr "Nein"
 
-#: qml/components/FeedbackPane.qml:172
+#: qml/components/FeedbackPane.qml:216
 msgid "No messages yet"
 msgstr "Noch keine Nachrichten"
 
-#: qml/components/FeedbackPane.qml:172
+#: qml/components/FeedbackPane.qml:216
 msgid "No messages here"
 msgstr "Hier keine Nachrichten"
 
-#: qml/components/FeedbackPane.qml:173
+#: qml/components/FeedbackPane.qml:217
 msgid ""
 "Tell the AI what to do differently. It revises the proposal, you review "
 "again."
@@ -345,78 +399,82 @@ msgstr ""
 "Sag der KI, was sie anders machen soll. Sie überarbeitet den Vorschlag, du "
 "liest erneut gegen."
 
-#: qml/components/FeedbackPane.qml:186
+#: qml/components/FeedbackPane.qml:230
 msgid "AI is working"
 msgstr "KI arbeitet"
 
-#: qml/components/FeedbackPane.qml:238
+#: qml/components/FeedbackPane.qml:282
 msgid "%1 → v%2"
 msgstr "%1 → v%2"
 
-#: qml/components/FeedbackPane.qml:274 qml/VersionsPage.qml:129
+#: qml/components/FeedbackPane.qml:320 qml/VersionsPage.qml:131
 msgid "You"
 msgstr "Du"
 
-#: qml/components/FeedbackPane.qml:274 qml/VersionsPage.qml:54
-#: qml/VersionsPage.qml:129
+#: qml/components/FeedbackPane.qml:320 qml/VersionsPage.qml:56
+#: qml/VersionsPage.qml:131
 msgid "AI"
 msgstr "KI"
 
-#: qml/components/FeedbackPane.qml:280
+#: qml/components/FeedbackPane.qml:326
 msgid "Change %1"
 msgstr "Änderung %1"
 
-#: qml/components/FeedbackPane.qml:293
+#: qml/components/FeedbackPane.qml:339
 msgid "question"
 msgstr "Rückfrage"
 
-#: qml/components/FeedbackPane.qml:319
+#: qml/components/FeedbackPane.qml:365
 msgid "→ v%1 %2"
 msgstr "→ v%1 %2"
 
-#: qml/components/FeedbackPane.qml:341
+#: qml/components/FeedbackPane.qml:387
 msgctxt "feedback scope"
 msgid "Change %1"
 msgstr "Änderung %1"
 
-#: qml/components/FeedbackPane.qml:341
+#: qml/components/FeedbackPane.qml:387
 msgctxt "feedback scope"
 msgid "Change"
 msgstr "Hunk"
 
-#: qml/components/FeedbackPane.qml:342
+#: qml/components/FeedbackPane.qml:388
 msgctxt "feedback scope"
 msgid "File"
 msgstr "Datei"
 
-#: qml/components/FeedbackPane.qml:342
+#: qml/components/FeedbackPane.qml:388
 msgctxt "feedback scope"
 msgid "Batch"
 msgstr "Batch"
 
-#: qml/components/FeedbackPane.qml:355
+#: qml/components/FeedbackPane.qml:401
 msgid "Reason"
 msgstr "Grund"
 
-#: qml/components/FeedbackPane.qml:392
+#: qml/components/FeedbackPane.qml:442
 msgid "Feedback on change %1…"
 msgstr "Feedback zu Änderung %1 …"
 
-#: qml/components/FeedbackPane.qml:393
+#: qml/components/FeedbackPane.qml:443
 msgid "Feedback on this file…"
 msgstr "Feedback zu dieser Datei …"
 
-#: qml/components/FeedbackPane.qml:393
+#: qml/components/FeedbackPane.qml:443
 msgid "Feedback on the whole batch…"
 msgstr "Feedback zum ganzen Batch …"
 
-#: qml/components/FeedbackPane.qml:409
+#: qml/components/FeedbackPane.qml:459
 msgid "Remember as rule"
 msgstr "Als Regel merken"
 
-#: qml/components/FeedbackPane.qml:414
+#: qml/components/FeedbackPane.qml:464
 msgid "Send"
 msgstr "Senden"
+
+#: qml/components/FeedbackPane.qml:501
+msgid "Price missing"
+msgstr "Preis fehlt"
 
 #: qml/components/FindingList.qml:39
 msgid "Open %1 in Obsidian"
@@ -462,174 +520,174 @@ msgstr "Änderungen %1–%2 von %3"
 msgid "Change %1 of %2"
 msgstr "Änderung %1 von %2"
 
-#: qml/components/HunkHeader.qml:79
+#: qml/components/HunkHeader.qml:80
 msgid "Frontmatter"
 msgstr "Frontmatter"
 
-#: qml/components/HunkHeader.qml:96
+#: qml/components/HunkHeader.qml:97
 msgid "Show this rule"
 msgstr "Diese Regel zeigen"
 
-#: qml/components/HunkHeader.qml:100
+#: qml/components/HunkHeader.qml:101
 msgid "1 comment"
 msgid_plural "%1 comments"
 msgstr[0] "1 Kommentar"
 msgstr[1] "%1 Kommentare"
 
-#: qml/components/HunkHeader.qml:120
+#: qml/components/HunkHeader.qml:121
 msgid "Rejected: %1"
 msgstr "Abgelehnt: %1"
 
-#: qml/components/HunkHeader.qml:133 qml/ReviewPage.qml:625
+#: qml/components/HunkHeader.qml:134 qml/ReviewPage.qml:748
 msgid "Accept"
 msgstr "Annehmen"
 
-#: qml/components/HunkHeader.qml:137
+#: qml/components/HunkHeader.qml:138
 msgid "Accept (A)"
 msgstr "Annehmen (A)"
 
-#: qml/components/HunkHeader.qml:142 qml/components/RejectDialog.qml:84
-#: qml/ReviewPage.qml:632
+#: qml/components/HunkHeader.qml:143 qml/components/RejectDialog.qml:87
+#: qml/ReviewPage.qml:755
 msgid "Reject"
 msgstr "Ablehnen"
 
-#: qml/components/HunkHeader.qml:146
+#: qml/components/HunkHeader.qml:147
 msgid "Reject (R)"
 msgstr "Ablehnen (R)"
 
-#: qml/components/HunkHeader.qml:154
+#: qml/components/HunkHeader.qml:155
 msgid "Edit (E)"
 msgstr "Bearbeiten (E)"
 
-#: qml/components/HunkHeader.qml:158 qml/ReviewPage.qml:45
-#: qml/ReviewPage.qml:638
+#: qml/components/HunkHeader.qml:159 qml/ReviewPage.qml:53
+#: qml/ReviewPage.qml:761
 msgid "Feedback"
 msgstr "Feedback"
 
-#: qml/components/HunkHeader.qml:162
+#: qml/components/HunkHeader.qml:163
 msgid "Feedback to the AI (F)"
 msgstr "Feedback an die KI (F)"
 
-#: qml/components/HunkHeader.qml:169
+#: qml/components/HunkHeader.qml:170
 msgid "More"
 msgstr "Mehr"
 
-#: qml/components/HunkHeader.qml:174
+#: qml/components/HunkHeader.qml:176
 msgid "History of this change"
 msgstr "Verlauf dieser Änderung"
 
-#: qml/components/HunkHeader.qml:179 qml/components/KeysDialog.qml:22
-#: qml/ReviewPage.qml:496
+#: qml/components/HunkHeader.qml:181 qml/components/KeysDialog.qml:24
+#: qml/ReviewPage.qml:615
 msgid "Propose again"
 msgstr "Neu vorschlagen"
 
-#: qml/components/HunkHeader.qml:186
+#: qml/components/HunkHeader.qml:188
 msgid "Undecide"
 msgstr "Entscheidung zurücknehmen"
 
-#: qml/components/KeysDialog.qml:11 qml/ReviewPage.qml:64
+#: qml/components/KeysDialog.qml:11 qml/ReviewPage.qml:67
 msgid "Keys"
 msgstr "Tasten"
 
-#: qml/components/KeysDialog.qml:16
+#: qml/components/KeysDialog.qml:18
 msgid "Decide"
 msgstr "Entscheiden"
 
-#: qml/components/KeysDialog.qml:16
+#: qml/components/KeysDialog.qml:18
 msgid "Accept the change"
 msgstr "Änderung annehmen"
 
-#: qml/components/KeysDialog.qml:16
+#: qml/components/KeysDialog.qml:18
 msgid "Reject the change"
 msgstr "Änderung ablehnen"
 
-#: qml/components/KeysDialog.qml:16
+#: qml/components/KeysDialog.qml:18
 msgid "Edit the change"
 msgstr "Änderung bearbeiten"
 
-#: qml/components/KeysDialog.qml:17
+#: qml/components/KeysDialog.qml:19
 msgid "Accept every open change of the file"
 msgstr "Alle offenen Änderungen der Datei annehmen"
 
-#: qml/components/KeysDialog.qml:17
+#: qml/components/KeysDialog.qml:19
 msgid "Reject every open change of the file"
 msgstr "Alle offenen Änderungen der Datei ablehnen"
 
-#: qml/components/KeysDialog.qml:18
+#: qml/components/KeysDialog.qml:20
 msgid "Undo the written file"
 msgstr "Geschriebene Datei zurücknehmen"
 
-#: qml/components/KeysDialog.qml:19
+#: qml/components/KeysDialog.qml:21
 msgid "Move"
 msgstr "Bewegen"
 
-#: qml/components/KeysDialog.qml:19
+#: qml/components/KeysDialog.qml:21
 msgid "Next change"
 msgstr "Nächste Änderung"
 
-#: qml/components/KeysDialog.qml:19
+#: qml/components/KeysDialog.qml:21
 msgid "Previous change"
 msgstr "Vorige Änderung"
 
-#: qml/components/KeysDialog.qml:20
+#: qml/components/KeysDialog.qml:22
 msgid "Next file"
 msgstr "Nächste Datei"
 
-#: qml/components/KeysDialog.qml:20
+#: qml/components/KeysDialog.qml:22
 msgid "Previous file"
 msgstr "Vorige Datei"
 
-#: qml/components/KeysDialog.qml:21
+#: qml/components/KeysDialog.qml:23
 msgid "Talk to the AI"
 msgstr "Mit der KI sprechen"
 
-#: qml/components/KeysDialog.qml:21
+#: qml/components/KeysDialog.qml:23
 msgid "Feedback on the change"
 msgstr "Feedback zur Änderung"
 
-#: qml/components/KeysDialog.qml:21
+#: qml/components/KeysDialog.qml:23
 msgid "Feedback on the batch"
 msgstr "Feedback zum Batch"
 
-#: qml/components/KeysDialog.qml:23
+#: qml/components/KeysDialog.qml:25
 msgid "View"
 msgstr "Ansicht"
 
-#: qml/components/KeysDialog.qml:23
+#: qml/components/KeysDialog.qml:25
 msgid "Side by side, unified, rendered"
 msgstr "Nebeneinander, einheitlich, gerendert"
 
-#: qml/components/KeysDialog.qml:23
+#: qml/components/KeysDialog.qml:25
 msgid "Previous version"
 msgstr "Vorige Version"
 
-#: qml/components/KeysDialog.qml:23
+#: qml/components/KeysDialog.qml:25
 msgid "History of the change"
 msgstr "Verlauf der Änderung"
 
-#: qml/components/KeysDialog.qml:24
+#: qml/components/KeysDialog.qml:26
 msgid "This overview"
 msgstr "Diese Übersicht"
 
-#: qml/components/KeysDialog.qml:25
+#: qml/components/KeysDialog.qml:27
 msgid "Everywhere"
 msgstr "Überall"
 
-#: qml/components/KeysDialog.qml:25 qml/components/TaskDialog.qml:30
-#: qml/StartPage.qml:140
+#: qml/components/KeysDialog.qml:27 qml/components/TaskDialog.qml:30
+#: qml/StartPage.qml:263
 msgid "New task"
 msgstr "Neuer Auftrag"
 
-#: qml/components/KeysDialog.qml:25 qml/Main.qml:112 qml/SetupPage.qml:179
-#: qml/StartPage.qml:21 qml/StartPage.qml:156
+#: qml/components/KeysDialog.qml:27 qml/Main.qml:175 qml/SetupPage.qml:181
+#: qml/StartPage.qml:62 qml/StartPage.qml:279
 msgid "Start"
 msgstr "Start"
 
-#: qml/components/KeysDialog.qml:25 qml/JournalPage.qml:44 qml/Main.qml:130
+#: qml/components/KeysDialog.qml:27 qml/JournalPage.qml:44 qml/Main.qml:193
 msgid "Journal"
 msgstr "Journal"
 
-#: qml/components/KeysDialog.qml:25 qml/Main.qml:136 qml/SettingsPage.qml:27
+#: qml/components/KeysDialog.qml:27 qml/Main.qml:199 qml/SettingsPage.qml:29
 msgid "Settings"
 msgstr "Einstellungen"
 
@@ -641,70 +699,74 @@ msgstr "%1 angenommen · %2 abgelehnt · %3 offen"
 msgid "Why reject?"
 msgstr "Warum ablehnen?"
 
-#: qml/components/RejectDialog.qml:21
+#: qml/components/RejectDialog.qml:23
 msgid "Not needed"
 msgstr "Unnötig"
 
-#: qml/components/RejectDialog.qml:21 qml/SettingsPage.qml:620
+#: qml/components/RejectDialog.qml:23
 msgid "Style"
 msgstr "Stil"
 
-#: qml/components/RejectDialog.qml:21
+#: qml/components/RejectDialog.qml:23
 msgid "Later"
 msgstr "Später"
 
-#: qml/components/RejectDialog.qml:41
+#: qml/components/RejectDialog.qml:44
 msgid "Optional. The reason helps the AI with the next proposal."
 msgstr "Optional. Der Grund hilft der KI beim nächsten Vorschlag."
 
-#: qml/components/RejectDialog.qml:62
+#: qml/components/RejectDialog.qml:65
 msgid "e.g. Borg, not Restic"
 msgstr "z. B. Borg, nicht Restic"
 
-#: qml/components/RejectDialog.qml:69
+#: qml/components/RejectDialog.qml:72
 msgid "Enter rejects · Ctrl+Enter rejects and asks for a new proposal"
 msgstr ""
 "Enter lehnt ab · Strg+Enter lehnt ab und bittet um einen neuen Vorschlag"
 
-#: qml/components/RejectDialog.qml:79
+#: qml/components/RejectDialog.qml:82
 msgid "Reject and propose again"
 msgstr "Ablehnen und neu vorschlagen"
 
-#: qml/components/RenderedView.qml:100
+#: qml/components/RenderedView.qml:92
+msgid "Embedded: %1"
+msgstr "Eingebettet: %1"
+
+#: qml/components/RenderedView.qml:115
 msgid "Before"
 msgstr "Vorher"
 
-#: qml/components/RenderedView.qml:111
+#: qml/components/RenderedView.qml:127
 msgid "After"
 msgstr "Nachher"
 
-#: qml/components/Store.qml:104
+#: qml/components/Store.qml:106
 msgid "one minute ago"
 msgid_plural "%1 minutes ago"
 msgstr[0] "vor einer Minute"
 msgstr[1] "vor %1 Minuten"
 
-#: qml/components/Store.qml:107
+#: qml/components/Store.qml:109
 msgid "one hour ago"
 msgid_plural "%1 hours ago"
 msgstr[0] "vor einer Stunde"
 msgstr[1] "vor %1 Stunden"
 
-#: qml/components/Store.qml:109
+#: qml/components/Store.qml:111
 msgid "one day ago"
 msgid_plural "%1 days ago"
 msgstr[0] "vor einem Tag"
 msgstr[1] "vor %1 Tagen"
 
-#: qml/components/Store.qml:135
+#: qml/components/Store.qml:137
 msgid "%1 k tokens"
 msgstr "%1 k Tokens"
 
-#: qml/components/Store.qml:135
+#: qml/components/Store.qml:137
 msgid "%1 tokens"
 msgstr "%1 Tokens"
 
-#: qml/components/Store.qml:149
+#: qml/components/Store.qml:151
 msgid "One file ready for review"
 msgid_plural "%1 files ready for review"
 msgstr[0] "Eine Datei wartet auf dein Review"
@@ -722,173 +784,213 @@ msgstr "Ergänze die fehlenden Frontmatter-Felder"
 msgid "Move passwords to Vaultwarden and link the entry"
 msgstr "Verschiebe Passwörter nach Vaultwarden und verlinke den Eintrag"
 
-#: qml/components/TaskDialog.qml:104
+#: qml/components/TaskDialog.qml:105
 msgid "What should change? One sentence is enough."
 msgstr "Was soll sich ändern? Ein Satz reicht."
 
-#: qml/components/TaskDialog.qml:127
+#: qml/components/TaskDialog.qml:128
 msgid "Scope"
 msgstr "Reichweite"
 
-#: qml/components/TaskDialog.qml:129
+#: qml/components/TaskDialog.qml:130
 msgid "all allowed folders"
 msgstr "alle freigegebenen Ordner"
 
-#: qml/components/TaskDialog.qml:129
+#: qml/components/TaskDialog.qml:130
 msgid "one folder"
 msgid_plural "%1 folders"
 msgstr[0] "ein Ordner"
 msgstr[1] "%1 Ordner"
 
-#: qml/components/TaskDialog.qml:155
+#: qml/components/TaskDialog.qml:157
 msgid "Filter folders…"
 msgstr "Ordner filtern …"
 
-#: qml/components/TaskDialog.qml:184
+#: qml/components/TaskDialog.qml:193
 msgid "Provider"
 msgstr "Anbieter"
 
-#: qml/components/TaskDialog.qml:196
+#: qml/components/TaskDialog.qml:205
 msgid "Only find notes, propose nothing"
 msgstr "Nur Notizen suchen, nichts vorschlagen"
 
-#: qml/components/TaskDialog.qml:208 qml/StartPage.qml:194
+#: qml/components/TaskDialog.qml:217 qml/StartPage.qml:334
 msgid "≈ %1 k tokens at most"
 msgstr "höchstens ≈ %1 k Tokens"
 
-#: qml/components/TaskDialog.qml:210 qml/StartPage.qml:194
+#: qml/components/TaskDialog.qml:219 qml/StartPage.qml:334
 msgid "about %1 %2"
 msgstr "ca. %1 %2"
 
-#: qml/components/TaskDialog.qml:213
+#: qml/components/TaskDialog.qml:222
 msgid "local model, nothing leaves this computer"
 msgstr "lokales Modell, nichts verlässt diesen Rechner"
 
-#: qml/components/TaskDialog.qml:216
+#: qml/components/TaskDialog.qml:225
 msgid "one note is for local models only"
 msgid_plural "%1 notes are for local models only"
 msgstr[0] "eine Notiz nur für lokale Modelle"
 msgstr[1] "%1 Notizen nur für lokale Modelle"
 
-#: qml/components/TaskDialog.qml:229
+#: qml/components/TaskDialog.qml:239
 msgid "Find notes"
 msgstr "Notizen suchen"
 
-#: qml/JournalPage.qml:72
+#: qml/JournalPage.qml:55
+msgid "Today"
+msgstr "Heute"
+
+#: qml/JournalPage.qml:55
+msgid "Yesterday"
+msgstr "Gestern"
+
+#: qml/JournalPage.qml:84
 msgid "Search notes and batches…"
 msgstr "Notizen und Batches suchen …"
 
-#: qml/JournalPage.qml:79
+#: qml/JournalPage.qml:91
 msgctxt "journal filter"
 msgid "All"
 msgstr "Alle"
 
-#: qml/JournalPage.qml:79
+#: qml/JournalPage.qml:91
 msgctxt "journal filter"
 msgid "Written"
 msgstr "Geschrieben"
 
-#: qml/JournalPage.qml:79
+#: qml/JournalPage.qml:91
 msgctxt "journal filter"
 msgid "Reverted"
 msgstr "Zurückgesetzt"
 
-#: qml/JournalPage.qml:100
+#: qml/JournalPage.qml:112 qml/StartPage.qml:195
 msgid "Nothing written yet"
 msgstr "Noch nichts geschrieben"
 
-#: qml/JournalPage.qml:100
+#: qml/JournalPage.qml:112
 msgid "Nothing matches"
 msgstr "Nichts gefunden"
 
-#: qml/JournalPage.qml:101
+#: qml/JournalPage.qml:113
 msgid "Accepted changes appear here and can be undone."
 msgstr ""
 "Angenommene Änderungen erscheinen hier und lassen sich rückgängig machen."
 
-#: qml/JournalPage.qml:165
+#: qml/JournalPage.qml:188
 msgid "new"
 msgstr "neu"
 
-#: qml/JournalPage.qml:166
+#: qml/JournalPage.qml:189
 msgid "reverted"
 msgstr "zurückgesetzt"
 
-#: qml/JournalPage.qml:193
+#: qml/JournalPage.qml:216
 msgid "Show in the review"
 msgstr "In der Review-Strecke zeigen"
 
-#: qml/Main.qml:118
+#: qml/Main.qml:60 qml/SettingsPage.qml:29 qml/SetupPage.qml:99
+msgid "Folders"
+msgstr "Ordner"
+
+#: qml/Main.qml:67 qml/SettingsPage.qml:29
+msgid "Checks"
+msgstr "Prüfregeln"
+
+#: qml/Main.qml:74 qml/SettingsPage.qml:29
+msgid "AI providers"
+msgstr "KI-Anbieter"
+
+#: qml/Main.qml:81 qml/SettingsPage.qml:29
+msgid "Appearance"
+msgstr "Aussehen"
+
+#: qml/Main.qml:181
 msgid "Review (%1)"
 msgstr "Review-Strecke (%1)"
 
-#: qml/Main.qml:118 qml/ReviewPage.qml:39
+#: qml/Main.qml:181 qml/ReviewPage.qml:45
 msgid "Review"
 msgstr "Review-Strecke"
 
-#: qml/Main.qml:171
+#: qml/Main.qml:234
 msgid "Try again"
 msgstr "Erneut versuchen"
 
-#: qml/ReviewPage.qml:51
+#: qml/ReviewPage.qml:59
 msgid "Accept file"
 msgstr "Ganze Datei annehmen"
 
-#: qml/ReviewPage.qml:55
+#: qml/ReviewPage.qml:64
 msgid "Accept every open change of this file (Shift+A)"
 msgstr "Alle offenen Änderungen dieser Datei annehmen (Umschalt+A)"
 
-#: qml/ReviewPage.qml:70
+#: qml/ReviewPage.qml:73
 msgid "Hide secrets"
 msgstr "Geheimnisse verbergen"
 
-#: qml/ReviewPage.qml:70
+#: qml/ReviewPage.qml:73
 msgid "Show all secrets"
 msgstr "Alle Geheimnisse zeigen"
 
-#: qml/ReviewPage.qml:76
+#: qml/ReviewPage.qml:79
 msgid "Discard batch"
 msgstr "Batch verwerfen"
 
-#: qml/ReviewPage.qml:408
-msgid "The AI has a question:"
-msgid_plural "The AI has %1 questions:"
-msgstr[0] "Die KI hat eine Rückfrage:"
-msgstr[1] "Die KI hat %1 Rückfragen:"
+#: qml/ReviewPage.qml:464
+msgid "The AI has a question"
+msgid_plural "The AI has %1 questions"
+msgstr[0] "Die KI hat eine Rückfrage"
+msgstr[1] "Die KI hat %1 Rückfragen"
 
-#: qml/ReviewPage.qml:411
+#: qml/ReviewPage.qml:487
+msgid "Your answer… (Ctrl+Enter sends)"
+msgstr "Deine Antwort … (Strg+Enter sendet)"
+
+#: qml/ReviewPage.qml:498
 msgid "Answer"
 msgstr "Antworten"
 
-#: qml/ReviewPage.qml:427
+#: qml/ReviewPage.qml:519
 msgid "Version %1 of %2"
 msgstr "Version %1 von %2"
 
-#: qml/ReviewPage.qml:431
+#: qml/ReviewPage.qml:523
 msgid "All versions of this file (Shift+V)"
 msgstr "Alle Versionen dieser Datei (Umschalt+V)"
 
-#: qml/ReviewPage.qml:436
+#: qml/ReviewPage.qml:528
 msgid "Wrap lines"
 msgstr "Zeilen umbrechen"
 
-#: qml/ReviewPage.qml:451
+#: qml/ReviewPage.qml:539
+msgid "Wrap lines (on)"
+msgstr "Zeilen umbrechen (an)"
+
+#: qml/ReviewPage.qml:539
+msgid "Wrap lines (off)"
+msgstr "Zeilen umbrechen (aus)"
+
+#: qml/ReviewPage.qml:543
 msgid "Before | after"
 msgstr "Vorher | nachher"
 
-#: qml/ReviewPage.qml:461
+#: qml/ReviewPage.qml:552
+msgid "Markdown source"
+msgstr "Markdown-Quelltext"
+
+#: qml/ReviewPage.qml:574
 msgid "Side by side"
 msgstr "Nebeneinander"
 
-#: qml/ReviewPage.qml:461
+#: qml/ReviewPage.qml:574
 msgid "Unified"
 msgstr "Einheitlich"
 
-#: qml/ReviewPage.qml:461
+#: qml/ReviewPage.qml:574
 msgid "Rendered"
 msgstr "Gerendert"
 
-#: qml/ReviewPage.qml:494
+#: qml/ReviewPage.qml:613
 msgid ""
 "This note changed since the proposal. Changes that still fit are placed into "
 "the new content when you accept."
@@ -896,102 +998,113 @@ msgstr ""
 "Die Notiz wurde seit dem Vorschlag geändert. Änderungen, die noch passen, "
 "werden beim Annehmen in den neuen Inhalt eingesetzt."
 
-#: qml/ReviewPage.qml:506
+#: qml/ReviewPage.qml:626
 msgid "Written to the vault."
 msgstr "In den Tresor geschrieben."
 
-#: qml/ReviewPage.qml:507
+#: qml/ReviewPage.qml:627
 msgid "Everything rejected, nothing written."
 msgstr "Alles abgelehnt, nichts geschrieben."
 
-#: qml/ReviewPage.qml:507
+#: qml/ReviewPage.qml:627
 msgid "Reverted."
 msgstr "Zurückgesetzt."
 
-#: qml/ReviewPage.qml:517
+#: qml/ReviewPage.qml:637
 msgid "Review again"
 msgstr "Erneut prüfen"
 
-#: qml/ReviewPage.qml:528
+#: qml/ReviewPage.qml:649
 msgid "Secrets are visible."
 msgstr "Geheimnisse sind sichtbar."
 
-#: qml/ReviewPage.qml:553
+#: qml/ReviewPage.qml:674
 msgid "Old line %1: "
 msgstr "Alte Zeile %1: "
 
-#: qml/ReviewPage.qml:553
+#: qml/ReviewPage.qml:674
 msgid "Line %1: "
 msgstr "Zeile %1: "
 
-#: qml/ReviewPage.qml:573
+#: qml/ReviewPage.qml:695
 msgid "The AI found one note"
 msgid_plural "The AI found %1 notes"
 msgstr[0] "Die KI hat eine Notiz gefunden"
 msgstr[1] "Die KI hat %1 Notizen gefunden"
 
-#: qml/ReviewPage.qml:590
+#: qml/ReviewPage.qml:712
 msgid "Propose changes for these notes…"
 msgstr "Änderungen für diese Notizen vorschlagen …"
 
-#: qml/ReviewPage.qml:609
+#: qml/ReviewPage.qml:731
 msgid "Nothing waiting for review"
 msgstr "Nichts wartet auf dich"
 
-#: qml/ReviewPage.qml:609
+#: qml/ReviewPage.qml:731
 msgid "The AI is working on this batch"
 msgstr "Die KI arbeitet an diesem Batch"
 
-#: qml/ReviewPage.qml:610
+#: qml/ReviewPage.qml:732
 msgid "New proposals appear here. Press N for a new task."
 msgstr "Neue Vorschläge erscheinen hier. N startet einen neuen Auftrag."
 
-#: qml/ReviewPage.qml:651
-msgid "A accept · R reject · F feedback · J/K next/previous · ? all keys"
-msgstr ""
-"A annehmen · R ablehnen · F Feedback · J/K nächste/vorige · ? alle Tasten"
+#: qml/ReviewPage.qml:776 qml/ReviewPage.qml:777
+msgid "all keys"
+msgstr "alle Tasten"
 
-#: qml/ReviewPage.qml:698
+#: qml/ReviewPage.qml:777
+msgid "accept"
+msgstr "annehmen"
+
+#: qml/ReviewPage.qml:777
+msgid "reject"
+msgstr "ablehnen"
+
+#: qml/ReviewPage.qml:777
+msgid "feedback"
+msgstr "Feedback"
+
+#: qml/ReviewPage.qml:777
+msgid "next/previous"
+msgstr "nächste/vorige"
+
+#: qml/ReviewPage.qml:846
 msgid "Please propose this change again."
 msgstr "Bitte diese Änderung neu vorschlagen."
 
-#: qml/SettingsPage.qml:21 qml/SettingsPage.qml:603
+#: qml/SettingsPage.qml:23 qml/SettingsPage.qml:620
 msgid "Model:"
 msgstr "Modell:"
 
-#: qml/SettingsPage.qml:22
+#: qml/SettingsPage.qml:24
 msgid "Result:"
 msgstr "Ergebnis:"
 
-#: qml/SettingsPage.qml:23
+#: qml/SettingsPage.qml:25
 msgid "Key:"
 msgstr "Schlüssel:"
 
-#: qml/SettingsPage.qml:24
+#: qml/SettingsPage.qml:26
 msgid "Price per million tokens:"
 msgstr "Preis pro Million Tokens:"
 
-#: qml/SettingsPage.qml:25
+#: qml/SettingsPage.qml:27
 msgid "Fallback:"
 msgstr "Ausweichmodell:"
 
-#: qml/SettingsPage.qml:86
+#: qml/SettingsPage.qml:90
 msgid "Choose a rulebook note"
 msgstr "Regelwerk-Notiz wählen"
 
-#: qml/SettingsPage.qml:87
+#: qml/SettingsPage.qml:91
 msgid "Notes (*.md)"
 msgstr "Notizen (*.md)"
 
-#: qml/SettingsPage.qml:92
+#: qml/SettingsPage.qml:96
 msgid "The rulebook has to be a note in the vault."
 msgstr "Das Regelwerk muss eine Notiz im Tresor sein."
 
-#: qml/SettingsPage.qml:107
-msgid "Vault and folders"
-msgstr "Tresor und Ordner"
-
-#: qml/SettingsPage.qml:111
+#: qml/SettingsPage.qml:118
 msgid ""
 "The AI only sees allowed folders; sub folders can be allowed on their own. "
 "Blocked wins over everything: never read, not even for the index. Local only "
@@ -1001,198 +1114,190 @@ msgstr ""
 "freigeben. Gesperrt gewinnt immer: nie gelesen, nicht einmal für den Index. "
 "Nur lokal geht nie an externe Anbieter."
 
-#: qml/SettingsPage.qml:135 qml/SetupPage.qml:111
+#: qml/SettingsPage.qml:142 qml/SetupPage.qml:113
 msgid "Allowed"
 msgstr "Freigegeben"
 
-#: qml/SettingsPage.qml:135
+#: qml/SettingsPage.qml:142
 msgid "Local only"
 msgstr "Nur lokal"
 
-#: qml/SettingsPage.qml:135 qml/SetupPage.qml:112
+#: qml/SettingsPage.qml:142 qml/SetupPage.qml:114
 msgid "Blocked"
 msgstr "Gesperrt"
 
-#: qml/SettingsPage.qml:183
+#: qml/SettingsPage.qml:190
 msgid "Allowed by a parent folder"
 msgstr "Über einen übergeordneten Ordner freigegeben"
 
-#: qml/SettingsPage.qml:189
+#: qml/SettingsPage.qml:196
 msgid "Local only through a parent folder"
 msgstr "Über einen übergeordneten Ordner nur lokal"
 
-#: qml/SettingsPage.qml:195
+#: qml/SettingsPage.qml:202
 msgid "Blocked by a parent folder"
 msgstr "Über einen übergeordneten Ordner gesperrt"
 
-#: qml/SettingsPage.qml:207
+#: qml/SettingsPage.qml:214
 msgid "Rulebook:"
 msgstr "Regelwerk:"
 
-#: qml/SettingsPage.qml:224
+#: qml/SettingsPage.qml:231
 msgid "Remove from the rulebook"
 msgstr "Aus dem Regelwerk entfernen"
 
-#: qml/SettingsPage.qml:229
+#: qml/SettingsPage.qml:236
 msgid "default: %1"
 msgstr "Standard: %1"
 
-#: qml/SettingsPage.qml:229
+#: qml/SettingsPage.qml:236
 msgid "none"
 msgstr "keins"
 
-#: qml/SettingsPage.qml:236
+#: qml/SettingsPage.qml:243
 msgid "Add note…"
 msgstr "Notiz hinzufügen …"
 
-#: qml/SettingsPage.qml:251
-msgid "Checks"
-msgstr "Prüfregeln"
-
-#: qml/SettingsPage.qml:256
+#: qml/SettingsPage.qml:267
 msgid "The checks run without AI and fill the findings on the start page."
 msgstr ""
 "Die Prüfregeln laufen ohne KI und füllen die Befunde auf der Startseite."
 
-#: qml/SettingsPage.qml:266
+#: qml/SettingsPage.qml:277
 msgid "Old code names"
 msgstr "Alte Codenamen"
 
-#: qml/SettingsPage.qml:267
+#: qml/SettingsPage.qml:278
 msgid "Replace with"
 msgstr "Ersetzen durch"
 
-#: qml/SettingsPage.qml:281
+#: qml/SettingsPage.qml:292
 msgid "only report"
 msgstr "nur melden"
 
-#: qml/SettingsPage.qml:299 qml/SettingsPage.qml:370
+#: qml/SettingsPage.qml:310 qml/SettingsPage.qml:381
 msgid "Remove"
 msgstr "Entfernen"
 
-#: qml/SettingsPage.qml:306
+#: qml/SettingsPage.qml:317
 msgid "Old name"
 msgstr "Alter Name"
 
-#: qml/SettingsPage.qml:313
+#: qml/SettingsPage.qml:324
 msgid "New name (empty: only report)"
 msgstr "Neuer Name (leer: nur melden)"
 
-#: qml/SettingsPage.qml:331 qml/SettingsPage.qml:400
+#: qml/SettingsPage.qml:342 qml/SettingsPage.qml:411
 msgid "Add"
 msgstr "Hinzufügen"
 
-#: qml/SettingsPage.qml:338
+#: qml/SettingsPage.qml:349
 msgid "Folder"
 msgstr "Ordner"
 
-#: qml/SettingsPage.qml:339
+#: qml/SettingsPage.qml:350
 msgid "Required frontmatter fields"
 msgstr "Pflichtfelder im Frontmatter"
 
-#: qml/SettingsPage.qml:383
+#: qml/SettingsPage.qml:394
 msgid "e.g. Gerät, Zuständig"
 msgstr "z. B. Gerät, Zuständig"
 
-#: qml/SettingsPage.qml:408
+#: qml/SettingsPage.qml:419
 msgid "Review date older than"
 msgstr "Prüfdatum älter als"
 
-#: qml/SettingsPage.qml:419
+#: qml/SettingsPage.qml:431
 msgid "days (0: off)"
 msgstr "Tage (0: aus)"
 
-#: qml/SettingsPage.qml:425
-msgid "AI providers"
-msgstr "KI-Anbieter"
-
-#: qml/SettingsPage.qml:454
+#: qml/SettingsPage.qml:470
 msgid "local"
 msgstr "lokal"
 
-#: qml/SettingsPage.qml:457
+#: qml/SettingsPage.qml:474
 msgid "key stored"
 msgstr "Schlüssel vorhanden"
 
-#: qml/SettingsPage.qml:457
+#: qml/SettingsPage.qml:474
 msgid "no key"
 msgstr "kein Schlüssel"
 
-#: qml/SettingsPage.qml:462
+#: qml/SettingsPage.qml:479
 msgid "Remove provider"
 msgstr "Anbieter entfernen"
 
-#: qml/SettingsPage.qml:493
+#: qml/SettingsPage.qml:510
 msgid "Test connection"
 msgstr "Verbindung testen"
 
-#: qml/SettingsPage.qml:515
+#: qml/SettingsPage.qml:532
 msgid "Testing…"
 msgstr "Wird getestet …"
 
-#: qml/SettingsPage.qml:516
+#: qml/SettingsPage.qml:533
 msgid "one model"
 msgid_plural "%1 models"
 msgstr[0] "ein Modell"
 msgstr[1] "%1 Modelle"
 
-#: qml/SettingsPage.qml:516
+#: qml/SettingsPage.qml:533
 msgid "answer: %1"
 msgstr "Antwort: %1"
 
-#: qml/SettingsPage.qml:516
+#: qml/SettingsPage.qml:533
 msgid "Works · %1"
 msgstr "Funktioniert · %1"
 
-#: qml/SettingsPage.qml:532
+#: qml/SettingsPage.qml:549
 msgid "API key (stored in KWallet)"
 msgstr "API-Schlüssel (wird im KWallet gespeichert)"
 
-#: qml/SettingsPage.qml:532
+#: qml/SettingsPage.qml:549
 msgid "API key, if the endpoint needs one"
 msgstr "API-Schlüssel, falls der Endpunkt einen braucht"
 
-#: qml/SettingsPage.qml:538
+#: qml/SettingsPage.qml:555
 msgid "Save key"
 msgstr "Schlüssel speichern"
 
-#: qml/SettingsPage.qml:551
-msgid "in"
-msgstr "Eingabe"
+#: qml/SettingsPage.qml:568
+msgid "in, $/1M"
+msgstr "Eingabe, $/1M"
 
-#: qml/SettingsPage.qml:559
-msgid "out"
-msgstr "Ausgabe"
+#: qml/SettingsPage.qml:576
+msgid "out, $/1M"
+msgstr "Ausgabe, $/1M"
 
-#: qml/SettingsPage.qml:580
+#: qml/SettingsPage.qml:597
 msgid "Switch to a similar model when this one is overloaded"
 msgstr "Bei Überlastung auf ein ähnliches Modell ausweichen"
 
-#: qml/SettingsPage.qml:598
+#: qml/SettingsPage.qml:615
 msgid "Kind:"
 msgstr "Art:"
 
-#: qml/SettingsPage.qml:599
+#: qml/SettingsPage.qml:616
 msgid "Claude (Anthropic)"
 msgstr "Claude (Anthropic)"
 
-#: qml/SettingsPage.qml:599
+#: qml/SettingsPage.qml:616
 msgid "OpenAI-compatible (Ollama, LM Studio, …)"
 msgstr "OpenAI-kompatibel (Ollama, LM Studio, …)"
 
-#: qml/SettingsPage.qml:602
+#: qml/SettingsPage.qml:619
 msgid "Name:"
 msgstr "Name:"
 
-#: qml/SettingsPage.qml:604
+#: qml/SettingsPage.qml:621
 msgid "Address:"
 msgstr "Adresse:"
 
-#: qml/SettingsPage.qml:606
+#: qml/SettingsPage.qml:623
 msgid "Add provider"
 msgstr "Anbieter hinzufügen"
 
-#: qml/SettingsPage.qml:625
+#: qml/SettingsPage.qml:646
 msgid ""
 "System follows your Plasma colour scheme and is the default. Kante Light "
 "adds Kante's shapes and titles; Kante uses its own palette."
@@ -1200,23 +1305,27 @@ msgstr ""
 "System folgt deinem Plasma-Farbschema und ist der Standard. Kante Light "
 "ergänzt Kantes Formen und Titel; Kante nutzt seine eigene Palette."
 
-#: qml/SettingsPage.qml:632
+#: qml/SettingsPage.qml:653
 msgid "System"
 msgstr "System"
 
-#: qml/SettingsPage.qml:632
+#: qml/SettingsPage.qml:653
 msgid "Kante Light"
 msgstr "Kante Light"
 
-#: qml/SettingsPage.qml:632
+#: qml/SettingsPage.qml:653
 msgid "Kante"
 msgstr "Kante"
 
-#: qml/SettingsPage.qml:663
+#: qml/SettingsPage.qml:686
 msgid "Config: %1"
 msgstr "Konfiguration: %1"
 
-#: qml/SettingsPage.qml:742
+#: qml/SettingsPage.qml:693
+msgid "Open in editor"
+msgstr "Im Editor öffnen"
+
+#: qml/SettingsPage.qml:774
 msgid "Heading"
 msgstr "Überschrift"
 
@@ -1224,11 +1333,11 @@ msgstr "Überschrift"
 msgid "Welcome to Hansei"
 msgstr "Willkommen bei Hansei"
 
-#: qml/SetupPage.qml:53
+#: qml/SetupPage.qml:55
 msgid "Choose your Obsidian vault"
 msgstr "Obsidian-Tresor wählen"
 
-#: qml/SetupPage.qml:71
+#: qml/SetupPage.qml:73
 msgid ""
 "Hansei lets an AI improve your notes and shows every change as a diff before "
 "anything is written. Nothing leaves the folders you allow."
@@ -1237,27 +1346,23 @@ msgstr ""
 "Diff, bevor etwas geschrieben wird. Nichts verlässt die Ordner, die du "
 "freigibst."
 
-#: qml/SetupPage.qml:77 qml/VersionsPage.qml:86
+#: qml/SetupPage.qml:79 qml/VersionsPage.qml:88
 msgid "Vault"
 msgstr "Tresor"
 
-#: qml/SetupPage.qml:83
+#: qml/SetupPage.qml:85
 msgid "/home/you/Obsidian/Vault"
 msgstr "/home/du/Obsidian/Tresor"
 
-#: qml/SetupPage.qml:90
+#: qml/SetupPage.qml:92
 msgid "Choose…"
 msgstr "Wählen …"
 
-#: qml/SetupPage.qml:97
-msgid "Folders"
-msgstr "Ordner"
-
-#: qml/SetupPage.qml:127
+#: qml/SetupPage.qml:129
 msgid "sounds private"
 msgstr "klingt privat"
 
-#: qml/SetupPage.qml:164
+#: qml/SetupPage.qml:166
 msgid ""
 "Blocked folders are never read, not even for the search index. You can "
 "change all of this later in the settings."
@@ -1265,97 +1370,123 @@ msgstr ""
 "Gesperrte Ordner werden nie gelesen, nicht einmal für den Suchindex. Das "
 "alles lässt sich später in den Einstellungen ändern."
 
-#: qml/StartPage.qml:63
+#: qml/StartPage.qml:53
+msgid "%1 in %2"
+msgstr "%1 in %2"
+
+#: qml/StartPage.qml:117
 msgid "Conforms to rules"
 msgstr "Regelkonform"
 
-#: qml/StartPage.qml:65
+#: qml/StartPage.qml:119
 msgid "%1 this week"
 msgstr "%1 diese Woche"
 
-#: qml/StartPage.qml:65
+#: qml/StartPage.qml:119
 msgid "One note checked"
 msgid_plural "%1 notes checked"
 msgstr[0] "Eine Notiz geprüft"
 msgstr[1] "%1 Notizen geprüft"
 
-#: qml/StartPage.qml:73
+#: qml/StartPage.qml:128
+msgid "Biggest lever: %1 (%2)"
+msgstr "Größter Hebel: %1 (%2)"
+
+#: qml/StartPage.qml:136
 msgid "Waiting for you"
 msgstr "Wartet auf dich"
 
-#: qml/StartPage.qml:75
-msgid "One open change"
-msgid_plural "%1 open changes"
-msgstr[0] "Eine offene Änderung"
-msgstr[1] "%1 offene Änderungen"
+#: qml/StartPage.qml:138
+msgid "change in one batch"
+msgid_plural "changes in %1 batches"
+msgstr[0] "Änderungen in einem Batch"
+msgstr[1] "Änderungen in %1 Batches"
 
-#: qml/StartPage.qml:78
+#: qml/StartPage.qml:141
+msgid "Oldest: %1"
+msgstr "Älteste: %1"
+
+#: qml/StartPage.qml:154
 msgid "Streak"
 msgstr "Serie"
 
-#: qml/StartPage.qml:80
+#: qml/StartPage.qml:156
 msgid "day in a row"
 msgid_plural "days in a row"
 msgstr[0] "Tag in Folge"
 msgstr[1] "Tage in Folge"
 
-#: qml/StartPage.qml:80
+#: qml/StartPage.qml:156
 msgid "one change today"
 msgid_plural "%1 changes today"
 msgstr[0] "heute eine Änderung"
 msgstr[1] "heute %1 Änderungen"
 
-#: qml/StartPage.qml:100
+#: qml/StartPage.qml:187
+msgid "AI this month"
+msgstr "KI diesen Monat"
+
+#: qml/StartPage.qml:189
+msgid "one task"
+msgid_plural "%1 tasks"
+msgstr[0] "ein Auftrag"
+msgstr[1] "%1 Aufträge"
+
+#: qml/StartPage.qml:193
+msgid "Last written"
+msgstr "Zuletzt geschrieben"
+
+#: qml/StartPage.qml:223
 msgid "Task"
 msgstr "Auftrag"
 
-#: qml/StartPage.qml:113
+#: qml/StartPage.qml:236
 msgid "one change open"
 msgid_plural "%1 changes open"
 msgstr[0] "eine Änderung offen"
 msgstr[1] "%1 Änderungen offen"
 
-#: qml/StartPage.qml:126
+#: qml/StartPage.qml:249
 msgid "and one more batch in the review line"
 msgid_plural "and %1 more batches in the review line"
 msgstr[0] "und ein weiterer Batch in der Review-Strecke"
 msgstr[1] "und %1 weitere Batches in der Review-Strecke"
 
-#: qml/StartPage.qml:149
+#: qml/StartPage.qml:272
 msgid "What should change? The AI finds the notes, you review every change."
 msgstr ""
 "Was soll sich ändern? Die KI findet die Notizen, du liest jede Änderung "
 "gegen."
 
-#: qml/StartPage.qml:163
+#: qml/StartPage.qml:286
 msgid "Details…"
 msgstr "Details …"
 
-#: qml/StartPage.qml:202
+#: qml/StartPage.qml:342
 msgid "Findings from checks · no AI"
 msgstr "Befunde aus Prüfregeln · ohne KI"
 
-#: qml/StartPage.qml:208
+#: qml/StartPage.qml:348
 msgid "No findings"
 msgstr "Keine Befunde"
 
-#: qml/StartPage.qml:209
+#: qml/StartPage.qml:349
 msgid "Every note in the allowed folders follows the checks."
 msgstr "Alle Notizen in den freigegebenen Ordnern erfüllen die Prüfregeln."
 
-#: qml/StartPage.qml:270
+#: qml/StartPage.qml:408
 msgid "Open batch"
 msgstr "Batch öffnen"
 
-#: qml/StartPage.qml:312
+#: qml/StartPage.qml:474
 msgid "Vault %1"
 msgstr "Tresor %1"
 
-#: qml/StartPage.qml:314
+#: qml/StartPage.qml:476
 msgid "checked %1"
 msgstr "geprüft %1"
 
-#: qml/StartPage.qml:320
+#: qml/StartPage.qml:482
 msgid "Check again"
 msgstr "Neu prüfen"
 
@@ -1363,71 +1494,71 @@ msgstr "Neu prüfen"
 msgid "History of change %1 · %2"
 msgstr "Verlauf von Änderung %1 · %2"
 
-#: qml/VersionsPage.qml:54
+#: qml/VersionsPage.qml:56
 msgid "you"
 msgstr "du"
 
-#: qml/VersionsPage.qml:54
+#: qml/VersionsPage.qml:56
 msgid "checks"
 msgstr "Prüfregeln"
 
-#: qml/VersionsPage.qml:54
+#: qml/VersionsPage.qml:56
 msgid "vault"
 msgstr "Tresor"
 
-#: qml/VersionsPage.qml:68
+#: qml/VersionsPage.qml:70
 msgid "Versions"
 msgstr "Versionen"
 
-#: qml/VersionsPage.qml:91
+#: qml/VersionsPage.qml:93
 msgid "before the batch"
 msgstr "vor dem Batch"
 
-#: qml/VersionsPage.qml:98
+#: qml/VersionsPage.qml:100
 msgid "in use"
 msgstr "in Verwendung"
 
-#: qml/VersionsPage.qml:103
+#: qml/VersionsPage.qml:105
 msgid "Use"
 msgstr "Verwenden"
 
-#: qml/VersionsPage.qml:107
+#: qml/VersionsPage.qml:109
 msgid "Use this version"
 msgstr "Diese Version verwenden"
 
-#: qml/VersionsPage.qml:113
+#: qml/VersionsPage.qml:115
 msgid "Rounds about this change"
 msgstr "Runden zu dieser Änderung"
 
-#: qml/VersionsPage.qml:129
+#: qml/VersionsPage.qml:131
 msgid "Round"
 msgstr "Runde"
 
-#: qml/VersionsPage.qml:132
+#: qml/VersionsPage.qml:134
 msgid "→ v%1"
 msgstr "→ v%1"
 
-#: qml/VersionsPage.qml:143
+#: qml/VersionsPage.qml:145
 msgid "No feedback on this change yet"
 msgstr "Noch kein Feedback zu dieser Änderung"
 
-#: qml/VersionsPage.qml:155
+#: qml/VersionsPage.qml:159
 msgid "Vault → v%1"
 msgstr "Tresor → v%1"
 
-#: qml/VersionsPage.qml:155
+#: qml/VersionsPage.qml:159
 msgid "v%1 → v%2"
 msgstr "v%1 → v%2"
 
-#: qml/VersionsPage.qml:159
+#: qml/VersionsPage.qml:163
 msgid "Whole file"
 msgstr "Ganze Datei"
 
-#: qml/VersionsPage.qml:179
+#: qml/VersionsPage.qml:183
 msgid "No difference"
 msgstr "Kein Unterschied"
 
-#: src/client.cpp:62
+#: src/client.cpp:63
 msgid ""
 "The Hansei service does not answer. Start “hansei daemon” in a terminal to "
 "see why."
@@ -1435,17 +1566,17 @@ msgstr ""
 "Der Hansei-Dienst antwortet nicht. Starte „hansei daemon“ im Terminal, um "
 "den Grund zu sehen."
 
-#: src/client.cpp:141
+#: src/client.cpp:142
 msgid "The program “hansei” was not found. Install it or set HANSEI_BIN."
 msgstr ""
 "Das Programm „hansei“ wurde nicht gefunden. Installiere es oder setze "
 "HANSEI_BIN."
 
-#: src/client.cpp:146
+#: src/client.cpp:147
 msgid "Could not start “%1”."
 msgstr "„%1“ ließ sich nicht starten."
 
-#: src/client.cpp:236
+#: src/client.cpp:237
 msgid "Connection to the Hansei service lost."
 msgstr "Verbindung zum Hansei-Dienst verloren."
 

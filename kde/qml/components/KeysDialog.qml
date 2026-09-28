@@ -49,7 +49,7 @@ Kirigami.Dialog {
                         required property var modelData
                         spacing: Kirigami.Units.largeSpacing
                         QQC2.Label {
-                            text: modelData[0]
+                            text: modelData[0].indexOf("+") > 0 ? Hansei.keyName(modelData[0]) : modelData[0]
                             font: KanteStyle.monoFont(Kirigami.Theme.smallFont.pointSize, true)
                             Layout.preferredWidth: Kirigami.Units.gridUnit * 4
                         }
@@ -65,5 +65,5 @@ Kirigami.Dialog {
     }
 
     // After the content: the dialog sizes its first content child.
-    KanteScope { target: dialog.contentItem }
+    KanteDialogSkin { dialog: dialog }
 }

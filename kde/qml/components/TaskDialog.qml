@@ -97,6 +97,7 @@ Kirigami.Dialog {
         spacing: Kirigami.Units.largeSpacing
 
         QQC2.TextArea {
+            KanteFieldSkin { control: parent }
             id: taskText
             Layout.fillWidth: true
             Layout.preferredHeight: Kirigami.Units.gridUnit * 4
@@ -151,6 +152,7 @@ Kirigami.Dialog {
         }
 
         Kirigami.SearchField {
+            KanteFieldSkin { control: parent }
             Layout.fillWidth: true
             placeholderText: i18n("Filter folders…")
             onTextChanged: dialog.filter = text.toLowerCase()
@@ -165,16 +167,23 @@ Kirigami.Dialog {
                 id: folders
                 clip: true
                 model: (dialog.store.status.scopes || []).filter(f => dialog.filter === "" || f.toLowerCase().indexOf(dialog.filter) >= 0)
-                delegate: QQC2.CheckBox {
+                // An Item around the check box: the ListView owns the delegate's x.
+                delegate: Item {
+                    id: folderRow
                     required property string modelData
                     readonly property int depth: dialog.filter === "" ? modelData.split("/").length - 1 : 0
-                    x: Kirigami.Units.gridUnit * depth
-                    width: ListView.view.width - x
-                    text: dialog.filter === "" ? modelData.split("/").pop() : modelData
-                    checked: dialog.covered(modelData)
-                    enabled: dialog.scope.indexOf(modelData) >= 0 || !dialog.covered(modelData)
-                    onClicked: dialog.toggle(modelData)
-                    KanteCheckSkin { control: parent }
+                    width: ListView.view.width
+                    implicitHeight: box.implicitHeight
+                    QQC2.CheckBox {
+                        id: box
+                        x: Kirigami.Units.gridUnit * 1.2 * folderRow.depth
+                        width: parent.width - x
+                        text: dialog.filter === "" ? folderRow.modelData.split("/").pop() : folderRow.modelData
+                        checked: dialog.covered(folderRow.modelData)
+                        enabled: dialog.scope.indexOf(folderRow.modelData) >= 0 || !dialog.covered(folderRow.modelData)
+                        onClicked: dialog.toggle(folderRow.modelData)
+                        KanteCheckSkin { control: parent }
+                    }
                 }
             }
         }
@@ -207,7 +216,7 @@ Kirigami.Dialog {
                 }
                 let t = i18np("one note", "%1 notes", e.notes) + " · " + i18n("≈ %1 k tokens at most", Math.round(e.tokens / 1000))
                 if (e.hasPrice) {
-                    t += " · " + i18n("about %1 %2", e.cost.toFixed(2), e.currency || "")
+                    t += " · <b>" + i18n("about %1 %2", e.cost.toFixed(2), e.currency || "") + "</b>"
                 }
                 if (e.local) {
                     t += " · " + i18n("local model, nothing leaves this computer")
@@ -217,7 +226,8 @@ Kirigami.Dialog {
                 }
                 return t
             }
-            font: KanteStyle.monoFont(Kirigami.Theme.smallFont.pointSize)
+            font: Kirigami.Theme.smallFont
+            textFormat: Text.StyledText
             color: KanteStyle.mutedTextColor
             wrapMode: Text.Wrap
             Layout.fillWidth: true
@@ -235,5 +245,5 @@ Kirigami.Dialog {
     ]
 
     // After the content: the dialog sizes its first content child.
-    KanteScope { target: dialog.contentItem }
+    KanteDialogSkin { dialog: dialog }
 }

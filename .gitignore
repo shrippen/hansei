@@ -4,3 +4,4 @@
 /kde/po/hansei.pot
 *.test
 .hansei-tmp
+*~

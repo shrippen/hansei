@@ -24,6 +24,8 @@ Kirigami.ScrollablePage {
 
     title: i18n("Welcome to Hansei")
     KantePageTitle { page: page }
+    // Kante: the page ground is Kante's ground, not the dialog tint KanteScope hands to the theme.
+    background: Rectangle { color: KanteStyle.themed ? KanteStyle.backgroundColor : Kirigami.Theme.backgroundColor }
 
     function isPrivate(name) {
         const n = name.toLowerCase()
@@ -85,7 +87,7 @@ Kirigami.ScrollablePage {
                 Layout.fillWidth: true
                 KanteFieldSkin { control: parent }
             }
-            QQC2.Button {
+            KanteButton {
                 icon.name: "document-open-folder"
                 text: i18n("Choose…")
                 onClicked: picker.open()

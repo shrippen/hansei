@@ -3,6 +3,7 @@ import QtCore
 import QtQuick.Controls as QQC2
 import QtQuick.Layouts
 import org.kde.kirigami as Kirigami
+import org.kde.kirigamiaddons.settings as KirigamiSettings
 import Kante
 import "components"
 
@@ -18,7 +19,7 @@ Kirigami.ApplicationWindow {
     property alias store: store
     // Pages look the app state up through the window.
     readonly property var pages: ({ start: Qt.resolvedUrl("StartPage.qml"), review: Qt.resolvedUrl("ReviewPage.qml"), board: Qt.resolvedUrl("BoardPage.qml"),
-                                    journal: Qt.resolvedUrl("JournalPage.qml"), settings: Qt.resolvedUrl("SettingsPage.qml") })
+                                    journal: Qt.resolvedUrl("JournalPage.qml") })
     property string current: "review"
 
     // System (platform theme) is the default; Kante and Kante Light are opt-in in the settings.
@@ -30,7 +31,7 @@ Kirigami.ApplicationWindow {
     KanteScope { target: root.contentItem }
     color: KanteStyle.themed ? KanteStyle.backgroundColor : Kirigami.Theme.backgroundColor
 
-    Store { id: store }
+    Store { id: store; window: root }
 
     function show(name) {
         current = name
@@ -49,6 +50,58 @@ Kirigami.ApplicationWindow {
         pageStack.replace(pages[name])
     }
 
+    // Settings: Kirigami's settings window, one page per category.
+    KirigamiSettings.ConfigurationView {
+        id: settingsView
+        window: root
+        modules: [
+            KirigamiSettings.ConfigurationModule {
+                moduleId: "folders"
+                text: i18n("Folders")
+                icon.name: "folder"
+                page: () => Qt.createComponent(Qt.resolvedUrl("SettingsPage.qml"))
+                initialProperties: () => ({ store: store, section: "folders" })
+            },
+            KirigamiSettings.ConfigurationModule {
+                moduleId: "checks"
+                text: i18n("Checks")
+                icon.name: "checkmark"
+                page: () => Qt.createComponent(Qt.resolvedUrl("SettingsPage.qml"))
+                initialProperties: () => ({ store: store, section: "checks" })
+            },
+            KirigamiSettings.ConfigurationModule {
+                moduleId: "providers"
+                text: i18n("AI providers")
+                icon.name: "network-server"
+                page: () => Qt.createComponent(Qt.resolvedUrl("SettingsPage.qml"))
+                initialProperties: () => ({ store: store, section: "providers" })
+            },
+            KirigamiSettings.ConfigurationModule {
+                moduleId: "look"
+                text: i18n("Appearance")
+                icon.name: "preferences-desktop-theme-global"
+                page: () => Qt.createComponent(Qt.resolvedUrl("SettingsPage.qml"))
+                initialProperties: () => ({ store: store, section: "look" })
+            }
+        ]
+    }
+    Component { id: kanteScope; KanteScope {} }
+
+    function openSettings(module) {
+        settingsView.open(module || "")
+        Qt.callLater(() => {
+            // The settings window follows the chosen style like the main window.
+            const win = settingsView.configViewItem
+            if (win && win.contentItem && root.styledSettings !== win) {
+                kanteScope.createObject(win.contentItem, { target: win.contentItem })
+                win.color = Qt.binding(() => KanteStyle.themed ? KanteStyle.backgroundColor : Kirigami.Theme.backgroundColor)
+                root.styledSettings = win
+            }
+        })
+    }
+    property alias settingsView: settingsView
+    property var styledSettings: null
+
     function openTask(text, folders) {
         taskDialog.openWith(text || "", folders || null)
     }
@@ -57,9 +110,14 @@ Kirigami.ApplicationWindow {
     Settings {
         id: layout
         category: "Layout"
+        // Demo runs (screenshots) never touch your real layout.
+        location: Hansei.demoBuild ? StandardPaths.writableLocation(StandardPaths.TempLocation) + "/hansei-demo-layout.conf" : ""
         property real drawerWidth: -1
         property real batchListWidth: Kirigami.Units.gridUnit * 15
         property real feedbackWidth: Kirigami.Units.gridUnit * 19
+        property bool feedbackFolded: false
+        property string recentTasks: "[]"
+        property int sessions: 0
     }
     property alias layout: layout
 
@@ -85,6 +143,11 @@ Kirigami.ApplicationWindow {
 
     function toast(text, actionText, action) {
         if (!text) {
+            return
+        }
+        // A page with its own action bar at the bottom shows messages at the top instead.
+        const page = pageStack.currentItem
+        if (page && typeof page.showNotice === "function" && page.showNotice(text, action)) {
             return
         }
         if (actionText) {
@@ -135,8 +198,7 @@ Kirigami.ApplicationWindow {
             Kirigami.Action {
                 text: i18n("Settings")
                 icon.name: "configure"
-                checked: root.current === "settings"
-                onTriggered: root.show("settings")
+                onTriggered: root.openSettings()
             },
             Kirigami.Action {
                 separator: true
@@ -157,10 +219,11 @@ Kirigami.ApplicationWindow {
     Shortcut { sequence: "W"; enabled: !store.typing; onActivated: root.show(root.current === "board" ? "review" : "board") }
     Shortcut { sequence: "S"; enabled: !store.typing; onActivated: root.show("start") }
     Shortcut { sequence: "O"; enabled: !store.typing; onActivated: root.show("journal") }
-    Shortcut { sequence: "Ctrl+,"; onActivated: root.show("settings") }
+    Shortcut { sequence: "Ctrl+,"; onActivated: root.openSettings() }
 
     // Connection problems and first start.
     Kirigami.InlineMessage {
+        KanteMessageSkin { message: parent }
         id: problem
         z: 10
         anchors { left: parent.left; right: parent.right; bottom: parent.bottom; margins: Kirigami.Units.largeSpacing }
@@ -196,6 +259,7 @@ Kirigami.ApplicationWindow {
     }
 
     Component.onCompleted: {
+        layout.sessions = layout.sessions + 1
         if (Hansei.needsSetup) {
             current = "setup"
             pageStack.push(setupPage)

@@ -16,7 +16,6 @@ func (m *Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case tea.WindowSizeMsg:
 		m.w, m.h = msg.Width, msg.Height
 		m.task.SetWidth(max(20, m.w-8))
-		m.taskScope.Width = max(20, m.w-20)
 		return m, nil
 	case tickMsg:
 		return m, tickCmd()
@@ -685,7 +684,7 @@ func (m *Model) onInputKey(k tea.KeyMsg) tea.Cmd {
 	case "enter":
 		return m.submitInput()
 	}
-	if code, ok := quickCodes[key]; ok && m.input.Value() == "" && m.inKind != inputKey {
+	if code, ok := quickCodes[key]; ok && m.input.Value() == "" && m.inKind != inputKey && m.inKind != inputSetting {
 		if m.quick == code {
 			m.quick = ""
 		} else {
@@ -745,6 +744,8 @@ func (m *Model) submitInput() tea.Cmd {
 			}
 			return nil
 		}
+	case inputSetting:
+		return m.submitSetting(text)
 	case inputKey:
 		prov := m.keyFor
 		return func() tea.Msg {
@@ -852,53 +853,6 @@ func (m *Model) onJournalKey(key string) tea.Cmd {
 	return nil
 }
 
-func (m *Model) onSettingsKey(key string) tea.Cmd {
-	folders, provs := m.settings.Folders, m.settings.Providers
-	total := len(folders) + len(provs)
-	switch key {
-	case "j", "down":
-		m.si = clamp(m.si+1, 0, total-1)
-		return nil
-	case "k", "up":
-		m.si = clamp(m.si-1, 0, total-1)
-		return nil
-	case "t":
-		next := map[string]string{styleSystem: styleKanteLight, styleKanteLight: styleKante, styleKante: styleSystem}[m.settings.Style]
-		return m.patch(service.SettingsPatch{Style: &next})
-	}
-
-	if m.si < len(folders) {
-		f := folders[m.si]
-		switch key {
-		// Sub folders change on their own; inherited states change at the parent.
-		case " ":
-			return m.patch(service.SettingsPatch{Allow: ptr(toggle(m.settings.Allow, f.Path, !contains(m.settings.Allow, f.Path)))})
-		case "b":
-			return m.patch(service.SettingsPatch{Block: ptr(toggle(m.settings.Block, f.Path, !contains(m.settings.Block, f.Path)))})
-		case "l":
-			return m.patch(service.SettingsPatch{LocalOnly: ptr(toggle(m.settings.LocalOnly, f.Path, !contains(m.settings.LocalOnly, f.Path)))})
-		}
-		return nil
-	}
-	pi := m.si - len(folders)
-	if pi >= len(provs) {
-		return nil
-	}
-	switch key {
-	case "enter":
-		name := provs[pi].Name
-		return m.patch(service.SettingsPatch{Provider: &name})
-	case "K":
-		m.keyFor = provs[pi].Name
-		m.openInput(inputKey)
-		m.input.EchoMode = textinput.EchoPassword
-	case "c":
-		m.setToast(m.t("testing"))
-		return m.checkProvider(provs[pi].Name)
-	}
-	return nil
-}
-
 func contains(list []string, s string) bool {
 	for _, x := range list {
 		if x == s {
@@ -937,10 +891,9 @@ func ptr[T any](v T) *T { return &v }
 func (m *Model) openTask() tea.Cmd {
 	m.back, m.screen = m.screen, scrTask
 	m.taskField, m.estimate, m.findOnly = 0, nil, false
+	m.scopeSel, m.scopeRow = map[string]bool{}, 0
 	m.task.Reset()
-	m.taskScope.SetValue("")
 	m.task.Focus()
-	m.taskScope.Blur()
 	for i, p := range m.status.Providers {
 		if p.Default {
 			m.taskProv = i
@@ -951,9 +904,9 @@ func (m *Model) openTask() tea.Cmd {
 
 func (m *Model) taskInput() service.TaskInput {
 	var scope []string
-	for _, s := range strings.Split(m.taskScope.Value(), ",") {
-		if s = strings.TrimSpace(s); s != "" {
-			scope = append(scope, s)
+	for _, f := range m.status.Scopes {
+		if m.scopeSel[f] {
+			scope = append(scope, f)
 		}
 	}
 	in := service.TaskInput{Instruction: m.task.Value(), Scope: scope, FindOnly: m.findOnly}
@@ -973,10 +926,8 @@ func (m *Model) onTaskKey(k tea.KeyMsg) tea.Cmd {
 		m.taskField = (m.taskField + 1) % 2
 		if m.taskField == 0 {
 			m.task.Focus()
-			m.taskScope.Blur()
 		} else {
 			m.task.Blur()
-			m.taskScope.Focus()
 		}
 		return m.estimateCmd()
 	case "ctrl+f":
@@ -1004,12 +955,31 @@ func (m *Model) onTaskKey(k tea.KeyMsg) tea.Cmd {
 			return batchesMsg(m.api.Batches())
 		}
 	}
-	var cmd tea.Cmd
-	if m.taskField == 0 {
-		m.task, cmd = m.task.Update(k)
-	} else {
-		m.taskScope, cmd = m.taskScope.Update(k)
+	// The folder list: j/k to move, space to pick; a folder covers its sub folders.
+	if m.taskField == 1 {
+		switch k.String() {
+		case "j", "down":
+			m.scopeRow = clamp(m.scopeRow+1, 0, len(m.status.Scopes)-1)
+		case "k", "up":
+			m.scopeRow = clamp(m.scopeRow-1, 0, len(m.status.Scopes)-1)
+		case " ":
+			if m.scopeRow < len(m.status.Scopes) {
+				f := m.status.Scopes[m.scopeRow]
+				if !m.scopeCovered(f) || m.scopeSel[f] {
+					m.scopeSel[f] = !m.scopeSel[f]
+					for g := range m.scopeSel {
+						if strings.HasPrefix(g, f+"/") {
+							delete(m.scopeSel, g)
+						}
+					}
+				}
+				return m.estimateCmd()
+			}
+		}
+		return nil
 	}
+	var cmd tea.Cmd
+	m.task, cmd = m.task.Update(k)
 	return tea.Batch(cmd, m.estimateDebounced())
 }
 
@@ -1033,4 +1003,14 @@ func clamp(v, lo, hi int) int {
 		return lo
 	}
 	return min(max(v, lo), hi)
+}
+
+// scopeCovered: the folder or one of its parents is picked.
+func (m *Model) scopeCovered(f string) bool {
+	for g, on := range m.scopeSel {
+		if on && (f == g || strings.HasPrefix(f, g+"/")) {
+			return true
+		}
+	}
+	return false
 }

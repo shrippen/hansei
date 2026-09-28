@@ -23,6 +23,8 @@ ColumnLayout {
     property string quote: ""
 
     signal jump(string path, string hunkID)
+    signal fold()
+    property bool foldable: false
 
     readonly property var hunk: file && hunkIndex >= 0 && hunkIndex < file.hunks.length ? file.hunks[hunkIndex] : null
     readonly property bool busy: batch ? (batch.running || batch.revising) : false
@@ -107,33 +109,75 @@ ColumnLayout {
             QQC2.ToolTip.visible: hovered
             QQC2.ToolTip.text: i18n("Which messages to show")
         }
+        KanteToolButton {
+            visible: pane.foldable
+            icon.name: "sidebar-collapse-right"
+            text: i18n("Hide the conversation")
+            display: QQC2.AbstractButton.IconOnly
+            onClicked: pane.fold()
+            QQC2.ToolTip.visible: hovered
+            QQC2.ToolTip.text: text
+        }
     }
 
-    // Rule suggestions stay on top until you decide.
+    // Rule suggestions stay on top until you decide: one line, opened on demand.
     Repeater {
         model: pane.suggestions
-        delegate: Kirigami.InlineMessage {
+        delegate: QQC2.Control {
+            id: sugg
             required property var modelData
+            property bool open: false
+            // The quoted feedback without its closing mark: the sentence adds its own.
+            readonly property string quoted: modelData.text.trim().replace(/[.!?…]+$/, "")
             Layout.fillWidth: true
             Layout.leftMargin: Kirigami.Units.largeSpacing
             Layout.rightMargin: Kirigami.Units.largeSpacing
             Layout.bottomMargin: Kirigami.Units.smallSpacing
-            visible: true
-            type: Kirigami.MessageType.Information
-            text: i18np("You gave this feedback once: “%2”. Make it a rule?", "You gave similar feedback %1 times: “%2”. Make it a rule?", modelData.count, modelData.text)
-                + (modelData.target ? "\n" + i18n("→ %1", modelData.target) : "")
-            actions: [
-                Kirigami.Action {
-                    text: i18n("Propose as batch")
-                    icon.name: "list-add"
-                    onTriggered: pane.store.call("suggestion", { id: pane.batch.id, sid: modelData.id, accept: true })
-                },
-                Kirigami.Action {
-                    text: i18n("No")
-                    icon.name: "dialog-cancel"
-                    onTriggered: pane.store.call("suggestion", { id: pane.batch.id, sid: modelData.id, accept: false })
+            padding: Kirigami.Units.smallSpacing
+            background: Surface { fill: Qt.alpha(KanteStyle.infoColor, 0.1) }
+            contentItem: ColumnLayout {
+                spacing: Kirigami.Units.smallSpacing
+                RowLayout {
+                    Layout.fillWidth: true
+                    Kirigami.Icon {
+                        source: "help-hint"
+                        implicitWidth: Kirigami.Units.iconSizes.small
+                        implicitHeight: Kirigami.Units.iconSizes.small
+                        color: KanteStyle.infoColor
+                        isMask: true
+                    }
+                    QQC2.Label {
+                        text: i18n("Rule suggestion: “%1”", sugg.quoted)
+                        elide: Text.ElideRight
+                        Layout.fillWidth: true
+                    }
+                    KanteToolButton {
+                        text: sugg.open ? i18n("Less") : i18n("Show")
+                        onClicked: sugg.open = !sugg.open
+                    }
                 }
-            ]
+                QQC2.Label {
+                    visible: sugg.open
+                    text: i18np("You gave this feedback once: “%2”. Make it a rule?", "You gave similar feedback %1 times: “%2”. Make it a rule?", sugg.modelData.count, sugg.quoted)
+                        + (sugg.modelData.target ? "\n" + i18n("→ %1", sugg.modelData.target) : "")
+                    wrapMode: Text.Wrap
+                    Layout.fillWidth: true
+                }
+                RowLayout {
+                    visible: sugg.open
+                    Item { Layout.fillWidth: true }
+                    KanteButton {
+                        text: i18n("Propose as batch")
+                        icon.name: "list-add"
+                        onClicked: pane.store.call("suggestion", { id: pane.batch.id, sid: sugg.modelData.id, accept: true })
+                    }
+                    KanteToolButton {
+                        text: i18n("No")
+                        icon.name: "dialog-cancel"
+                        onClicked: pane.store.call("suggestion", { id: pane.batch.id, sid: sugg.modelData.id, accept: false })
+                    }
+                }
+            }
         }
     }
 
@@ -184,7 +228,7 @@ ColumnLayout {
                     RowLayout {
                         QQC2.BusyIndicator { running: pane.busy; Layout.preferredHeight: Kirigami.Units.iconSizes.small; Layout.preferredWidth: Layout.preferredHeight }
                         SectionLabel { text: i18n("AI is working"); Layout.fillWidth: true }
-                        QQC2.ToolButton {
+                        KanteToolButton {
                             icon.name: "process-stop"
                             text: i18n("Stop")
                             onClicked: pane.store.call("cancel", { id: pane.batch.id })
@@ -221,7 +265,7 @@ ColumnLayout {
                 Kirigami.Separator { Layout.fillWidth: true }
                 QQC2.Label {
                     text: Qt.formatTime(new Date(sys.m.created), Qt.DefaultLocaleShortDate)
-                    font: Kirigami.Theme.smallFont
+                    font: KanteStyle.monoFont(Kirigami.Theme.smallFont.pointSize)
                     color: KanteStyle.mutedTextColor
                 }
                 Kirigami.Separator { Layout.fillWidth: true }
@@ -258,13 +302,15 @@ ColumnLayout {
         id: bubble
         QQC2.Control {
             id: box
+            // Your own messages sit a little to the right, like in a chat.
+            leftInset: mine ? Kirigami.Units.gridUnit : 0
+            leftPadding: Kirigami.Units.largeSpacing + leftInset
             readonly property var m: parent.msg
             readonly property bool mine: m.role === "user"
             readonly property int number: pane.hunkNumber(m.path, m.hunk)
             padding: Kirigami.Units.largeSpacing
             background: Surface {
                 fill: box.mine ? (KanteStyle.active ? KanteStyle.cardColor : Kirigami.Theme.alternateBackgroundColor) : KanteStyle.sunkenColor
-                bar: !!box.m.question && !box.m.answered ? KanteStyle.neutralTextColor : (box.mine ? KanteStyle.infoColor : KanteStyle.accentColor)
             }
             contentItem: ColumnLayout {
                 spacing: Kirigami.Units.smallSpacing
@@ -296,7 +342,7 @@ ColumnLayout {
                     Item { Layout.fillWidth: true }
                     QQC2.Label {
                         text: Qt.formatTime(new Date(box.m.created), Qt.DefaultLocaleShortDate)
-                        font: Kirigami.Theme.smallFont
+                        font: KanteStyle.monoFont(Kirigami.Theme.smallFont.pointSize)
                         color: KanteStyle.mutedTextColor
                     }
                 }
@@ -340,7 +386,7 @@ ColumnLayout {
             Repeater {
                 model: [["hunk", pane.hunk ? i18nc("feedback scope", "Change %1", pane.hunk.index + 1) : i18nc("feedback scope", "Change")],
                         ["file", i18nc("feedback scope", "File")], ["batch", i18nc("feedback scope", "Batch")]]
-                delegate: QQC2.ToolButton {
+                delegate: KanteToolButton {
                     required property var modelData
                     text: modelData[1]
                     checkable: true
@@ -351,11 +397,12 @@ ColumnLayout {
                 }
             }
             Item { Layout.fillWidth: true }
-            QQC2.ToolButton {
+            KanteToolButton {
                 text: pane.quick ? pane.quickLabel(pane.quick) + "  ✕" : i18n("Reason")
                 icon.name: pane.quick ? "" : "tag"
                 onClicked: pane.quick ? pane.quick = "" : reasons.popup()
                 QQC2.Menu {
+                    KantePopupSkin { popup: reasons }
                     id: reasons
                     Repeater {
                         model: ["wrong-fact", "too-long", "rulebook", "question"]
@@ -373,17 +420,20 @@ ColumnLayout {
         QQC2.Label {
             visible: pane.scope === "hunk" && pane.quote !== ""
             text: "“" + pane.quote + "”"
-            font: KanteStyle.monoFont(Kirigami.Theme.smallFont.pointSize)
+            font.pointSize: Kirigami.Theme.smallFont.pointSize
+            font.italic: true
             color: KanteStyle.mutedTextColor
             elide: Text.ElideRight
-            maximumLineCount: 2
-            wrapMode: Text.Wrap
+            HoverHandler { id: quoteHover }
+            QQC2.ToolTip.visible: quoteHover.hovered && truncated
+            QQC2.ToolTip.text: pane.quote
             Layout.fillWidth: true
             leftPadding: Kirigami.Units.smallSpacing
             Rectangle { width: 2; height: parent.height; color: KanteStyle.infoColor }
         }
 
         QQC2.TextArea {
+            KanteFieldSkin { control: parent }
             id: input
             Layout.fillWidth: true
             Layout.preferredHeight: activeFocus || text !== "" ? Kirigami.Units.gridUnit * 4 : implicitHeight
@@ -419,27 +469,38 @@ ColumnLayout {
             }
         }
 
-        QQC2.Label {
+        RowLayout {
             Layout.fillWidth: true
-            font: KanteStyle.monoFont(Kirigami.Theme.smallFont.pointSize)
-            color: KanteStyle.mutedTextColor
-            elide: Text.ElideRight
-            text: {
-                const b = pane.batch
-                const p = pane.store.defaultProvider
-                if (!b) {
-                    return ""
+            QQC2.Label {
+                Layout.fillWidth: true
+                font: KanteStyle.monoFont(Kirigami.Theme.smallFont.pointSize)
+                color: KanteStyle.mutedTextColor
+                elide: Text.ElideRight
+                text: {
+                    const b = pane.batch
+                    const p = pane.store.defaultProvider
+                    if (!b) {
+                        return ""
+                    }
+                    const u = pane.store.usageOf(b)
+                    const parts = [(b.provider || (p ? p.name : "")) + (p ? " · " + p.model : "")]
+                    if (u && u.in + u.out > 0) {
+                        parts.push(pane.store.tokens(u))
+                    }
+                    const money = pane.store.money(u, pane.store.currencyOf(b))
+                    if (money) {
+                        parts.push(money)
+                    }
+                    return parts.join(" · ")
                 }
-                const u = pane.store.usageOf(b)
-                const parts = [(b.provider || (p ? p.name : "")) + (p ? " · " + p.model : "")]
-                if (u && u.in + u.out > 0) {
-                    parts.push(pane.store.tokens(u))
-                }
-                const money = pane.store.money(u, pane.store.currencyOf(b))
-                if (money) {
-                    parts.push(money)
-                }
-                return parts.join(" · ")
+            }
+            // No price, no cost: say where to add it.
+            KanteToolButton {
+                readonly property var prov: pane.store.providers.find(p => p.name === (pane.batch && pane.batch.provider ? pane.batch.provider : (pane.store.defaultProvider || {}).name))
+                visible: pane.batch !== null && !!prov && !prov.local && !prov.priceIn
+                text: i18n("Price missing")
+                font: Kirigami.Theme.smallFont
+                onClicked: pane.store.window.openSettings("providers")
             }
         }
     }

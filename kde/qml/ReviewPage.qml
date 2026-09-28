@@ -27,38 +27,41 @@ Kirigami.Page {
     readonly property var questions: batch ? (batch.thread || []).filter(m => m.question && !m.answered) : []
 
     readonly property bool showList: width > Kirigami.Units.gridUnit * 56
-    readonly property bool showFeedback: width > Kirigami.Units.gridUnit * 42
+    // The conversation gets its own column only where the diff keeps enough room; it can be folded away.
+    readonly property bool showFeedback: width > Kirigami.Units.gridUnit * 60 && !layout.feedbackFolded
+    // Two columns of diff need room: below ~700 px the diff is shown unified.
+    readonly property bool narrowDiff: width < Kirigami.Units.gridUnit * 38
+    readonly property string diffMode: store.mode === "unified" || (store.mode === "split" && narrowDiff) ? "unified" : "split"
+    onNarrowDiffChanged: if (store.mode === "split") loadFile()
     readonly property bool keys: page.isCurrentPage && !store.typing && !dialogOpen
     property bool dialogOpen: rejectDialog.opened || editDialog.opened || doneDialog.opened || keysDialog.opened || ruleDialog.opened
     property int context: 3
     property var wrapOff: ({})       // path → lines not wrapped
     property bool renderedBoth: false
+    property bool renderedRaw: false
 
     // Breadcrumb: topic › folder › file.
     title: file ? [batch && batch.topic ? batch.topic : "", file.path.split("/").slice(0, -1).join("/"), store.fileName(file.path)].filter(s => !!s).join("  ›  ")
                 : (batch ? batch.title : i18n("Review"))
     padding: 0
     KantePageTitle { page: page }
+    // Kante: the page ground is Kante's ground, not the dialog tint KanteScope hands to the theme.
+    background: Rectangle { color: KanteStyle.themed ? KanteStyle.backgroundColor : Kirigami.Theme.backgroundColor }
 
     actions: [
         Kirigami.Action {
             text: i18n("Feedback")
             icon.name: "mail-reply-sender"
             visible: !page.showFeedback
-            onTriggered: feedbackDrawer.open()
+            onTriggered: page.width > Kirigami.Units.gridUnit * 60 ? page.layout.feedbackFolded = false : feedbackDrawer.open()
         },
         Kirigami.Action {
             text: i18n("Accept file")
             icon.name: "dialog-ok-apply"
-            enabled: page.file && page.file.status === "open" && page.file.hunks.some(h => h.state === "pending")
+            visible: page.file !== null && page.file.status === "open"
+            enabled: page.file && page.file.hunks.some(h => h.state === "pending")
             onTriggered: page.decideFile("accepted")
             tooltip: i18n("Accept every open change of this file (Shift+A)")
-        },
-        Kirigami.Action {
-            text: i18n("Undo")
-            icon.name: "edit-undo"
-            visible: page.file && page.file.status === "applied"
-            onTriggered: page.undoFile()
         },
         Kirigami.Action {
             text: i18n("Keys")
@@ -109,7 +112,7 @@ Kirigami.Page {
             file = null
             return
         }
-        store.call("file", { id: store.batchID, path: store.path, mode: store.mode === "unified" ? "unified" : "split", context: page.context, reveal: store.reveal }, r => {
+        store.call("file", { id: store.batchID, path: store.path, mode: page.diffMode, context: page.context, reveal: store.reveal }, r => {
             if (!r) {
                 return
             }
@@ -266,7 +269,7 @@ Kirigami.Page {
 
     /** Shows one masked value for ten seconds. */
     function revealRow(i) {
-        store.call("file", { id: store.batchID, path: store.path, mode: store.mode === "unified" ? "unified" : "split", context: page.context, reveal: true }, r => {
+        store.call("file", { id: store.batchID, path: store.path, mode: page.diffMode, context: page.context, reveal: true }, r => {
             if (!r || !r.rows[i]) {
                 return
             }
@@ -285,6 +288,30 @@ Kirigami.Page {
             return
         }
         feedback.compose(scope, prefix)
+    }
+
+    // Sends an answer to one AI question as feedback on the batch, quoting the question.
+    function sendAnswer(question, field) {
+        const text = field.text.trim()
+        if (!batch || text === "") {
+            return
+        }
+        store.call("feedback", { batch: batch.id, scope: "batch", text: "„" + question.text.split("\n")[0] + "“: " + text }, (r, err) => {
+            if (!err) {
+                field.text = ""
+            }
+        })
+    }
+
+    // Called by the window's toast: true when the message was shown here.
+    function showNotice(text, action) {
+        if (!bottomBar.visible) {
+            return false
+        }
+        notice.onUndo = action || null
+        notice.text = text
+        noticeTimer.restart()
+        return true
     }
 
     function answer(question) {
@@ -366,6 +393,7 @@ Kirigami.Page {
         }
 
         ColumnLayout {
+            id: center
             QQC2.SplitView.fillWidth: true
             QQC2.SplitView.minimumWidth: Kirigami.Units.gridUnit * 20
             spacing: 0
@@ -397,20 +425,85 @@ Kirigami.Page {
                 }
             }
 
-            // Open questions of the AI come first.
+            // Messages that would hide the bottom action bar as a toast show here instead.
             Kirigami.InlineMessage {
+                id: notice
+                KanteMessageSkin { message: parent }
+                property var onUndo: null
                 Layout.fillWidth: true
                 Layout.margins: Kirigami.Units.largeSpacing
                 Layout.bottomMargin: 0
-                visible: page.questions.length > 0
-                type: Kirigami.MessageType.Warning
-                icon.name: "dialog-question"
-                text: i18np("The AI has a question:", "The AI has %1 questions:", page.questions.length) + "\n"
-                    + page.questions.map(q => "• " + q.text).join("\n")
+                visible: text !== ""
+                type: Kirigami.MessageType.Positive
+                showCloseButton: true
                 actions: Kirigami.Action {
-                    text: i18n("Answer")
-                    icon.name: "mail-reply-sender"
-                    onTriggered: page.answer(page.questions[0])
+                    visible: notice.onUndo !== null
+                    text: i18n("Undo")
+                    icon.name: "edit-undo"
+                    onTriggered: { notice.onUndo(); notice.text = "" }
+                }
+                Timer { id: noticeTimer; interval: 8000; onTriggered: notice.text = "" }
+            }
+
+            // Open questions of the AI come first, each answered right here (Ctrl+Enter sends).
+            QQC2.Control {
+                visible: page.questions.length > 0
+                Layout.fillWidth: true
+                Layout.margins: Kirigami.Units.largeSpacing
+                Layout.bottomMargin: 0
+                padding: Kirigami.Units.largeSpacing
+                background: Surface { fill: Qt.alpha(KanteStyle.neutralTextColor, 0.12); selected: true }
+                contentItem: ColumnLayout {
+                    spacing: Kirigami.Units.largeSpacing
+                    RowLayout {
+                        Kirigami.Icon {
+                            source: "dialog-question"
+                            implicitWidth: Kirigami.Units.iconSizes.small
+                            implicitHeight: Kirigami.Units.iconSizes.small
+                        }
+                        SectionLabel {
+                            text: i18np("The AI has a question", "The AI has %1 questions", page.questions.length)
+                            color: KanteStyle.neutralTextColor
+                            Layout.fillWidth: true
+                        }
+                    }
+                    Repeater {
+                        model: page.questions
+                        delegate: ColumnLayout {
+                            id: question
+                            required property var modelData
+                            Layout.fillWidth: true
+                            spacing: Kirigami.Units.smallSpacing
+                            QQC2.Label {
+                                text: question.modelData.text
+                                wrapMode: Text.Wrap
+                                Layout.fillWidth: true
+                            }
+                            RowLayout {
+                                Layout.fillWidth: true
+                                QQC2.TextArea {
+                                    id: answerField
+                                    Layout.fillWidth: true
+                                    wrapMode: TextEdit.Wrap
+                                    placeholderText: i18n("Your answer… (Ctrl+Enter sends)")
+                                    onActiveFocusChanged: page.store.typing = activeFocus
+                                    Keys.onPressed: event => {
+                                        if ((event.key === Qt.Key_Return || event.key === Qt.Key_Enter) && (event.modifiers & Qt.ControlModifier)) {
+                                            page.sendAnswer(question.modelData, answerField)
+                                            event.accepted = true
+                                        }
+                                    }
+                                    KanteFieldSkin { control: parent }
+                                }
+                                KanteButton {
+                                    text: i18n("Answer")
+                                    icon.name: "document-send"
+                                    enabled: answerField.text.trim() !== ""
+                                    onClicked: page.sendAnswer(question.modelData, answerField)
+                                }
+                            }
+                        }
+                    }
                 }
             }
 
@@ -422,7 +515,7 @@ Kirigami.Page {
                 Layout.bottomMargin: Kirigami.Units.smallSpacing
                 spacing: Kirigami.Units.largeSpacing
 
-                QQC2.ToolButton {
+                KanteToolButton {
                     visible: page.file && page.file.versions.length > 1
                     text: page.file ? i18n("Version %1 of %2", page.file.current, page.file.versions.length) : ""
                     icon.name: "view-history"
@@ -431,41 +524,67 @@ Kirigami.Page {
                     QQC2.ToolTip.text: i18n("All versions of this file (Shift+V)")
                 }
                 Item { Layout.fillWidth: true }
-                QQC2.ToolButton {
+                KanteToolButton {
                     visible: page.store.mode !== "rendered"
                     text: i18n("Wrap lines")
-                    icon.name: "format-text-wrap"
+                    icon.name: "text-wrap"
                     checkable: true
                     checked: page.file ? !page.wrapOff[page.file.path] : true
-                    display: page.width > Kirigami.Units.gridUnit * 40 ? QQC2.AbstractButton.TextBesideIcon : QQC2.AbstractButton.IconOnly
+                    display: QQC2.AbstractButton.IconOnly
                     onToggled: {
                         const w = Object.assign({}, page.wrapOff)
                         w[page.file.path] = !checked
                         page.wrapOff = w
                     }
-                    QQC2.ToolTip.visible: hovered && display === QQC2.AbstractButton.IconOnly
-                    QQC2.ToolTip.text: text
+                    QQC2.ToolTip.visible: hovered
+                    QQC2.ToolTip.text: checked ? i18n("Wrap lines (on)") : i18n("Wrap lines (off)")
                 }
-                QQC2.ToolButton {
+                KanteToolButton {
                     visible: page.store.mode === "rendered"
                     text: i18n("Before | after")
                     icon.name: "view-split-left-right"
                     checkable: true
                     checked: page.renderedBoth
+                    display: center.width > Kirigami.Units.gridUnit * 50 ? QQC2.AbstractButton.TextBesideIcon : QQC2.AbstractButton.IconOnly
                     onToggled: page.renderedBoth = checked
                 }
-                RowLayout {
-                    spacing: 0
-                    QQC2.ButtonGroup { id: modes }
-                    Repeater {
-                        model: [["split", i18n("Side by side")], ["unified", i18n("Unified")], ["rendered", i18n("Rendered")]]
-                        delegate: QQC2.ToolButton {
-                            required property var modelData
-                            text: modelData[1]
-                            checkable: true
-                            checked: page.store.mode === modelData[0]
-                            QQC2.ButtonGroup.group: modes
-                            onClicked: { page.store.mode = modelData[0]; page.loadFile() }
+                KanteToolButton {
+                    visible: page.store.mode === "rendered"
+                    text: i18n("Markdown source")
+                    icon.name: "text-x-markdown"
+                    checkable: true
+                    checked: page.renderedRaw
+                    display: center.width > Kirigami.Units.gridUnit * 50 ? QQC2.AbstractButton.TextBesideIcon : QQC2.AbstractButton.IconOnly
+                    onToggled: page.renderedRaw = checked
+                    QQC2.ToolTip.visible: hovered && display === QQC2.AbstractButton.IconOnly
+                    QQC2.ToolTip.text: text
+                }
+                // The three layouts as one segmented switch.
+                QQC2.Control {
+                    padding: 1
+                    background: Rectangle {
+                        color: "transparent"
+                        border.width: 1
+                        border.color: KanteStyle.frameColor
+                        radius: KanteStyle.active ? 0 : Kirigami.Units.cornerRadius
+                    }
+                    contentItem: RowLayout {
+                        spacing: 0
+                        QQC2.ButtonGroup { id: modes }
+                        Repeater {
+                            model: [["split", i18n("Side by side"), "view-split-left-right"], ["unified", i18n("Unified"), "view-list-text"], ["rendered", i18n("Rendered"), "view-preview"]]
+                            delegate: KanteToolButton {
+                                required property var modelData
+                                text: modelData[1]
+                                icon.name: modelData[2]
+                                display: center.width > Kirigami.Units.gridUnit * 30 ? QQC2.AbstractButton.TextOnly : QQC2.AbstractButton.IconOnly
+                                checkable: true
+                                checked: page.store.mode === modelData[0]
+                                QQC2.ButtonGroup.group: modes
+                                onClicked: { page.store.mode = modelData[0]; page.loadFile() }
+                                QQC2.ToolTip.visible: hovered && display === QQC2.AbstractButton.IconOnly
+                                QQC2.ToolTip.text: text
+                            }
                         }
                     }
                 }
@@ -479,7 +598,7 @@ Kirigami.Page {
                 Layout.rightMargin: Kirigami.Units.largeSpacing
                 Layout.bottomMargin: Kirigami.Units.smallSpacing
                 padding: Kirigami.Units.largeSpacing
-                background: Surface { bar: KanteStyle.infoColor }
+                background: Surface {}
                 contentItem: QQC2.Label {
                     text: page.file ? (page.file.summary || page.batch.summary) : ""
                     wrapMode: Text.Wrap
@@ -487,6 +606,7 @@ Kirigami.Page {
             }
 
             Kirigami.InlineMessage {
+                KanteMessageSkin { message: parent }
                 Layout.fillWidth: true
                 Layout.margins: Kirigami.Units.largeSpacing
                 visible: page.file && page.file.stale
@@ -499,6 +619,7 @@ Kirigami.Page {
                 }
             }
             Kirigami.InlineMessage {
+                KanteMessageSkin { message: parent }
                 Layout.fillWidth: true
                 Layout.margins: Kirigami.Units.largeSpacing
                 visible: page.file && page.file.status !== "open"
@@ -521,6 +642,7 @@ Kirigami.Page {
                 ]
             }
             Kirigami.InlineMessage {
+                KanteMessageSkin { message: parent }
                 Layout.fillWidth: true
                 Layout.margins: Kirigami.Units.largeSpacing
                 visible: page.store.reveal
@@ -561,6 +683,7 @@ Kirigami.Page {
                 file: page.file
                 store: page.store
                 sideBySide: page.renderedBoth
+                raw: page.renderedRaw
             }
 
             // A find-only task: the notes the AI found, each opens in Obsidian.
@@ -592,7 +715,7 @@ Kirigami.Page {
                         emphasis: KanteButton.Emphasis.Primary
                         onClicked: applicationWindow().openTask(page.batch.instruction, null)
                     }
-                    QQC2.Button {
+                    KanteButton {
                         text: i18n("Discard")
                         icon.name: "edit-delete"
                         onClicked: page.store.call("discard", { id: page.batch.id })
@@ -617,6 +740,7 @@ Kirigami.Page {
 
             // Narrow windows: the actions for the current change stay at the bottom.
             QQC2.ToolBar {
+                id: bottomBar
                 visible: !page.showFeedback && page.file !== null && page.file.status === "open" && page.current() !== null && page.current().state === "pending"
                 Layout.fillWidth: true
                 position: QQC2.ToolBar.Footer
@@ -628,13 +752,13 @@ Kirigami.Page {
                         Layout.fillWidth: true
                         onClicked: { const h = page.current(); if (h) page.decide(h.id, "accepted") }
                     }
-                    QQC2.Button {
+                    KanteButton {
                         text: i18n("Reject")
                         icon.name: "dialog-cancel"
                         Layout.fillWidth: true
                         onClicked: rejectDialog.openFor(page.hunk)
                     }
-                    QQC2.Button {
+                    KanteButton {
                         text: i18n("Feedback")
                         icon.name: "mail-reply-sender"
                         Layout.fillWidth: true
@@ -643,16 +767,39 @@ Kirigami.Page {
                 }
             }
 
-            // The most important keys; ? shows all.
-            QQC2.Label {
+            // The most important keys; ? shows all. After a few sessions only the way to the overview stays.
+            RowLayout {
                 Layout.fillWidth: true
                 Layout.margins: Kirigami.Units.smallSpacing
                 visible: page.file !== null && page.showFeedback
-                text: i18n("A accept · R reject · F feedback · J/K next/previous · ? all keys")
-                font: KanteStyle.monoFont(Kirigami.Theme.smallFont.pointSize)
-                color: KanteStyle.mutedTextColor
-                elide: Text.ElideRight
-                MouseArea { anchors.fill: parent; cursorShape: Qt.PointingHandCursor; onClicked: keysDialog.open() }
+                spacing: Kirigami.Units.largeSpacing
+                Repeater {
+                    model: page.layout.sessions > 5 && !Hansei.demoBuild ? [["?", i18n("all keys")]]
+                        : [["A", i18n("accept")], ["R", i18n("reject")], ["F", i18n("feedback")], ["J/K", i18n("next/previous")], ["?", i18n("all keys")]]
+                    delegate: RowLayout {
+                        required property var modelData
+                        spacing: Kirigami.Units.smallSpacing
+                        QQC2.Label {
+                            text: modelData[0]
+                            font: KanteStyle.monoFont(Kirigami.Theme.smallFont.pointSize, true)
+                            leftPadding: Kirigami.Units.smallSpacing
+                            rightPadding: Kirigami.Units.smallSpacing
+                            background: Rectangle {
+                                color: KanteStyle.sunkenColor
+                                border.width: 1
+                                border.color: KanteStyle.frameColor
+                                radius: KanteStyle.active ? 0 : 3
+                            }
+                        }
+                        QQC2.Label {
+                            text: modelData[1]
+                            font: Kirigami.Theme.smallFont
+                            color: KanteStyle.mutedTextColor
+                        }
+                    }
+                }
+                Item { Layout.fillWidth: true }
+                TapHandler { onTapped: keysDialog.open() }
             }
         }
 
@@ -667,6 +814,8 @@ Kirigami.Page {
             file: page.file
             hunkIndex: page.hunk
             quote: page.quoteOf(page.hunk)
+            foldable: true
+            onFold: page.layout.feedbackFolded = true
             onJump: (path, hunkID) => page.jump(path, hunkID)
         }
     }
@@ -736,6 +885,7 @@ Kirigami.Page {
         property var section: null
         title: section ? (section.heading ? section.heading.replace(/^#+\s*/, "") : section.file) : ""
         preferredWidth: Math.min(Kirigami.Units.gridUnit * 30, applicationWindow().width - Kirigami.Units.gridUnit * 4)
+        preferredHeight: Math.min(ruleForm.implicitHeight + topPadding + bottomPadding + Kirigami.Units.gridUnit * 5, applicationWindow().height - Kirigami.Units.gridUnit * 4)
         padding: Kirigami.Units.largeSpacing
         standardButtons: Kirigami.Dialog.Close
         function show(ref) {
@@ -747,6 +897,7 @@ Kirigami.Page {
             })
         }
         ColumnLayout {
+            id: ruleForm
             SectionLabel { text: ruleDialog.section ? ruleDialog.section.file : "" }
             QQC2.Label {
                 Layout.fillWidth: true
@@ -755,6 +906,6 @@ Kirigami.Page {
                 wrapMode: Text.Wrap
             }
         }
-        KanteScope { target: ruleDialog.contentItem }
+        KanteDialogSkin { dialog: ruleDialog }
     }
 }

@@ -83,6 +83,8 @@ QtObject {
     readonly property color infoColor: themed ? palette.info : Kirigami.Theme.linkColor
     /** Tags, topics, categories (purple in Kante; the visited-link colour of the platform otherwise). */
     readonly property color tagColor: themed ? palette.tag : Kirigami.Theme.visitedLinkColor
+    // Warnings below "neutral" (e.g. stale dates, dead links); the platform has no own role, so neutral.
+    readonly property color warningColor: themed ? palette.warning : Kirigami.Theme.neutralTextColor
     readonly property color cardColor: themed ? palette.card : tint(Kirigami.Theme.textColor, 0.04)
     readonly property color sunkenColor: themed ? palette.sunken : tint(Kirigami.Theme.textColor, 0.06)
     readonly property color frameColor: themed ? palette.frame : tint(Kirigami.Theme.textColor, 0.12)

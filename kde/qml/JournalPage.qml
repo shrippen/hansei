@@ -32,7 +32,7 @@ Kirigami.ScrollablePage {
             }
             let g = byBatch[e.batch]
             if (!g) {
-                g = { batch: e.batch, title: e.title, time: e.time, entries: [] }
+                g = { batch: e.batch, title: e.title, time: e.time, day: dayOf(e.time), entries: [] }
                 byBatch[e.batch] = g
                 out.push(g)
             }
@@ -43,6 +43,17 @@ Kirigami.ScrollablePage {
 
     title: i18n("Journal")
     KantePageTitle { page: page }
+    // Kante: the page ground is Kante's ground, not the dialog tint KanteScope hands to the theme.
+    background: Rectangle { color: KanteStyle.themed ? KanteStyle.backgroundColor : Kirigami.Theme.backgroundColor }
+
+    // "Today", "Yesterday" or the date: the heading above a day's batches.
+    function dayOf(time) {
+        const d = new Date(time)
+        const today = new Date()
+        today.setHours(0, 0, 0, 0)
+        const diff = Math.round((new Date(d.getFullYear(), d.getMonth(), d.getDate()) - today) / 86400000)
+        return diff === 0 ? i18n("Today") : diff === -1 ? i18n("Yesterday") : Qt.formatDate(d, Qt.DefaultLocaleLongDate)
+    }
 
     function load() {
         store.call("journal", { limit: 500 }, r => { entries = r || [] })
@@ -67,6 +78,7 @@ Kirigami.ScrollablePage {
     header: QQC2.ToolBar {
         contentItem: RowLayout {
             Kirigami.SearchField {
+                KanteFieldSkin { control: parent }
                 Layout.fillWidth: true
                 Layout.maximumWidth: Kirigami.Units.gridUnit * 20
                 placeholderText: i18n("Search notes and batches…")
@@ -77,7 +89,7 @@ Kirigami.ScrollablePage {
             QQC2.ButtonGroup { id: filters }
             Repeater {
                 model: [["all", i18nc("journal filter", "All")], ["written", i18nc("journal filter", "Written")], ["undone", i18nc("journal filter", "Reverted")]]
-                delegate: QQC2.ToolButton {
+                delegate: KanteToolButton {
                     required property var modelData
                     text: modelData[1]
                     checkable: true
@@ -106,10 +118,20 @@ Kirigami.ScrollablePage {
             delegate: ColumnLayout {
                 id: group
                 required property var modelData
+                required property int index
                 readonly property bool anyWritten: modelData.entries.some(e => !e.undone)
                 Layout.fillWidth: true
                 spacing: 0
 
+                // A day heading when the day changes.
+                Kirigami.Heading {
+                    visible: group.index === 0 || page.groups[group.index - 1].day !== group.modelData.day
+                    text: group.modelData.day
+                    level: 3
+                    font: KanteStyle.headingFont(Kirigami.Theme.defaultFont.pointSize * 1.15)
+                    Layout.topMargin: group.index === 0 ? 0 : Kirigami.Units.gridUnit
+                    Layout.bottomMargin: Kirigami.Units.smallSpacing
+                }
                 RowLayout {
                     Layout.fillWidth: true
                     SectionLabel {
@@ -117,11 +139,11 @@ Kirigami.ScrollablePage {
                         Layout.fillWidth: true
                     }
                     QQC2.Label {
-                        text: Qt.formatDate(new Date(group.modelData.time), Qt.DefaultLocaleShortDate)
+                        text: i18np("one file", "%1 files", group.modelData.entries.length)
                         font: Kirigami.Theme.smallFont
                         color: KanteStyle.mutedTextColor
                     }
-                    QQC2.ToolButton {
+                    KanteToolButton {
                         visible: group.anyWritten && group.modelData.entries.length > 1
                         text: i18n("Undo batch")
                         icon.name: "edit-undo"
@@ -156,7 +178,8 @@ Kirigami.ScrollablePage {
                                 }
                                 QQC2.Label {
                                     text: entry.modelData.path
-                                    font: KanteStyle.monoFont(Kirigami.Theme.defaultFont.pointSize)
+                                    font: KanteStyle.monoFont(Kirigami.Theme.smallFont.pointSize)
+                                    color: KanteStyle.textColor
                                     elide: Text.ElideMiddle
                                     Layout.fillWidth: true
                                 }
@@ -164,7 +187,7 @@ Kirigami.ScrollablePage {
                                 QQC2.Label { text: "−" + entry.modelData.removed; color: KanteStyle.negativeTextColor; font: KanteStyle.monoFont(Kirigami.Theme.smallFont.pointSize) }
                                 Chip { visible: entry.modelData.new; text: i18n("new"); tone: KanteStyle.infoColor }
                                 Chip { visible: entry.modelData.undone; text: i18n("reverted"); tone: KanteStyle.mutedTextColor }
-                                QQC2.Button {
+                                KanteButton {
                                     visible: !entry.modelData.undone
                                     text: i18n("Undo")
                                     icon.name: "edit-undo"
@@ -189,7 +212,7 @@ Kirigami.ScrollablePage {
                             }
                             RowLayout {
                                 visible: entry.open
-                                QQC2.Button {
+                                KanteButton {
                                     text: i18n("Show in the review")
                                     icon.name: "document-compare"
                                     onClicked: {

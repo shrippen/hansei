@@ -37,6 +37,7 @@ type Summary struct {
 	Streak        int       `json:"streak"`
 	Spark         []float64 `json:"spark"`
 	SparkDays     []string  `json:"sparkDays"`
+	Week          []int     `json:"week"` // changes reviewed per day, the last seven days, oldest first
 }
 
 // Stats is the history file.
@@ -115,6 +116,14 @@ func (s *Stats) Summary(now time.Time, current float64) Summary {
 		if keys[i] <= limit && s.Days[keys[i]].HasConf {
 			sum.WeekAgo, sum.HasWeekAgo = s.Days[keys[i]].Conformity, true
 			break
+		}
+	}
+
+	// Reviewed changes of the last seven days, for the streak tile.
+	sum.Week = make([]int, weekDays)
+	for i := 0; i < weekDays; i++ {
+		if d, ok := s.Days[now.AddDate(0, 0, i-weekDays+1).Format(dayLayout)]; ok {
+			sum.Week[i] = d.Reviewed
 		}
 	}
 

@@ -73,7 +73,7 @@ func TestScreens(t *testing.T) {
 	m.screen = scrReview
 	run(m, m.pickBatch())
 	out := render(t, m, "review")
-	if !strings.Contains(out, "Hunk 1/1") || !strings.Contains(out, "SW-NAS01") || !strings.Contains(out, "Nebelhorn") {
+	if !strings.Contains(out, "Änderung 1/1") || !strings.Contains(out, "SW-NAS01") || !strings.Contains(out, "Nebelhorn") {
 		t.Errorf("review screen:\n%s", out)
 	}
 	if m.batchID != sum.ID {

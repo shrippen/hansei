@@ -32,6 +32,7 @@ const (
 	inputFeedback
 	inputReason
 	inputKey
+	inputSetting // a value in the settings (code name, model, prices)
 )
 
 const (
@@ -92,8 +93,9 @@ type Model struct {
 
 	// New task
 	task      textarea.Model
-	taskScope textinput.Model
 	taskField int
+	scopeSel  map[string]bool // new task: picked folders
+	scopeRow  int
 	taskProv  int
 	estimate  *service.Estimate
 
@@ -105,6 +107,7 @@ type Model struct {
 	remember bool
 	regen    bool
 	keyFor   string
+	editing  string // what inputSetting changes, e.g. "codename:SW-PI"
 
 	toast      string
 	toastUntil time.Time
@@ -127,13 +130,9 @@ func New(api service.API, lang, style string) *Model {
 	ta.SetHeight(4)
 	ta.CharLimit = 4000
 
-	sc := textinput.New()
-	sc.Prompt = ""
-
-	m := &Model{api: api, lang: lang, style: style, st: newStyles(style), mode: defaultMode, input: in, task: ta, taskScope: sc,
+	m := &Model{api: api, lang: lang, style: style, st: newStyles(style), mode: defaultMode, input: in, task: ta,
 		aiText: map[string]string{}, progress: map[string]string{}, live: map[string]batch.Usage{}}
 	m.task.Placeholder = m.t("taskHint")
-	m.taskScope.Placeholder = m.t("scopeHint")
 	return m
 }
 

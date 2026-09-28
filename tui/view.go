@@ -3,6 +3,7 @@ package tui
 import (
 	"fmt"
 	"path"
+	"sort"
 	"strings"
 	"time"
 
@@ -29,8 +30,6 @@ func (m *Model) View() string {
 	m.hits = m.hits[:0]
 	var body string
 	switch {
-	case m.rule != nil:
-		body = m.viewRule()
 	case m.help:
 		body = m.viewHelp()
 	case m.compare != nil:
@@ -170,6 +169,8 @@ func (m *Model) viewInput() string {
 		}
 	case inputKey:
 		label = m.st.chipWarn.Render(m.t("prompt.key", m.keyFor))
+	case inputSetting:
+		label = m.st.chipInfo.Render(m.settingPrompt())
 	}
 	if m.quick != "" {
 		label += m.st.key.Render(" [" + m.t("quick."+quickIndex(m.quick)) + "]")
@@ -229,8 +230,8 @@ func (m *Model) viewBatchList(w, h int) string {
 			mark = m.st.key.Render("▾ ")
 		}
 		topic := m.st.chipTag.Render(trunc(bs.Topic, 12))
-		prog := " " + m.t("progress", c.Done, c.Files, c.Accepted+c.Rejected, c.Hunks)
-		b.WriteString(mark + topic + m.st.dim.Render(trunc(prog, w-16)) + "\n")
+		prog := " " + m.t("progressShort", c.Done, c.Files, c.Accepted+c.Rejected, c.Hunks)
+		b.WriteString(mark + topic + m.st.dim.Render(prog) + "\n")
 		m.addHit(hit{y: y, x0: 0, x1: w, batch: bs.ID, hunk: -1})
 		m.addHit(hit{y: y + 1, x0: 0, x1: w, batch: bs.ID, hunk: -1})
 		y += 3
@@ -306,6 +307,10 @@ func (m *Model) viewDiffPane(w, h, x0 int) string {
 	head := title + strings.Repeat(" ", max(1, w-lipgloss.Width(title)-lipgloss.Width(info))) + m.st.dim.Render(info)
 	lines := []string{head}
 	lines = append(lines, m.questionLines(w)...)
+	// The rule behind a change (i) sits in a box above the diff.
+	if m.rule != nil {
+		lines = append(lines, m.ruleBox(w)...)
+	}
 	if f.Stale {
 		lines = append(lines, m.st.chipWarn.Render("⚠ "+m.t("stale")))
 	}
@@ -475,7 +480,7 @@ func (m *Model) viewDone() string {
 		"",
 		m.st.title.Render(d.Batch.Title),
 		"",
-		m.t("doneStats", c.Files, c.Accepted, c.Rejected, rounds),
+		m.t("doneStats2", m.n("doneFiles", c.Files), c.Accepted, c.Rejected, m.n("rounds", rounds)),
 		m.st.dim.Render(m.doneLine(d.Batch)),
 		"",
 		m.st.dim.Render(m.t("doneKeys")),
@@ -484,16 +489,24 @@ func (m *Model) viewDone() string {
 }
 
 func (m *Model) viewHelp() string {
-	keys := []string{"keys.review", "keys.board", "keys.start", "keys.journal", "keys.settings", "keys.task", "keys.input", "keys.reason"}
-	var lines []string
-	lines = append(lines, m.st.title.Render(m.t("help")), "")
-	for _, k := range keys {
-		for _, part := range strings.Split(m.t(k), " · ") {
-			lines = append(lines, "  "+part)
+	// The current screen's keys first, then the rest, each group with its title.
+	groups := []struct{ title, keys string }{
+		{"help.review", "keys.review"}, {"help.board", "keys.board"}, {"help.start", "keys.start"},
+		{"help.journal", "keys.journal"}, {"help.settings", "keys.settings"}, {"help.task", "keys.task"},
+		{"help.input", "keys.input"}, {"help.reason", "keys.reason"}, {"help.global", "keys.global"},
+	}
+	current := map[screen]string{scrReview: "keys.review", scrBoard: "keys.board", scrStart: "keys.start",
+		scrJournal: "keys.journal", scrSettings: "keys.settings", scrTask: "keys.task"}[m.screen]
+	sort.SliceStable(groups, func(i, j int) bool { return groups[i].keys == current && groups[j].keys != current })
+	lines := []string{m.st.title.Render(m.t("help")) + m.st.dim.Render("  (Esc)"), ""}
+	for _, g := range groups {
+		lines = append(lines, m.st.key.Render(strings.ToUpper(m.t(g.title))))
+		for _, part := range strings.Split(m.t(g.keys), " · ") {
+			k, v, _ := strings.Cut(part, " ")
+			lines = append(lines, "  "+m.st.strong.Render(fmt.Sprintf("%-9s", k))+" "+m.st.base.Render(v))
 		}
 		lines = append(lines, "")
 	}
-	lines = append(lines, m.st.dim.Render("s "+m.t("tab.start")+" · w "+m.t("tab.board")+" · Tab "+m.t("tab.review")+" · o "+m.t("tab.journal")+" · , "+m.t("tab.settings")+" · n "+m.t("newTask")+" · z secrets · "+m.t("quit")))
 	return columns(lines, m.w, m.bodyHeight())
 }
 

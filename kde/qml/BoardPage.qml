@@ -24,6 +24,8 @@ Kirigami.Page {
     title: i18n("Workbench")
     padding: Kirigami.Units.largeSpacing
     KantePageTitle { page: page }
+    // Kante: the page ground is Kante's ground, not the dialog tint KanteScope hands to the theme.
+    background: Rectangle { color: KanteStyle.themed ? KanteStyle.backgroundColor : Kirigami.Theme.backgroundColor }
 
     actions: [
         Kirigami.Action {
@@ -119,6 +121,7 @@ Kirigami.Page {
                                 "Every open change of “%2” is accepted and written: %1 files.",
                                 (batch.files || []).filter(f => f.status === "open" || f.status === "stale").length, batch.title) : ""
         standardButtons: Kirigami.Dialog.Ok | Kirigami.Dialog.Cancel
+        KanteDialogSkin { dialog: acceptAll }
         onAccepted: {
             for (const f of (batch.files || [])) {
                 if (f.status === "open" || f.status === "stale") {
@@ -153,6 +156,19 @@ Kirigami.Page {
         padding: Kirigami.Units.largeSpacing
         spacing: Kirigami.Units.smallSpacing
         visible: page.topics.length > 1 || (page.store.status.allowed || []).length > 1
+        QQC2.Label {
+            text: i18n("Topic:")
+            color: KanteStyle.mutedTextColor
+            height: allChip.height
+            verticalAlignment: Text.AlignVCenter
+        }
+        Chip {
+            id: allChip
+            interactive: true
+            text: i18nc("all topics", "All")
+            checked: page.topic === "" && page.folder === ""
+            onClicked: { page.topic = ""; page.folder = "" }
+        }
         Repeater {
             model: page.topics
             delegate: Chip {
@@ -254,7 +270,7 @@ Kirigami.Page {
                         spacing: Kirigami.Units.smallSpacing
 
                         RowLayout {
-                            SectionLabel { text: column.modelData.title; color: column.modelData.tone; Layout.fillWidth: true }
+                            SectionLabel { text: column.modelData.title; Layout.fillWidth: true }
                             QQC2.Label { text: column.items.length; font: KanteStyle.monoFont(Kirigami.Theme.smallFont.pointSize); color: KanteStyle.mutedTextColor }
                         }
                         Rectangle { Layout.fillWidth: true; implicitHeight: 2; color: column.modelData.tone }
@@ -279,7 +295,7 @@ Kirigami.Page {
                                 padding: Kirigami.Units.largeSpacing
                                 opacity: page.dragging && (page.dragging.id ? page.dragging.id === modelData.id : page.dragging.rule === modelData.rule) ? 0.4 : 1
                                 onClicked: modelData.finding ? page.openFinding = (expanded ? "" : modelData.rule) : page.open(modelData)
-                                background: Surface { selected: card.hovered; bar: card.modelData.questions > 0 ? KanteStyle.neutralTextColor : "transparent" }
+                                background: Surface { selected: card.hovered }
 
                                 DragHandler {
                                     enabled: card.draggable
@@ -304,11 +320,24 @@ Kirigami.Page {
                                             tone: KanteStyle.neutralTextColor
                                         }
                                     }
-                                    QQC2.Label {
-                                        text: card.modelData.title
-                                        font.bold: true
-                                        wrapMode: Text.Wrap
+                                    RowLayout {
                                         Layout.fillWidth: true
+                                        QQC2.Label {
+                                            text: card.modelData.title
+                                            font.bold: true
+                                            wrapMode: Text.Wrap
+                                            Layout.fillWidth: true
+                                        }
+                                        // Findings: the batch action as an icon in the card head.
+                                        KanteToolButton {
+                                            visible: !!card.modelData.finding
+                                            text: i18n("Create batch")
+                                            icon.name: "document-new"
+                                            display: QQC2.AbstractButton.IconOnly
+                                            onClicked: page.store.call("fromFinding", { rule: card.modelData.rule })
+                                            QQC2.ToolTip.visible: hovered
+                                            QQC2.ToolTip.text: i18n("Create batch (or drag the card onto “AI working”)")
+                                        }
                                     }
                                     RowLayout {
                                         visible: !!card.modelData.finding
@@ -328,12 +357,6 @@ Kirigami.Page {
                                         visible: active
                                         Layout.fillWidth: true
                                         sourceComponent: FindingList { store: page.store; rule: card.modelData.rule; limit: 8 }
-                                    }
-                                    QQC2.Button {
-                                        visible: !!card.modelData.finding
-                                        text: i18n("Create batch")
-                                        icon.name: "document-new"
-                                        onClicked: page.store.call("fromFinding", { rule: card.modelData.rule })
                                     }
                                     QQC2.Label {
                                         visible: !card.modelData.finding
@@ -383,7 +406,7 @@ Kirigami.Page {
                                             elide: Text.ElideRight
                                             Layout.fillWidth: true
                                         }
-                                        QQC2.ToolButton {
+                                        KanteToolButton {
                                             visible: card.modelData.column === "done"
                                             icon.name: "edit-undo"
                                             text: i18n("Undo")
@@ -392,7 +415,7 @@ Kirigami.Page {
                                             QQC2.ToolTip.text: text
                                             QQC2.ToolTip.visible: hovered
                                         }
-                                        QQC2.ToolButton {
+                                        KanteToolButton {
                                             visible: card.modelData.running === true
                                             icon.name: "process-stop"
                                             text: i18n("Stop")
@@ -401,7 +424,7 @@ Kirigami.Page {
                                             QQC2.ToolTip.text: text
                                             QQC2.ToolTip.visible: hovered
                                         }
-                                        QQC2.ToolButton {
+                                        KanteToolButton {
                                             visible: card.modelData.column === "failed"
                                             icon.name: "edit-delete"
                                             text: i18n("Discard")
@@ -415,7 +438,7 @@ Kirigami.Page {
                             }
                         }
 
-                        QQC2.Button {
+                        KanteButton {
                             visible: column.hiddenOld > 0 || (column.modelData.key === "done" && page.showOlder)
                             flat: true
                             text: page.showOlder ? i18n("Only the last 7 days") : i18np("Show one older", "Show %1 older", column.hiddenOld)

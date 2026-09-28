@@ -17,11 +17,57 @@ Kirigami.ScrollablePage {
     property string expanded: ""
     property var estimate: null
     property var quickScope: []
+    property var lastWrite: null
+    // The check with the most findings: the biggest lever for the rule quota.
+    readonly property var lever: findings.length > 0 ? findings.reduce((a, b) => b.count > a.count ? b : a) : null
+    // Tiles: five on wide pages, the three essential ones otherwise.
+    readonly property int tileColumns: width > Kirigami.Units.gridUnit * 70 ? 5 : (width > Kirigami.Units.gridUnit * 40 ? 3 : 1)
+    readonly property var monthUsage: {
+        const start = new Date()
+        start.setDate(1)
+        start.setHours(0, 0, 0, 0)
+        const u = { in: 0, out: 0, cost: 0, tasks: 0 }
+        for (const b of store.batches) {
+            if (new Date(b.created) >= start && (b.usage.in + b.usage.out) > 0) {
+                u.in += b.usage.in
+                u.out += b.usage.out
+                u.cost += b.usage.cost || 0
+                u.tasks++
+            }
+        }
+        return u
+    }
+    readonly property var oldestWaiting: waitingBatches.length > 0 ? waitingBatches.reduce((a, b) => new Date(b.created) < new Date(a.created) ? b : a) : null
+    readonly property var recentTasks: {
+        try {
+            return JSON.parse(applicationWindow().layout.recentTasks || "[]")
+        } catch (e) {
+            return []
+        }
+    }
+
+    readonly property bool narrow: width < Kirigami.Units.gridUnit * 38
+
+    function countText(f) {
+        return f.count === f.paths.length ? i18np("one finding", "%1 findings", f.count)
+            : i18n("%1 in %2", i18np("one finding", "%1 findings", f.count), i18np("one note", "%1 notes", f.paths.length))
+    }
+
+    // Keeps the last three task sentences for the chips under the field.
+    function remember(text) {
+        const list = [text].concat(recentTasks.filter(t => t !== text)).slice(0, 3)
+        applicationWindow().layout.recentTasks = JSON.stringify(list)
+    }
 
     title: i18n("Start")
     KantePageTitle { page: page }
+    // Kante: the page ground is Kante's ground, not the dialog tint KanteScope hands to the theme.
+    background: Rectangle { color: KanteStyle.themed ? KanteStyle.backgroundColor : Kirigami.Theme.backgroundColor }
 
-    Component.onCompleted: store.refreshHome()
+    Component.onCompleted: {
+        store.refreshHome()
+        store.call("journal", { limit: 1 }, r => { page.lastWrite = r && r.length > 0 ? r[0] : null })
+    }
 
     function openBatch(id) {
         store.batchID = id
@@ -33,8 +79,10 @@ Kirigami.ScrollablePage {
         if (taskField.text.trim() === "") {
             return
         }
+        const text = taskField.text.trim()
         store.call("task", { instruction: taskField.text, scope: quickScope }, r => {
             if (r) {
+                page.remember(text)
                 taskField.text = ""
                 store.batchID = r.id
                 store.path = ""
@@ -49,11 +97,17 @@ Kirigami.ScrollablePage {
         onTriggered: page.store.call("estimate", { instruction: taskField.text, scope: page.quickScope }, r => { page.estimate = r })
     }
 
+    // Wide windows: the content keeps a readable width, centred.
+    Item {
+    implicitHeight: content.implicitHeight
     ColumnLayout {
+        id: content
+        width: Math.min(parent.width, Kirigami.Units.gridUnit * 80)
+        anchors.horizontalCenter: parent.horizontalCenter
         spacing: Kirigami.Units.gridUnit
 
         GridLayout {
-            columns: page.width > Kirigami.Units.gridUnit * 40 ? 3 : 1
+            columns: page.tileColumns
             columnSpacing: Kirigami.Units.largeSpacing
             rowSpacing: Kirigami.Units.largeSpacing
             uniformCellHeights: columns > 1
@@ -68,16 +122,85 @@ Kirigami.ScrollablePage {
                     days: page.stats.sparkDays || []
                     Layout.topMargin: Kirigami.Units.smallSpacing
                 }
+                // The next step that helps most.
+                QQC2.Label {
+                    visible: page.lever !== null
+                    text: page.lever ? i18n("Biggest lever: %1 (%2)", (page.store.home.titles || {})[page.lever.rule] || page.lever.rule, page.lever.count) : ""
+                    font: Kirigami.Theme.smallFont
+                    color: KanteStyle.mutedTextColor
+                    elide: Text.ElideRight
+                    Layout.fillWidth: true
+                }
             }
             Tile {
                 label: i18n("Waiting for you")
-                value: page.store.home.waiting || 0
-                detail: i18np("One open change", "%1 open changes", page.store.home.waitingHunks || 0)
+                value: page.store.home.waitingHunks || 0
+                detail: i18np("change in one batch", "changes in %1 batches", page.store.home.waiting || 0)
+                QQC2.Label {
+                    visible: page.oldestWaiting !== null
+                    text: page.oldestWaiting ? i18n("Oldest: %1", page.store.age(page.oldestWaiting.created)) : ""
+                    font: Kirigami.Theme.smallFont
+                    color: KanteStyle.mutedTextColor
+                }
+                QQC2.Label {
+                    readonly property int questions: page.waitingBatches.reduce((n, b) => n + b.questions, 0)
+                    visible: questions > 0
+                    text: i18np("One question from the AI", "%1 questions from the AI", questions)
+                    font: Kirigami.Theme.smallFont
+                    color: KanteStyle.neutralTextColor
+                }
             }
             Tile {
                 label: i18n("Streak")
                 value: page.stats.streak || 0
                 detail: i18np("day in a row", "days in a row", page.stats.streak || 0) + " · " + i18np("one change today", "%1 changes today", page.stats.reviewedToday || 0)
+                // Reviewed changes per day this week.
+                Row {
+                    id: week
+                    readonly property var days: page.stats.week || []
+                    readonly property int most: Math.max(1, ...days)
+                    spacing: 3
+                    Layout.topMargin: Kirigami.Units.smallSpacing
+                    height: Kirigami.Units.gridUnit * 1.6
+                    Repeater {
+                        model: week.days
+                        delegate: Item {
+                            required property int modelData
+                            required property int index
+                            width: Kirigami.Units.smallSpacing * 2.2
+                            height: week.height
+                            Rectangle {
+                                anchors.bottom: parent.bottom
+                                width: parent.width
+                                height: parent.modelData > 0 ? Math.max(3, parent.height * parent.modelData / week.most) : 2
+                                color: parent.modelData > 0 ? (parent.index === week.days.length - 1 ? KanteStyle.accentColor : Qt.alpha(KanteStyle.positiveTextColor, 0.7)) : KanteStyle.frameColor
+                            }
+                            HoverHandler { id: dayHover }
+                            QQC2.ToolTip.visible: dayHover.hovered
+                            QQC2.ToolTip.text: i18np("one change", "%1 changes", parent.modelData)
+                        }
+                    }
+                }
+            }
+            Tile {
+                visible: page.tileColumns === 5
+                label: i18n("AI this month")
+                value: page.monthUsage.cost > 0 ? page.store.money(page.monthUsage, page.store.currencyOf(null)) : page.store.tokens(page.monthUsage)
+                detail: i18np("one task", "%1 tasks", page.monthUsage.tasks) + (page.monthUsage.cost > 0 ? " · " + page.store.tokens(page.monthUsage) : "")
+            }
+            Tile {
+                visible: page.tileColumns === 5
+                label: i18n("Last written")
+                value: page.lastWrite ? Qt.formatTime(new Date(page.lastWrite.time), Qt.DefaultLocaleShortDate) : "–"
+                detail: page.lastWrite ? page.store.fileName(page.lastWrite.path) + " · " + page.store.age(page.lastWrite.time) : i18n("Nothing written yet")
+                KanteToolButton {
+                    visible: page.lastWrite !== null && !page.lastWrite.undone
+                    text: i18n("Undo")
+                    icon.name: "edit-undo"
+                    onClicked: page.store.call("undoFile", { id: page.lastWrite.batch, path: page.lastWrite.path }, () => {
+                        page.store.call("journal", { limit: 1 }, r => { page.lastWrite = r && r.length > 0 ? r[0] : null })
+                    })
+                }
             }
         }
 
@@ -93,7 +216,7 @@ Kirigami.ScrollablePage {
                 required property var modelData
                 Layout.fillWidth: true
                 padding: Kirigami.Units.largeSpacing
-                background: Surface { bar: waitRow.modelData.questions > 0 ? KanteStyle.neutralTextColor : KanteStyle.accentColor; selected: waitRow.hovered }
+                background: Surface { selected: waitRow.hovered }
                 onClicked: page.openBatch(modelData.id)
                 contentItem: RowLayout {
                     spacing: Kirigami.Units.largeSpacing
@@ -132,7 +255,7 @@ Kirigami.ScrollablePage {
         QQC2.Control {
             Layout.fillWidth: true
             padding: Kirigami.Units.largeSpacing
-            background: Surface { bar: KanteStyle.accentColor }
+            background: Surface {}
             contentItem: ColumnLayout {
                 spacing: Kirigami.Units.smallSpacing
                 Kirigami.Heading {
@@ -159,9 +282,26 @@ Kirigami.ScrollablePage {
                         enabled: taskField.text.trim() !== ""
                         onClicked: page.startTask()
                     }
-                    QQC2.Button {
+                    KanteButton {
                         text: i18n("Details…")
                         onClicked: applicationWindow().openTask(taskField.text, page.quickScope.length > 0 ? page.quickScope : null)
+                    }
+                }
+                // The last tasks, one click to use again.
+                Flow {
+                    visible: page.recentTasks.length > 0 && taskField.text === ""
+                    Layout.fillWidth: true
+                    spacing: Kirigami.Units.smallSpacing
+                    Repeater {
+                        model: page.recentTasks
+                        delegate: Chip {
+                            required property string modelData
+                            interactive: true
+                            checkable: false
+                            plain: true
+                            text: modelData
+                            onClicked: { taskField.text = modelData; taskField.forceActiveFocus() }
+                        }
                     }
                 }
                 RowLayout {
@@ -239,9 +379,11 @@ Kirigami.ScrollablePage {
                         QQC2.Label {
                             text: page.store.home.titles ? page.store.home.titles[finding.modelData.rule] : finding.modelData.rule
                             Layout.preferredWidth: Kirigami.Units.gridUnit * 13
+                            Layout.fillWidth: page.narrow
                             elide: Text.ElideRight
                         }
                         Item {
+                            visible: !page.narrow
                             Layout.preferredWidth: Kirigami.Units.gridUnit * 8
                             Layout.fillWidth: true
                             Layout.maximumWidth: Kirigami.Units.gridUnit * 12
@@ -254,19 +396,15 @@ Kirigami.ScrollablePage {
                                 color: page.store.ruleColor(finding.modelData.rule)
                             }
                         }
+                        // What the numbers are: findings, and in how many notes.
                         QQC2.Label {
-                            text: finding.modelData.count
-                            font: KanteStyle.monoFont(Kirigami.Theme.defaultFont.pointSize, true)
-                            horizontalAlignment: Text.AlignRight
-                            Layout.preferredWidth: Kirigami.Units.gridUnit * 2
-                        }
-                        QQC2.Label {
-                            text: i18np("one note", "%1 notes", finding.modelData.paths.length)
+                            visible: !page.narrow
+                            text: page.countText(finding.modelData)
                             color: KanteStyle.mutedTextColor
-                            Layout.preferredWidth: Kirigami.Units.gridUnit * 5
-                            Layout.fillWidth: true
+                            Layout.preferredWidth: Kirigami.Units.gridUnit * 10
                         }
-                        QQC2.ToolButton {
+                        KanteToolButton {
+                            id: findingAction
                             text: finding.openBatch ? i18n("Open batch") : i18n("Create batch")
                             icon.name: finding.openBatch ? "go-next" : "document-new"
                             display: page.width > Kirigami.Units.gridUnit * 34 ? QQC2.AbstractButton.TextBesideIcon : QQC2.AbstractButton.IconOnly
@@ -289,6 +427,30 @@ Kirigami.ScrollablePage {
                                 })
                             }
                         }
+                        Item { visible: !page.narrow; Layout.fillWidth: true }
+                    }
+                }
+                // Narrow pages: bar and numbers on their own line.
+                RowLayout {
+                    visible: page.narrow
+                    Layout.fillWidth: true
+                    Layout.leftMargin: Kirigami.Units.gridUnit * 1.5
+                    Layout.bottomMargin: Kirigami.Units.smallSpacing
+                    Item {
+                        Layout.fillWidth: true
+                        implicitHeight: Kirigami.Units.smallSpacing * 1.5
+                        Rectangle { anchors.fill: parent; color: KanteStyle.sunkenColor; radius: KanteStyle.active ? 0 : height / 2 }
+                        Rectangle {
+                            width: parent.width * finding.modelData.count / page.maxCount
+                            height: parent.height
+                            radius: KanteStyle.active ? 0 : height / 2
+                            color: page.store.ruleColor(finding.modelData.rule)
+                        }
+                    }
+                    QQC2.Label {
+                        text: page.countText(finding.modelData)
+                        color: KanteStyle.mutedTextColor
+                        font: Kirigami.Theme.smallFont
                     }
                 }
 
@@ -316,7 +478,7 @@ Kirigami.ScrollablePage {
                 font: Kirigami.Theme.smallFont
                 elide: Text.ElideRight
             }
-            QQC2.ToolButton {
+            KanteToolButton {
                 text: i18n("Check again")
                 icon.name: "view-refresh"
                 onClicked: page.store.call("findings", { refresh: true }, r => {
@@ -327,6 +489,7 @@ Kirigami.ScrollablePage {
                 })
             }
         }
+    }
     }
 
     component Tile: QQC2.Control {

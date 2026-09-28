@@ -16,6 +16,8 @@ Kirigami.Dialog {
     title: i18n("Why reject?")
     padding: Kirigami.Units.largeSpacing
     preferredWidth: Math.min(Kirigami.Units.gridUnit * 28, applicationWindow().width - Kirigami.Units.gridUnit * 2)
+    // Kirigami.Dialog does not size itself from a layout: the height comes from the content.
+    preferredHeight: form.implicitHeight + topPadding + bottomPadding + Kirigami.Units.gridUnit * 5
     standardButtons: Kirigami.Dialog.NoButton
 
     readonly property var labels: ({ "wrong-fact": i18n("Wrong fact"), "unneeded": i18n("Not needed"), "too-long": i18n("Too long"), "style": i18n("Style"), "later": i18n("Later") })
@@ -36,6 +38,7 @@ Kirigami.Dialog {
     }
 
     ColumnLayout {
+        id: form
         spacing: Kirigami.Units.largeSpacing
         QQC2.Label {
             text: i18n("Optional. The reason helps the AI with the next proposal.")
@@ -88,5 +91,5 @@ Kirigami.Dialog {
     ]
 
     // After the content: the dialog sizes its first content child.
-    KanteScope { target: dialog.contentItem }
+    KanteDialogSkin { dialog: dialog }
 }

@@ -62,7 +62,7 @@ QQC2.Control {
             spacing: Kirigami.Units.smallSpacing
             Layout.fillWidth: true
 
-            QQC2.ToolButton {
+            KanteToolButton {
                 icon.name: header.folded ? "go-next" : "go-down"
                 visible: !header.pending
                 onClicked: header.toggle()
@@ -72,14 +72,15 @@ QQC2.Control {
             QQC2.Label {
                 text: header.group > 1 ? i18n("Changes %1–%2 of %3", header.hunk.index + 1, header.hunk.index + header.group, header.total)
                                        : i18n("Change %1 of %2", header.hunk.index + 1, header.total)
-                font: KanteStyle.monoFont(Kirigami.Theme.smallFont.pointSize, true)
-                color: header.current ? KanteStyle.accentTextColor : KanteStyle.mutedTextColor
+                // A label, not a title: small uppercase mono in Kante, small bold otherwise.
+                font: KanteStyle.active ? KanteStyle.labelFont() : Qt.font({ family: Kirigami.Theme.smallFont.family, pointSize: Kirigami.Theme.smallFont.pointSize, bold: true })
+                color: header.current ? KanteStyle.textColor : KanteStyle.mutedTextColor
             }
             QQC2.Label {
-                text: header.hunk.heading === "---" ? i18n("Frontmatter") : (header.hunk.heading || "")
+                text: header.hunk.heading === "---" ? i18n("Frontmatter") : (header.hunk.heading || "").replace(/^#+\s*/, "")
                 visible: text !== "" && header.group === 1
-                font: KanteStyle.monoFont(Kirigami.Theme.smallFont.pointSize)
-                color: KanteStyle.mutedTextColor
+                font.weight: Font.DemiBold
+                color: header.current ? KanteStyle.strongTextColor : KanteStyle.mutedTextColor
                 elide: Text.ElideRight
                 Layout.maximumWidth: Kirigami.Units.gridUnit * 14
             }
@@ -137,7 +138,7 @@ QQC2.Control {
                 QQC2.ToolTip.text: i18n("Accept (A)")
                 QQC2.ToolTip.visible: hovered
             }
-            QQC2.ToolButton {
+            KanteToolButton {
                 visible: header.pending
                 text: i18n("Reject")
                 icon.name: "dialog-cancel"
@@ -146,7 +147,7 @@ QQC2.Control {
                 QQC2.ToolTip.text: i18n("Reject (R)")
                 QQC2.ToolTip.visible: hovered
             }
-            QQC2.ToolButton {
+            KanteToolButton {
                 text: i18n("Edit")
                 icon.name: "document-edit"
                 display: header.compact ? QQC2.AbstractButton.IconOnly : QQC2.AbstractButton.TextBesideIcon
@@ -154,7 +155,7 @@ QQC2.Control {
                 QQC2.ToolTip.text: i18n("Edit (E)")
                 QQC2.ToolTip.visible: hovered
             }
-            QQC2.ToolButton {
+            KanteToolButton {
                 text: i18n("Feedback")
                 icon.name: "mail-reply-sender"
                 display: header.compact ? QQC2.AbstractButton.IconOnly : QQC2.AbstractButton.TextBesideIcon
@@ -163,12 +164,13 @@ QQC2.Control {
                 QQC2.ToolTip.visible: hovered
             }
             Item { Layout.fillWidth: true }
-            QQC2.ToolButton {
+            KanteToolButton {
                 icon.name: "overflow-menu"
                 onClicked: more.popup()
                 QQC2.ToolTip.text: i18n("More")
                 QQC2.ToolTip.visible: hovered
                 QQC2.Menu {
+                    KantePopupSkin { popup: more }
                     id: more
                     QQC2.MenuItem {
                         text: i18n("History of this change")

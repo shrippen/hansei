@@ -149,6 +149,7 @@
       "negative": "red",
       "info": "blue",
       "tag": "purple",
+      "warning": "yellow",
       "card": [
         "bg1",
         0.6
@@ -184,6 +185,7 @@
       "negative": "red",
       "info": "blue",
       "tag": "purple",
+      "warning": "yellow",
       "card": [
         "bg1",
         0.7

@@ -9,6 +9,7 @@ import (
 	"time"
 
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/charmbracelet/lipgloss"
 
 	"git.arianw.de/shrippen/hansei/core/batch"
 	"git.arianw.de/shrippen/hansei/core/service"
@@ -21,6 +22,7 @@ import (
 const (
 	findingsShown = 8
 	waitingShown  = 3
+	ruleLines     = 12 // lines of a rule shown above the diff
 	minutesPerDay = 24 * 60
 )
 
@@ -208,17 +210,22 @@ func (m *Model) loadRule() tea.Cmd {
 	}
 }
 
-func (m *Model) viewRule() string {
+// ruleBox: the rulebook section behind the current change, framed, above the diff.
+func (m *Model) ruleBox(w int) []string {
 	r := m.rule
 	title := r.File
 	if r.Heading != "" {
 		title += " › " + strings.TrimLeft(r.Heading, "# ")
 	}
-	lines := []string{m.st.title.Render(title) + m.st.dim.Render("  (Esc)"), ""}
-	for _, l := range strings.Split(r.Text, "\n") {
-		lines = append(lines, wrap(l, m.w-2)...)
+	body := []string{m.st.strong.Render(title) + m.st.dim.Render("  (Esc)")}
+	for _, l := range strings.Split(strings.TrimSpace(r.Text), "\n") {
+		body = append(body, wrap(l, w-6)...)
 	}
-	return strings.Join(lines, "\n")
+	if len(body) > ruleLines {
+		body = append(body[:ruleLines], "…")
+	}
+	box := lipgloss.NewStyle().Border(lipgloss.NormalBorder()).BorderForeground(m.st.p.info).Padding(0, 1).Width(w - 2)
+	return strings.Split(box.Render(strings.Join(body, "\n")), "\n")
 }
 
 // liveUsage decodes a usage event.
@@ -298,4 +305,12 @@ func (m *Model) nextTemplate() {
 		return // your own text stays
 	}
 	m.task.SetValue(m.t(taskTemplates[next]))
+}
+
+// costText: the cost of a batch, empty without a price.
+func costText(u batch.Usage) string {
+	if u.Cost <= 0 {
+		return ""
+	}
+	return fmt.Sprintf("%.2f", u.Cost)
 }

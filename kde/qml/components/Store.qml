@@ -10,6 +10,8 @@ QtObject {
     property var status: ({})
     property var home: ({ stats: {}, findings: [], titles: {} })
     property var batches: []
+    // The main window, for pages that live in other windows (settings).
+    property var window: null
     property var findings: ({ findings: [], summary: [] })   // full rule report, loaded on demand
     property var progress: ({})   // batch id → last tool step of the AI
     property var aiText: ({})     // batch id → streamed answer text
@@ -84,7 +86,7 @@ QtObject {
         case "codename":
         case "frontmatter": return KanteStyle.neutralTextColor
         case "review": return KanteStyle.infoColor
-        default: return KanteStyle.tagColor
+        default: return KanteStyle.warningColor
         }
     }
 

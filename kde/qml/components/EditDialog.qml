@@ -110,6 +110,7 @@ Kirigami.Dialog {
                     Layout.fillWidth: true
                     Layout.fillHeight: true
                     QQC2.TextArea {
+                        KanteFieldSkin { control: parent }
                         readOnly: true
                         text: dialog.before
                         placeholderText: i18n("(new lines)")
@@ -128,6 +129,7 @@ Kirigami.Dialog {
                     Layout.fillWidth: true
                     Layout.fillHeight: true
                     QQC2.TextArea {
+                        KanteFieldSkin { control: parent }
                         id: area
                         font: KanteStyle.monoFont(Kirigami.Theme.defaultFont.pointSize)
                         wrapMode: TextEdit.Wrap
@@ -163,5 +165,5 @@ Kirigami.Dialog {
     }
 
     // After the content: the dialog sizes its first content child.
-    KanteScope { target: dialog.contentItem }
+    KanteDialogSkin { dialog: dialog }
 }

@@ -44,6 +44,8 @@ public:
     Q_INVOKABLE void notify(const QString &title, const QString &text);
     /** A folder argument from the command line or Dolphin ("Mit Hansei prüfen"). */
     Q_INVOKABLE QString startFolder() const;
+    // A shortcut as the desktop writes it in the current language ("Shift+A" → "Umschalt+A").
+    Q_INVOKABLE QString keyName(const QString &sequence) const;
 
 Q_SIGNALS:
     void connectedChanged();

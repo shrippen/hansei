@@ -96,7 +96,7 @@ type styles struct {
 	title, label, key                   lipgloss.Style
 	add, del, addWord, delWord, filler  lipgloss.Style
 	chipOK, chipInfo, chipWarn, chipTag lipgloss.Style
-	chipFail, chipDim, sel, bar         lipgloss.Style
+	chipFail, chipDim, chipHl, sel, bar lipgloss.Style
 	border                              lipgloss.Style
 }
 
@@ -121,6 +121,7 @@ func newStyles(style string) styles {
 	s.chipTag = lipgloss.NewStyle().Foreground(p.tag)
 	s.chipFail = lipgloss.NewStyle().Foreground(p.fail)
 	s.chipDim = lipgloss.NewStyle().Foreground(p.dim)
+	s.chipHl = lipgloss.NewStyle().Foreground(p.hl)
 	s.sel = lipgloss.NewStyle().Foreground(p.strong).Background(p.field)
 	s.bar = lipgloss.NewStyle().Foreground(p.accentFg).Background(p.accent).Bold(true)
 	s.border = lipgloss.NewStyle().Foreground(p.border)

@@ -15,7 +15,7 @@ Item {
     QQC2.ToolTip.visible: hover.hovered
     QQC2.ToolTip.delay: Kirigami.Units.toolTipDelay
     QQC2.ToolTip.text: i18n("%1 accepted · %2 rejected · %3 open", counts.accepted || 0, counts.rejected || 0, (counts.hunks || 0) - (counts.accepted || 0) - (counts.rejected || 0))
-Rectangle {
+    Rectangle {
         anchors.fill: parent
         color: KanteStyle.sunkenColor
         radius: KanteStyle.active ? 0 : height / 2

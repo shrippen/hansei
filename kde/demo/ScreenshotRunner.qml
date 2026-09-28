@@ -8,6 +8,7 @@ Item {
     readonly property var shots: (typeof ShotPlan !== "undefined" && ShotPlan) ? (ShotPlan.shots || ShotPlan) : []
     property int index: -1
     property var keys: []
+    property var target: null
 
     function step() {
         index++
@@ -24,6 +25,9 @@ Item {
         if (s.width) {
             win.width = s.width
         }
+        if (s.height) {
+            win.height = s.height
+        }
         if (s.batch) {
             win.store.batchID = s.batch
             win.store.path = s.path || ""
@@ -36,6 +40,11 @@ Item {
         }
         if (s.task) {
             win.openTask()
+        }
+        // "settings": module id; the shot is taken of the settings window.
+        target = win
+        if (s.settings) {
+            win.openSettings(s.settings)
         }
         keys = s.keys || []
         grab.interval = s.wait || 1500
@@ -58,8 +67,15 @@ Item {
                 return
             }
             const k = runner.keys[0]
-            // "type:…" types text, anything else is a key sequence.
-            if (k.startsWith("type:")) {
+            // "type:…" types text, "scroll:N" scrolls the page to N px, anything else is a key sequence.
+            if (k.startsWith("scroll:")) {
+                const cfg = applicationWindow().settingsView.configViewItem
+                const stack = cfg && cfg.visible && cfg.pageStack ? cfg.pageStack : applicationWindow().pageStack
+                const page = stack.depth > 0 ? stack.get(stack.depth - 1) : null
+                if (page && page.flickable) {
+                    page.flickable.contentY = Number(k.slice(7))
+                }
+            } else if (k.startsWith("type:")) {
                 Shots.type(applicationWindow(), k.slice(5))
             } else {
                 Shots.press(applicationWindow(), k)
@@ -72,7 +88,11 @@ Item {
         id: grab
         onTriggered: {
             const s = runner.shots[runner.index]
-            Shots.grab(applicationWindow(), ShotDir + "/" + s.name + ".png")
+            const w = s.settings && applicationWindow().settingsView.configViewItem ? applicationWindow().settingsView.configViewItem : applicationWindow()
+            Shots.grab(w, ShotDir + "/" + s.name + ".png")
+            if (s.settings && w !== applicationWindow()) {
+                w.close()
+            }
             runner.step()
         }
     }
