@@ -1,0 +1,213 @@
+{
+  "meta": {
+    "name": "Kante",
+    "version": "1.3.0",
+    "source": "https://github.com/shrippen/shrippen.github.io",
+    "base": "Gruvbox Dark (morhetz)",
+    "formerly": "shrippen Design Default"
+  },
+  "backgrounds": {
+    "bg-void": "#141312",
+    "bg-hard": "#1d2021",
+    "bg0": "#282828",
+    "bg1": "#3c3836",
+    "bg2": "#504945",
+    "bg-panel": "#2a2826"
+  },
+  "foregrounds": {
+    "fg0": "#fbf1c7",
+    "fg1": "#ebdbb2",
+    "fg2": "#d5c4a1",
+    "fg3": "#a89984"
+  },
+  "accent": "#e8dcc4",
+  "semantic": {
+    "blue": {
+      "bright": "#83a598",
+      "neutral": "#458588",
+      "faded": "#076678"
+    },
+    "aqua": {
+      "bright": "#8ec07c",
+      "neutral": "#689d6a",
+      "faded": "#427b58"
+    },
+    "green": {
+      "bright": "#b8bb26",
+      "neutral": "#98971a",
+      "faded": "#79740e"
+    },
+    "yellow": {
+      "bright": "#fabd2f",
+      "neutral": "#d79921",
+      "faded": "#b57614"
+    },
+    "orange": {
+      "bright": "#fe8019",
+      "neutral": "#d65d0e",
+      "faded": "#af3a03"
+    },
+    "red": {
+      "bright": "#fb4934",
+      "neutral": "#cc241d",
+      "faded": "#9d0006"
+    },
+    "purple": {
+      "bright": "#d3869b",
+      "neutral": "#b16286",
+      "faded": "#8f3f71"
+    }
+  },
+  "typography": {
+    "heading": "Rajdhani",
+    "headingWeights": [
+      600,
+      700
+    ],
+    "headingSource": "https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;700&display=swap",
+    "body": "system-sans",
+    "mono": "JetBrains Mono, Fira Code, Cascadia Code, Consolas, monospace",
+    "headingCase": "uppercase",
+    "headingLetterSpacing": 0.08,
+    "labelFont": "mono",
+    "labelCase": "uppercase",
+    "labelLetterSpacing": 0.14,
+    "figures": "mono (timers, times, durations, amounts)",
+    "bundled": [
+      "Rajdhani-600.ttf",
+      "Rajdhani-700.ttf",
+      "JetBrainsMono-400.ttf",
+      "JetBrainsMono-500.ttf"
+    ]
+  },
+  "badges": {
+    "labelColor": "1c1c20",
+    "version": "e8dcc4",
+    "tech": "83a598",
+    "license": "a89984"
+  },
+  "roles": {
+    "field": "bg-hard (dark) / bg1 (light)",
+    "score": "yellow",
+    "hl": "orange"
+  },
+  "light": {
+    "name": "Leinen",
+    "usage": "opt-in via data-theme=\"light\"; token names are roles, not lightness",
+    "backgrounds": {
+      "bg-void": "#f0e9d6",
+      "bg-hard": "#e6dec6",
+      "bg0": "#f0e9d6",
+      "bg-panel": "#f7f2e4",
+      "bg1": "#fbf8ee",
+      "bg2": "#d3c8ac"
+    },
+    "foregrounds": {
+      "fg0": "#282828",
+      "fg1": "#3c3836",
+      "fg2": "#665c54",
+      "fg3": "#6a5f52"
+    },
+    "accent": "#3c3836",
+    "semantic": {
+      "blue": "#076678",
+      "blue-hover": "#05505f",
+      "aqua": "#427b58",
+      "green": "#4f5d0a",
+      "yellow": "#8a5a00",
+      "orange": "#af3a03",
+      "red": "#9d0006",
+      "purple": "#8f3f71"
+    },
+    "alternative": {
+      "name": "Sand",
+      "bg-void": "#ebe3cf",
+      "bg-panel": "#f4eedd",
+      "bg1": "#f9f5e8",
+      "bg-hard": "#e0d6bb",
+      "bg2": "#cdc1a3"
+    }
+  },
+  "shape": {
+    "chamfer": 16,
+    "chamferSmall": 10,
+    "note": "only the top-right corner is cut; no border radius; buttons are square. Web: --chamfer. Apps: KanteStyle.chamfer / chamferSmall (scaled with the platform grid unit)."
+  },
+  "app": {
+    "usage": "Qt Quick / Kirigami apps and Plasma widgets (qml/Kante). Surfaces are tints with alpha so a blurred or translucent platform ground shows through; colour only in small opaque areas.",
+    "dark": {
+      "text": "fg1",
+      "strongText": "fg0",
+      "mutedText": "#bdae93",
+      "disabledText": "fg3",
+      "ground": "bg-hard",
+      "accent": "yellow",
+      "accentText": "yellow",
+      "accentForeground": "bg-hard",
+      "positive": "aqua",
+      "neutral": "orange",
+      "negative": "red",
+      "info": "blue",
+      "tag": "purple",
+      "card": [
+        "bg1",
+        0.6
+      ],
+      "sunken": [
+        "bg-void",
+        0.5
+      ],
+      "frame": [
+        "fg1",
+        0.16
+      ],
+      "rule": [
+        "fg1",
+        0.14
+      ],
+      "dialog": [
+        "bg0",
+        0.97
+      ]
+    },
+    "light": {
+      "text": "fg1",
+      "strongText": "fg0",
+      "mutedText": "fg2",
+      "disabledText": "fg3",
+      "ground": "bg-void",
+      "accent": "#d79921",
+      "accentText": "yellow",
+      "accentForeground": "fg0",
+      "positive": "aqua",
+      "neutral": "orange",
+      "negative": "red",
+      "info": "blue",
+      "tag": "purple",
+      "card": [
+        "bg1",
+        0.7
+      ],
+      "sunken": [
+        "bg-hard",
+        0.6
+      ],
+      "frame": [
+        "fg1",
+        0.18
+      ],
+      "rule": [
+        "fg1",
+        0.14
+      ],
+      "dialog": [
+        "bg-panel",
+        0.98
+      ]
+    },
+    "notes": {
+      "mutedText": "#bdae93 is fg3 one step lighter, for secondary text on glass (4.5:1 on the darkest tint)",
+      "accent (light)": "#d79921 is yellow neutral: a button fill that works on linen; text in the accent uses accentText (#8a5a00)"
+    }
+  }
+}

@@ -1,0 +1,6 @@
+/bin/
+/build-demo/
+/kde/build*/
+/kde/po/hansei.pot
+*.test
+.hansei-tmp

@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Service
+MimeType=inode/directory;text/markdown;
+Actions=hanseiTask;
+X-KDE-Priority=TopLevel
+
+[Desktop Action hanseiTask]
+Name=Review with Hansei…
+Name[de]=Mit Hansei prüfen…
+Icon=org.shrippen.hansei
+Exec=hansei-kde %f

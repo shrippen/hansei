@@ -1,0 +1,17 @@
+{
+  "kind": "command",
+  "start": "demo/shots.sh",
+  "timeout": 300,
+  "format": "webp",
+  "themes": ["kante", "system"],
+  "shots": [
+    { "name": "review", "page": "review", "batch": "demo-secrets", "path": "IT/Dienste/Feuerschiff/Nextcloud.md", "wait": 2500 },
+    { "name": "board", "page": "board", "wait": 1500 },
+    { "name": "start", "page": "start", "wait": 1500 },
+    { "name": "task", "page": "start", "task": true, "wait": 1500 },
+    { "name": "reject", "page": "review", "batch": "demo-secrets", "path": "IT/Dienste/Feuerschiff/Invoice Ninja.md", "keys": ["R"], "wait": 1200 },
+    { "name": "done", "page": "review", "batch": "demo-switch", "keys": ["A"], "wait": 1500 },
+    { "name": "settings", "page": "settings", "wait": 1500 },
+    { "name": "tui", "manual": "The terminal UI has no offscreen renderer; take it by hand with `demo/start.sh de tui` in a 150×40 terminal." }
+  ]
+}

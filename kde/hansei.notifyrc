@@ -1,0 +1,11 @@
+[Global]
+IconName=org.shrippen.hansei
+Name=Hansei
+Comment=Hansei
+
+[Event/batchReady]
+Name=Batch ready
+Name[de]=Batch bereit
+Comment=The AI finished a batch for review
+Comment[de]=Die KI hat einen Batch zum Gegenlesen fertig
+Action=Popup

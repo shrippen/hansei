@@ -1,0 +1,11 @@
+# Hansei daemon as a user service (optional; the KDE app starts it on demand).
+#   cp contrib/hansei.service ~/.config/systemd/user/ && systemctl --user enable --now hansei
+[Unit]
+Description=Hansei: AI edits for Obsidian notes, reviewed as diffs
+
+[Service]
+ExecStart=%h/.local/bin/hansei daemon
+Restart=on-failure
+
+[Install]
+WantedBy=default.target

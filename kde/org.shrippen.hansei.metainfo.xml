@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>org.shrippen.hansei</id>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>GPL-3.0-or-later</project_license>
+  <name>Hansei</name>
+  <summary>Let an AI improve your Obsidian notes and review every change as a diff</summary>
+  <summary xml:lang="de">Obsidian-Notizen von einer KI überarbeiten lassen und jede Änderung als Diff gegenlesen</summary>
+  <description>
+    <p>Hansei proposes edits to your notes in batches by topic. You review each change side by side, accept, reject, edit or give the AI feedback, and only what you accept is written. Every write can be undone.</p>
+    <p xml:lang="de">Hansei schlägt Änderungen an deinen Notizen in Batches nach Thema vor. Du liest jede Änderung nebeneinander gegen, nimmst sie an, lehnst sie ab, bearbeitest sie oder gibst der KI Feedback; geschrieben wird nur, was du annimmst. Jeder Schreibvorgang lässt sich rückgängig machen.</p>
+  </description>
+  <launchable type="desktop-id">org.shrippen.hansei.desktop</launchable>
+  <url type="homepage">https://shrippen.github.io/hansei/</url>
+  <developer id="io.github.shrippen"><name>shrippen</name></developer>
+  <content_rating type="oars-1.1"/>
+</component>

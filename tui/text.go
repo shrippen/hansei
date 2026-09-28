@@ -1,0 +1,156 @@
+package tui
+
+import "fmt"
+
+// texts: key → {de, en}.
+var texts = map[string][2]string{
+	"more":              {"… und %d weitere", "… and %d more"},
+	"openN":             {"%d offen", "%d open"},
+	"agoMin":            {"vor %d min", "%d min ago"},
+	"agoHour":           {"vor %d Std.", "%d h ago"},
+	"agoDay":            {"vor %d Tagen", "%d days ago"},
+	"checked":           {"geprüft %s", "checked %s"},
+	"answerHint":        {"F antwortet der KI", "F answers the AI"},
+	"minutes":           {"%d min", "%d min"},
+	"conformityNow":     {"regelkonform %d %%", "conforms %d %%"},
+	"providerOK":        {"%s antwortet · %d Modelle", "%s answers · %d models"},
+	"testing":           {"Verbindung wird getestet …", "Testing the connection …"},
+	"template1":         {"Ersetze alte Hostnamen durch die neuen", "Replace old host names with the new ones"},
+	"template2":         {"Ergänze die fehlenden Frontmatter-Felder", "Add the missing frontmatter fields"},
+	"template3":         {"Verschiebe Passwörter nach Vaultwarden und verlinke den Eintrag", "Move passwords to Vaultwarden and link the entry"},
+	"openBatch":         {"Batch öffnen", "open batch"},
+	"details":           {"Details", "details"},
+	"progress":          {"Dateien %d/%d · Änderungen %d/%d", "files %d/%d · changes %d/%d"},
+	"findOnly":          {"Nur suchen", "Only find"},
+	"templates":         {"Vorlagen", "templates"},
+	"findNotes":         {"Notizen suchen", "Find notes"},
+	"tab.start":         {"Start", "Start"},
+	"tab.review":        {"Strecke", "Review"},
+	"tab.board":         {"Werkbank", "Workbench"},
+	"tab.journal":       {"Journal", "Journal"},
+	"tab.settings":      {"Einstellungen", "Settings"},
+	"batches":           {"Batches", "Batches"},
+	"feedback":          {"Feedback an die KI", "Feedback to the AI"},
+	"noBatches":         {"Keine offenen Batches. n: neuer Auftrag, s: Befunde auf der Startseite.", "No open batches. n: new task, s: findings on the start page."},
+	"noFile":            {"Keine Datei gewählt.", "No file selected."},
+	"hunk":              {"Hunk %d/%d", "Hunk %d/%d"},
+	"version":           {"v%d von %d", "v%d of %d"},
+	"stale":             {"Notiz wurde seit dem Vorschlag geändert", "Note changed since the proposal"},
+	"gap":               {"⋯ %d unveränderte Zeilen", "⋯ %d unchanged lines"},
+	"state.pending":     {"offen", "open"},
+	"state.accepted":    {"angenommen", "accepted"},
+	"state.rejected":    {"abgelehnt", "rejected"},
+	"file.applied":      {"geschrieben", "written"},
+	"file.skipped":      {"übersprungen", "skipped"},
+	"file.undone":       {"zurückgesetzt", "reverted"},
+	"file.stale":        {"geändert", "changed"},
+	"col.findings":      {"Befunde", "Findings"},
+	"col.working":       {"KI arbeitet", "AI working"},
+	"col.review":        {"Zum Review", "To review"},
+	"col.feedback":      {"Feedback offen", "Feedback open"},
+	"col.done":          {"Übernommen", "Done"},
+	"col.failed":        {"Fehlgeschlagen", "Failed"},
+	"cards":             {"%d Karten", "%d cards"},
+	"files":             {"%d Dateien", "%d files"},
+	"files1":            {"%d Datei", "%d file"},
+	"hunks1":            {"%d Hunk", "%d hunk"},
+	"waitingN1":         {"%d Batch · %d Hunks", "%d batch · %d hunks"},
+	"streakN1":          {"%d Tag", "%d day"},
+	"questions1":        {"%d Rückfrage der KI", "%d question from the AI"},
+	"hunks":             {"%d Hunks", "%d hunks"},
+	"questions":         {"%d Rückfragen der KI", "%d questions from the AI"},
+	"revising":          {"v%d wird erstellt …", "creating v%d …"},
+	"conformity":        {"Regelkonform", "Conforms to rules"},
+	"thisWeek":          {"%+d diese Woche", "%+d this week"},
+	"waiting":           {"Wartet auf dich", "Waiting for you"},
+	"waitingN":          {"%d Batches · %d Hunks", "%d batches · %d hunks"},
+	"streak":            {"Serie", "Streak"},
+	"streakN":           {"%d Tage in Folge", "%d days in a row"},
+	"today":             {"heute %d Hunks", "today %d hunks"},
+	"findings":          {"Befunde aus Prüfregeln · ohne KI", "Findings from checks · no AI"},
+	"noFindings":        {"Keine Befunde. Alles regelkonform.", "No findings. Everything conforms."},
+	"inReview":          {"im Review", "in review"},
+	"newTask":           {"Neuer Auftrag", "New task"},
+	"taskHint":          {"Was soll sich ändern? Ein Satz reicht.", "What should change? One sentence is enough."},
+	"scope":             {"Reichweite", "Scope"},
+	"scopeHint":         {"Ordner, durch Komma getrennt (leer: alle freigegebenen)", "folders, comma separated (empty: all allowed)"},
+	"provider":          {"Anbieter", "Provider"},
+	"rulebook":          {"Regelwerk", "Rulebook"},
+	"estimate":          {"≈ %d k Tokens", "≈ %d k tokens"},
+	"estimateCost":      {"ca. %.2f %s", "about %.2f %s"},
+	"localBlocked":      {"%d Notizen nur für lokale Modelle", "%d notes for local models only"},
+	"createBatch":       {"Batch erstellen", "Create batch"},
+	"prompt.fb":         {"Feedback zu %s", "Feedback on %s"},
+	"prompt.reason":     {"Warum ablehnen? optional, hilft der KI", "Why reject? optional, helps the AI"},
+	"prompt.key":        {"API-Schlüssel für %s (wird im Schlüsselbund gespeichert)", "API key for %s (stored in the keyring)"},
+	"scope.hunk":        {"Hunk", "hunk"},
+	"scope.file":        {"Datei", "file"},
+	"scope.batch":       {"Batch", "batch"},
+	"quick":             {"Schnell: 1 Fakt falsch · 2 zu ausführlich · 3 passt nicht zum Regelwerk · 4 Rückfrage", "Quick: 1 wrong fact · 2 too long · 3 against the rulebook · 4 question"},
+	"quick.1":           {"Fakt falsch", "Wrong fact"},
+	"quick.2":           {"Zu ausführlich", "Too long"},
+	"quick.3":           {"Passt nicht zum Regelwerk", "Against the rulebook"},
+	"quick.4":           {"Rückfrage", "Question"},
+	"remember":          {"als Regel merken", "remember as rule"},
+	"regen":             {"und neu vorschlagen", "and propose again"},
+	"you":               {"du", "you"},
+	"ai":                {"ki", "ai"},
+	"aiWriting":         {"KI schreibt …", "AI is writing …"},
+	"suggestion":        {"Regel-Vorschlag: %s  (y übernehmen · Y verwerfen)", "Rule suggestion: %s  (y accept · Y dismiss)"},
+	"doneTitle":         {"Batch abgeschlossen", "Batch finished"},
+	"doneStats":         {"%d Dateien · %d angenommen · %d abgelehnt · %d Feedback-Runden", "%d files · %d accepted · %d rejected · %d feedback rounds"},
+	"doneKeys":          {"Enter nächster Batch · u rückgängig · Esc schließen", "Enter next batch · u undo · Esc close"},
+	"journalEmpty":      {"Noch nichts geschrieben.", "Nothing written yet."},
+	"undoneMark":        {"zurückgesetzt", "reverted"},
+	"newMark":           {"neu", "new"},
+	"folders":           {"Ordner", "Folders"},
+	"allowed":           {"freigegeben", "allowed"},
+	"blocked":           {"gesperrt", "blocked"},
+	"localOnly":         {"nur lokal", "local only"},
+	"providers":         {"KI-Anbieter", "AI providers"},
+	"hasKey":            {"Schlüssel vorhanden", "key stored"},
+	"noKey":             {"kein Schlüssel", "no key"},
+	"default":           {"Standard", "default"},
+	"style":             {"Stil", "Style"},
+	"style.system":      {"System", "System"},
+	"style.kante-light": {"Kante Light", "Kante Light"},
+	"style.kante":       {"Kante", "Kante"},
+	"styleNote":         {"System nutzt die Terminalfarben (Standard). Kante ist opt-in.", "System uses the terminal colours (default). Kante is opt-in."},
+	"revealOn":          {"Geheimnisse sichtbar – z verbirgt sie wieder", "Secrets visible – z hides them again"},
+	"cost":              {"%d k Tokens", "%d k tokens"},
+	"working":           {"arbeitet: %s", "working: %s"},
+	"compare":           {"Änderung v%d → v%d  (Esc schließen)", "Change v%d → v%d  (Esc close)"},
+	"keys.review":       {"a annehmen · r ablehnen · e $EDITOR · f Feedback · j/k Änderung · J/K Datei · A/X ganze Datei · i Regel · v Version · V Vergleich · m Ansicht · R neu · u zurück · Maus: Klick wählt · ? Hilfe", "a accept · r reject · e $EDITOR · f feedback · j/k change · J/K file · A/X whole file · i rule · v version · V compare · m layout · R again · u undo · mouse: click selects · ? help"},
+	"keys.board":        {"h/l Spalte · j/k Karte · Enter öffnen · b Batch aus Befund · d verwerfen · c abbrechen · w Strecke", "h/l column · j/k card · Enter open · b batch from finding · d discard · c cancel · w review"},
+	"keys.start":        {"Enter Batch erstellen/öffnen · Leertaste Befunde zeigen · n neuer Auftrag · w Werkbank · Tab Strecke · o Journal · , Einstellungen · q beenden", "Enter create/open batch · space show findings · n new task · w workbench · Tab review · o journal · , settings · q quit"},
+	"keys.journal":      {"j/k wählen · Enter Änderung zeigen · u rückgängig · U Batch rückgängig · b in der Strecke öffnen · Esc zurück", "j/k select · Enter show change · u undo · U undo batch · b open in review · Esc back"},
+	"keys.settings":     {"j/k wählen · Leertaste freigeben · b sperren · l nur lokal · Enter Standard-Anbieter · K Schlüssel · c Verbindung testen · t Stil · Esc zurück", "j/k select · space allow · b block · l local only · Enter default provider · K key · c test connection · t style · Esc back"},
+	"keys.task":         {"Tab Feld wechseln · Strg+P Anbieter · Strg+F nur suchen · Strg+T Vorlage · Strg+S starten · Esc abbrechen", "Tab next field · Ctrl+P provider · Ctrl+F only find · Ctrl+T template · Ctrl+S start · Esc cancel"},
+	"keys.input":        {"Enter senden · Tab Reichweite · Strg+R Regel merken · 1–4 Schnellgrund · Esc abbrechen", "Enter send · Tab scope · Ctrl+R remember rule · 1–4 quick reason · Esc cancel"},
+	"keys.reason":       {"Enter ablehnen · Tab + neu vorschlagen · 1–4 Schnellgrund · Esc abbrechen", "Enter reject · Tab + propose again · 1–4 quick reason · Esc cancel"},
+	"help":              {"Hilfe", "Help"},
+	"quit":              {"q beenden", "q quit"},
+}
+
+// n picks the singular text (key+"1") when the first number is 1.
+func (m *Model) n(key string, count int, args ...any) string {
+	if _, ok := texts[key+"1"]; ok && count == 1 {
+		key += "1"
+	}
+	return m.t(key, append([]any{count}, args...)...)
+}
+
+func (m *Model) t(key string, args ...any) string {
+	pair, ok := texts[key]
+	if !ok {
+		return key
+	}
+	s := pair[1]
+	if m.lang == "de" {
+		s = pair[0]
+	}
+	if len(args) == 0 {
+		return s
+	}
+	return fmt.Sprintf(s, args...)
+}

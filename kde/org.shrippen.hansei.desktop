@@ -1,0 +1,15 @@
+[Desktop Entry]
+Type=Application
+Name=Hansei
+Name[de]=Hansei
+GenericName=AI edits for Obsidian notes, reviewed as diffs
+GenericName[de]=KI-Überarbeitung für Obsidian-Notizen, als Diff gegengelesen
+Comment=Let an AI improve your notes in topic batches and review every change
+Comment[de]=Notizen von einer KI in Themen-Batches überarbeiten lassen und jede Änderung gegenlesen
+Exec=hansei-kde %u
+Icon=org.shrippen.hansei
+Terminal=false
+Categories=Qt;KDE;Office;TextTools;
+Keywords=obsidian;markdown;diff;review;ai;documentation;
+Keywords[de]=obsidian;markdown;diff;review;ki;doku;dokumentation;
+StartupWMClass=hansei-kde

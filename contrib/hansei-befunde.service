@@ -1,0 +1,8 @@
+# Optional scheduled run: turns rule findings into an AI batch each night (Reviergang).
+# Adjust the task text; the result waits in the review line, nothing is written without you.
+[Unit]
+Description=Hansei nightly round
+
+[Service]
+Type=oneshot
+ExecStart=%h/.local/bin/hansei auftrag --wait --in IT "Prüfe die Befunde der Prüfregeln und schlage Korrekturen vor, höchstens 10 Notizen."

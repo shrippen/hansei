@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+  <!-- Hansei: a sheet with Kante's cut corner, old and new side by side, one accepted line. -->
+  <path d="M3 2h14l4 4v16H3z" fill="#282828"/>
+  <path d="M11.5 5v14" stroke="#504945" stroke-width="1"/>
+  <g fill="#e8dcc4">
+    <rect x="5" y="6" width="5" height="1.4" rx="0.7"/>
+    <rect x="5" y="9" width="4" height="1.4" rx="0.7"/>
+    <rect x="5" y="15" width="5" height="1.4" rx="0.7"/>
+    <rect x="13" y="6" width="5" height="1.4" rx="0.7"/>
+    <rect x="13" y="15" width="4" height="1.4" rx="0.7"/>
+  </g>
+  <rect x="5" y="12" width="4.5" height="1.4" rx="0.7" fill="#fb4934"/>
+  <rect x="13" y="12" width="6" height="1.4" rx="0.7" fill="#fabd2f"/>
+</svg>
