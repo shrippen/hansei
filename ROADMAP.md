@@ -31,6 +31,11 @@ Konzept und Entwürfe: Artifact „Hansei“ (Konzeptstudie, 27.09.2026). Entsch
 
 - **andon:** Quelle „Obsidian/Hansei“ in andon, die die Statusnotiz und das Frontmatter aus dem
   `ObsidianPrivat`-Repo liest (Widget „Batches warten“, Abgleich Doku ↔ Snipe-IT/Compose). Gehört ins andon-Repo.
+- **Compose → Doku:** Hansei erzeugt aus den `compose.yaml` der Repos `docker-compose-eredin`, `-regis` und
+  `-ploetze` je Dienst eine Notiz im Tresor (Image und Version, Ports, Volumes, Netzwerke, `depends_on`, Host)
+  und legt sie als Batch zur Review vor. Nur Hansei schreibt; die Compose-Repos werden nur gelesen. Von Hand
+  gepflegte Abschnitte bleiben erhalten (Marker). Ein neuer Image-Tag, etwa durch Renovate, erzeugt einen neuen
+  Batch. Gegenstück in andon: Abgleich Doku ↔ Compose, nur lesend.
 - **KRunner:** „Hansei: Auftrag …“ direkt aus KRunner.
 - **Landing Page:** `docs/index.html` nach Kante-Vorlage, Screenshots über `demo/shots.json`.
 - **Server/Web:** `hansei serve` (HTTP + WebSocket über dasselbe Protokoll) und eine Web-Oberfläche.
