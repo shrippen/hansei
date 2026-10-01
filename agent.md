@@ -38,6 +38,31 @@ Rule 7: Use the body to explain what and why vs. how. Assume the code explains t
 
 - If the prompt indicates that a bug is being fixed, don't write the fix right away. First write the test. Observe it failing. Then write the fix. And observe the test passing.
 
+## GUI rule
+
+- Every GUI of this project is generated from Kante, not inspired by it: landing pages,
+  web apps, Qt Quick / Kirigami apps, Plasma widgets, dialogs, e-mail and print layouts.
+  Source: https://github.com/shrippen/shrippen.github.io (`kante/`).
+  Web: link `https://shrippen.github.io/v1/shrippen.css` and `shrippen.js`, or vendor them
+  unchanged. Apps: copy `kante/qml/Kante` (and `KantePlasma` for Plasma widgets) unchanged.
+- Use Kante's tokens, roles, components, classes, QML components and motion as they are.
+  No own colours, fonts, sizes, radii, cuts, shadows, animation timings, no own copy or
+  variant of a component that Kante has. Raw values (`#hex`, `px` for controls) are a bug;
+  use roles (`--primary`, `--focus`, `--warn`, `KanteStyle.*`).
+- A missing element is added to Kante first (CSS or QML, docs, catalogue), then used here.
+  Never solve it locally in this project and never wait with a "temporary" copy.
+- Exception: Kimai plugins take their GUI from Knust (`shrippen/kimai-knust-bundle`), the
+  Kante spinoff that adapts Kante to Kimai's look. The same rule applies to Knust: use it
+  as it is, and add missing elements to Knust.
+- Exception: Kintsugi (`shrippen/kintsugi`) uses Kante Gold (`<html data-kante="gold">`),
+  the noble variant defined in Kante itself. The same rule applies: use it as it is, and
+  add a missing element or Gold detail to Kante (its Gold block) first. No other project
+  uses Kante Gold without a decision recorded here.
+- A project without a GUI (library, CLI, scripts) has nothing to do here.
+- Hansei: the KDE app vendors `kde/qml/Kante` and the TUI `tui/kante/palette.json` via
+  `scripts/sync-kante.sh`. System is the default style; Kante and Kante Light are opt-in.
+  The landing page `docs/index.html` links `shrippen.css` and `shrippen.js`.
+
 ## Andon – Projekt-Wissen
 
 ## Zweck

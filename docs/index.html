@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Hansei — review every AI edit to your notes</title>
+<meta name="description" content="An AI proposes edits to your Obsidian notes in batches; you review every change as a diff, and only what you accept is written. KDE app, terminal UI and scripts.">
+<meta property="og:title" content="Hansei — review every AI edit to your notes">
+<meta property="og:description" content="An AI proposes edits to your Obsidian notes in batches; you review every change as a diff, and only what you accept is written.">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<!-- Umami tracker: mandatory on every landing page, same tag and ID everywhere, do not change -->
+<script defer src="https://um.arianw.de/script.js" data-website-id="056d39ee-6a9d-4b14-9902-5a1ac399df08"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://shrippen.github.io/v1/shrippen.css">
+<script src="https://shrippen.github.io/v1/shrippen.js"></script>
+<!-- Assets live next to this file. Screenshots come from demo/shots.json (Kante style, demo "Studio Weber"). -->
+</head>
+<body>
+
+<nav class="nav"><div class="nav-inner">
+  <a class="nav-brand" href="#"><img src="icon.svg" alt="">Hansei</a>
+  <div class="nav-links">
+    <a href="#features"><span lang="en">Features</span><span lang="de">Funktionen</span></a>
+    <a href="https://git.arianw.de/shrippen/hansei/src/branch/main/ROADMAP.md">Roadmap</a>
+    <a class="nav-hl" href="https://git.arianw.de/shrippen/hansei">Gitea</a>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-lang="en" aria-pressed="true">EN</button>
+      <button type="button" data-lang="de" aria-pressed="false">DE</button>
+    </div>
+  </div>
+</div></nav>
+
+<header class="hero">
+  <img class="hero-wm" src="icon-mono.svg" alt="" aria-hidden="true">
+  <div class="hero-main">
+    <h1>Han<br class="split">sei</h1>
+    <p class="tagline" lang="en">反省, reflection. An AI proposes edits to your Obsidian notes in batches by topic; you review every change as a diff, give feedback, and only what you accept is written. Every write can be undone.</p>
+    <p class="tagline" lang="de">反省, Reflexion. Eine KI schlägt Änderungen an deinen Obsidian-Notizen vor, gebündelt nach Thema; du prüfst jede als Diff, gibst Feedback, und nur was du annimmst, wird geschrieben. Jeder Schreibvorgang lässt sich rückgängig machen.</p>
+  </div>
+
+  <div class="hero-side">
+    <div class="install-card">
+      <label>Installation</label>
+      <div class="cmd-row">
+        <div class="cmd-box">make build &amp;&amp; make kde</div>
+        <button class="copy-btn" type="button" title="Copy" aria-label="Copy">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+        </button>
+      </div>
+      <p class="install-note" lang="en">Go 1.26+, Qt 6.6+, KDE Frameworks 6.8+. Then <code>hansei init --vault ~/Obsidian/Vault --allow IT</code>.</p>
+      <p class="install-note" lang="de">Go 1.26+, Qt 6.6+, KDE Frameworks 6.8+. Danach <code>hansei init --vault ~/Obsidian/Vault --allow IT</code>.</p>
+      <div class="install-links">
+        <a class="btn btn-primary" href="https://git.arianw.de/shrippen/hansei"><span lang="en">Source</span><span lang="de">Quelltext</span></a>
+        <a class="btn btn-ghost" href="https://git.arianw.de/shrippen/hansei/src/branch/main/README.md">README</a>
+      </div>
+    </div>
+
+    <div class="hero-shot">
+      <img src="review.webp" alt="Hansei review line: batches, a side-by-side diff with masked secrets, the conversation with the AI">
+    </div>
+  </div>
+</header>
+
+<main>
+<div class="section"><div class="callout callout-warn"><span lang="en"><strong>Note:</strong> built with AI assistance and still young. Review the diffs it shows you; that is the point.</span><span lang="de"><strong>Hinweis:</strong> mit KI-Unterstützung entstanden und noch jung. Prüf die Diffs, die es dir zeigt; genau dafür ist es da.</span></div></div>
+
+<section class="features" id="features">
+  <div class="feat" data-tier="yellow">
+    <span class="feat-tag"><span lang="en">Review line</span><span lang="de">Prüfzeile</span></span>
+    <h3 lang="en">Every change as a diff</h3><h3 lang="de">Jede Änderung als Diff</h3>
+    <p lang="en">Batches on the left, old and new side by side, the conversation with the AI on the right. Accept, reject, edit or give feedback per change, per file or per batch. Keyboard first.</p>
+    <p lang="de">Batches links, alt und neu nebeneinander, das Gespräch mit der KI rechts. Annehmen, ablehnen, bearbeiten oder Feedback geben, pro Änderung, Datei oder Batch. Tastatur zuerst.</p>
+  </div>
+  <div class="feat" data-tier="red">
+    <span class="feat-tag"><span lang="en">Boundaries</span><span lang="de">Grenzen</span></span>
+    <h3 lang="en">Only allowed folders</h3><h3 lang="de">Nur erlaubte Ordner</h3>
+    <p lang="en">Blocked folders are never read, not even for the index. Secrets are replaced by placeholders before anything leaves the machine, and masked in the diff.</p>
+    <p lang="de">Gesperrte Ordner werden nie gelesen, auch nicht für den Index. Geheimnisse werden durch Platzhalter ersetzt, bevor etwas den Rechner verlässt, und im Diff maskiert.</p>
+  </div>
+  <div class="feat" data-tier="blue">
+    <span class="feat-tag"><span lang="en">Checks without AI</span><span lang="de">Prüfungen ohne KI</span></span>
+    <h3 lang="en">Findings first</h3><h3 lang="de">Erst die Befunde</h3>
+    <p lang="en">Plain-text secrets, old code names, required frontmatter, old review dates, dead wikilinks, compose copies. Code names with a known replacement are fixed without AI.</p>
+    <p lang="de">Geheimnisse im Klartext, alte Codenamen, Pflicht-Frontmatter, alte Prüfdaten, tote Wikilinks, Compose-Kopien. Codenamen mit bekanntem Ersatz werden ohne KI behoben.</p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="showcase">
+    <div class="showcase-text">
+      <span class="showcase-tag"><span lang="en">Workbench</span><span lang="de">Werkbank</span></span>
+      <h2 lang="en">From finding to done</h2><h2 lang="de">Vom Befund bis erledigt</h2>
+      <p lang="en">The same batches as a board: findings, AI working, to review, feedback open, done. Repeated feedback becomes a rulebook suggestion.</p>
+      <p lang="de">Dieselben Batches als Board: Befunde, KI arbeitet, zu prüfen, Feedback offen, erledigt. Wiederholtes Feedback wird zum Vorschlag fürs Regelbuch.</p>
+    </div>
+    <figure><img src="board.webp" alt="Hansei workbench with five columns"></figure>
+  </div>
+</section>
+
+<section class="section">
+  <h2 lang="en">How it works</h2><h2 lang="de">So funktioniert es</h2>
+  <div class="flow">
+    <div class="flow-node"><b>hansei-kde · TUI · <span lang="en">scripts</span><span lang="de">Skripte</span></b><span lang="en">KDE app (Kirigami), terminal UI, andon</span><span lang="de">KDE-App (Kirigami), Terminal-UI, andon</span></div>
+    <div class="flow-arrow" aria-hidden="true"></div>
+    <div class="flow-node"><b>core/service</b><span>JSON-RPC 2.0, Unix socket</span></div>
+    <div class="flow-arrow" aria-hidden="true"></div>
+    <div class="flow-node"><b><span lang="en">vault · batches · rules · agent</span><span lang="de">Tresor · Batches · Regeln · Agent</span></b><span lang="en">journal for undo; Claude or any OpenAI-compatible endpoint</span><span lang="de">Journal zum Rückgängigmachen; Claude oder jeder OpenAI-kompatible Endpunkt</span></div>
+  </div>
+</section>
+
+<section class="section">
+  <h2 lang="en">Prerequisites</h2><h2 lang="de">Voraussetzungen</h2>
+  <ul lang="en"><li>Linux with KDE Plasma 6 for the app; the terminal UI runs anywhere Go runs</li><li>An Obsidian vault (any folder of Markdown notes)</li><li>A Claude API key, or a local model through Ollama or LM Studio</li></ul>
+  <ul lang="de"><li>Linux mit KDE Plasma 6 für die App; die Terminal-UI läuft überall, wo Go läuft</li><li>Ein Obsidian-Tresor (jeder Ordner mit Markdown-Notizen)</li><li>Ein Claude-API-Key oder ein lokales Modell über Ollama oder LM Studio</li></ul>
+</section>
+</main>
+
+<footer class="foot">
+  <div class="foot-inner">
+    <div class="foot-brand">
+      <img src="icon.svg" alt="">
+      <div><span class="foot-name">Hansei</span>
+        <span class="foot-tag"><span lang="en">Review every AI edit to your notes</span><span lang="de">Jede KI-Änderung an deinen Notizen prüfen</span></span></div>
+    </div>
+    <nav class="foot-cols" aria-label="Footer">
+      <div><h4><span lang="en">Project</span><span lang="de">Projekt</span></h4>
+        <a href="#features"><span lang="en">Features</span><span lang="de">Funktionen</span></a>
+        <a href="https://git.arianw.de/shrippen/hansei/src/branch/main/ROADMAP.md">Roadmap</a></div>
+      <div><h4><span lang="en">Source</span><span lang="de">Quelltext</span></h4>
+        <a href="https://git.arianw.de/shrippen/hansei">Gitea</a><a href="https://git.arianw.de/shrippen/hansei/issues">Issues</a></div>
+    </nav>
+  </div>
+  <div class="foot-meta"><p>shrippen · Kante</p></div>
+</footer>
+
+</body>
+</html>

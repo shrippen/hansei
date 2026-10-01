@@ -113,10 +113,8 @@ Kirigami.Dialog {
             spacing: Kirigami.Units.smallSpacing
             Repeater {
                 model: dialog.templates
-                delegate: Chip {
+                delegate: KanteChip {
                     required property string modelData
-                    interactive: true
-                    checkable: false
                     text: modelData
                     onClicked: { taskText.text = modelData; taskText.forceActiveFocus() }
                 }
@@ -125,7 +123,7 @@ Kirigami.Dialog {
 
         RowLayout {
             Layout.fillWidth: true
-            SectionLabel { text: i18n("Scope"); Layout.fillWidth: true }
+            KanteSectionLabel { text: i18n("Scope"); Layout.fillWidth: true }
             QQC2.Label {
                 text: dialog.scope.length === 0 ? i18n("all allowed folders") : i18np("one folder", "%1 folders", dialog.scope.length)
                 color: KanteStyle.mutedTextColor
@@ -140,12 +138,10 @@ Kirigami.Dialog {
             spacing: Kirigami.Units.smallSpacing
             Repeater {
                 model: dialog.scope
-                delegate: Chip {
+                delegate: KanteChip {
                     required property string modelData
-                    interactive: true
-                    checkable: false
                     text: modelData + "  ✕"
-                    tone: KanteStyle.tagColor
+                    chipColor: KanteStyle.tagColor
                     onClicked: dialog.toggle(modelData)
                 }
             }
@@ -190,7 +186,7 @@ Kirigami.Dialog {
 
         RowLayout {
             Layout.fillWidth: true
-            SectionLabel { text: i18n("Provider") }
+            KanteSectionLabel { text: i18n("Provider") }
             QQC2.ComboBox {
                 model: dialog.store.providers.map(p => p.name + " · " + p.model)
                 currentIndex: Math.max(0, dialog.store.providers.findIndex(p => p.name === dialog.provider))

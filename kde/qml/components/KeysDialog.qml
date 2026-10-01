@@ -42,7 +42,7 @@ Kirigami.Dialog {
                 Layout.fillWidth: true
                 Layout.preferredWidth: Kirigami.Units.gridUnit * 15
                 spacing: Kirigami.Units.smallSpacing
-                SectionLabel { text: modelData[0]; Layout.topMargin: Kirigami.Units.smallSpacing }
+                KanteSectionLabel { text: modelData[0]; Layout.topMargin: Kirigami.Units.smallSpacing }
                 Repeater {
                     model: modelData[1]
                     delegate: RowLayout {

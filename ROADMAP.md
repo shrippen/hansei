@@ -26,12 +26,12 @@ Konzept und Entwürfe: Artifact „Hansei“ (Konzeptstudie, 27.09.2026). Entsch
 | 02 KI | Anbieter-Schicht, Geheimnis-Filter, Werkzeuge, Regelwerk pro Ordner, Aufträge, Rückfragen, Feedback-Runden, Kostenschätzung | ✓ |
 | 03 Prüfregeln | Secrets, Codenamen, Pflicht-Frontmatter, Prüfdatum, tote Links, Compose-Kopien; Befund → Batch; Quote, Serie, Abschluss-Moment | ✓ |
 | 04 Automatisierung | `hansei auftrag`, systemd-Timer (`contrib/`), Statusnotiz für andon (`status_note`) | ✓ Hansei-Seite |
+| 05 Oberfläche | Kante 1.10: eigene Chips, Sparkline, Fortschrittsstreifen und Abschnittslabels durch Kante ersetzt, Gespräch als `KanteMessage`; Landing Page `docs/index.html` nach Kante-Vorlage | ✓ |
 
 ## Offen
 
 - **andon:** Quelle „Obsidian/Hansei“ in andon, die die Statusnotiz und das Frontmatter aus dem
   `ObsidianPrivat`-Repo liest (Widget „Batches warten“, Abgleich Doku ↔ Snipe-IT/Compose). Gehört ins andon-Repo.
 - **KRunner:** „Hansei: Auftrag …“ direkt aus KRunner.
-- **Landing Page:** `docs/index.html` nach Kante-Vorlage, Screenshots über `demo/shots.json`.
 - **Server/Web:** `hansei serve` (HTTP + WebSocket über dasselbe Protokoll) und eine Web-Oberfläche.
 - **Mehrbenutzer:** nicht geplant, solange der Tresor persönlich ist.

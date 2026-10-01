@@ -134,7 +134,7 @@ Kirigami.ScrollablePage {
                 }
                 RowLayout {
                     Layout.fillWidth: true
-                    SectionLabel {
+                    KanteSectionLabel {
                         text: group.modelData.title || i18n("Batch")
                         Layout.fillWidth: true
                     }
@@ -185,8 +185,8 @@ Kirigami.ScrollablePage {
                                 }
                                 QQC2.Label { text: "+" + entry.modelData.added; color: KanteStyle.positiveTextColor; font: KanteStyle.monoFont(Kirigami.Theme.smallFont.pointSize) }
                                 QQC2.Label { text: "−" + entry.modelData.removed; color: KanteStyle.negativeTextColor; font: KanteStyle.monoFont(Kirigami.Theme.smallFont.pointSize) }
-                                Chip { visible: entry.modelData.new; text: i18n("new"); tone: KanteStyle.infoColor }
-                                Chip { visible: entry.modelData.undone; text: i18n("reverted"); tone: KanteStyle.mutedTextColor }
+                                KanteChip { visible: entry.modelData.new; text: i18n("new"); chipColor: KanteStyle.infoColor; interactive: false }
+                                KanteChip { visible: entry.modelData.undone; text: i18n("reverted"); chipColor: KanteStyle.mutedTextColor; interactive: false }
                                 KanteButton {
                                     visible: !entry.modelData.undone
                                     text: i18n("Undo")

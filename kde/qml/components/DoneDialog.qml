@@ -59,7 +59,7 @@ Kirigami.Dialog {
                         text: modelData[0]
                         font: KanteStyle.monoFont(Kirigami.Theme.defaultFont.pointSize * 1.8, true)
                     }
-                    SectionLabel { text: modelData[1] }
+                    KanteSectionLabel { text: modelData[1] }
                 }
             }
         }
@@ -94,7 +94,7 @@ Kirigami.Dialog {
                 return parts.join(" · ")
             }
         }
-        SectionLabel {
+        KanteSectionLabel {
             visible: dialog.nextBatch !== null
             text: i18n("Next")
         }

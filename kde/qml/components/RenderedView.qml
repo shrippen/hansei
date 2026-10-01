@@ -163,7 +163,7 @@ Item {
             width: note.width - Kirigami.Units.gridUnit * 2
             spacing: Kirigami.Units.largeSpacing
 
-            SectionLabel { visible: note.label !== ""; text: note.label }
+            KanteSectionLabel { visible: note.label !== ""; text: note.label }
 
             // Source view: every line, changed ones marked at the margin.
             Repeater {

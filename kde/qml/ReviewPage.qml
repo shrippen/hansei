@@ -461,7 +461,7 @@ Kirigami.Page {
                             implicitWidth: Kirigami.Units.iconSizes.small
                             implicitHeight: Kirigami.Units.iconSizes.small
                         }
-                        SectionLabel {
+                        KanteSectionLabel {
                             text: i18np("The AI has a question", "The AI has %1 questions", page.questions.length)
                             color: KanteStyle.neutralTextColor
                             Layout.fillWidth: true
@@ -898,7 +898,7 @@ Kirigami.Page {
         }
         ColumnLayout {
             id: ruleForm
-            SectionLabel { text: ruleDialog.section ? ruleDialog.section.file : "" }
+            KanteSectionLabel { text: ruleDialog.section ? ruleDialog.section.file : "" }
             QQC2.Label {
                 Layout.fillWidth: true
                 text: ruleDialog.section ? ruleDialog.section.text : ""

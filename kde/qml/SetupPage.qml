@@ -76,7 +76,7 @@ Kirigami.ScrollablePage {
             Layout.maximumWidth: Kirigami.Units.gridUnit * 40
         }
 
-        SectionLabel { text: i18n("Vault") }
+        KanteSectionLabel { text: i18n("Vault") }
         RowLayout {
             Layout.fillWidth: true
             Layout.maximumWidth: Kirigami.Units.gridUnit * 40
@@ -94,7 +94,7 @@ Kirigami.ScrollablePage {
             }
         }
 
-        SectionLabel {
+        KanteSectionLabel {
             visible: folders.count > 0
             text: i18n("Folders")
             Layout.topMargin: Kirigami.Units.largeSpacing
@@ -110,8 +110,8 @@ Kirigami.ScrollablePage {
                 RowLayout {
                     Layout.fillWidth: true
                     Item { Layout.fillWidth: true }
-                    SectionLabel { text: i18n("Allowed"); horizontalAlignment: Text.AlignHCenter; Layout.preferredWidth: Kirigami.Units.gridUnit * 6 }
-                    SectionLabel { text: i18n("Blocked"); horizontalAlignment: Text.AlignHCenter; Layout.preferredWidth: Kirigami.Units.gridUnit * 6 }
+                    KanteSectionLabel { text: i18n("Allowed"); horizontalAlignment: Text.AlignHCenter; Layout.preferredWidth: Kirigami.Units.gridUnit * 6 }
+                    KanteSectionLabel { text: i18n("Blocked"); horizontalAlignment: Text.AlignHCenter; Layout.preferredWidth: Kirigami.Units.gridUnit * 6 }
                 }
                 Repeater {
                     model: folders
@@ -124,10 +124,11 @@ Kirigami.ScrollablePage {
                             Layout.fillWidth: true
                             leftPadding: Kirigami.Units.smallSpacing
                         }
-                        Chip {
+                        KanteChip {
+                            interactive: false
                             visible: page.isPrivate(fileName)
                             text: i18n("sounds private")
-                            tone: KanteStyle.neutralTextColor
+                            chipColor: KanteStyle.neutralTextColor
                         }
                         Item {
                             implicitWidth: Kirigami.Units.gridUnit * 6

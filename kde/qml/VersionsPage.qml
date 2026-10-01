@@ -67,7 +67,7 @@ Kirigami.Page {
             QQC2.SplitView.minimumWidth: Kirigami.Units.gridUnit * 14
             spacing: Kirigami.Units.smallSpacing
 
-            SectionLabel { text: i18n("Versions"); Layout.margins: Kirigami.Units.largeSpacing; Layout.bottomMargin: 0 }
+            KanteSectionLabel { text: i18n("Versions"); Layout.margins: Kirigami.Units.largeSpacing; Layout.bottomMargin: 0 }
             // Click a version to see what it changed against the one before.
             Repeater {
                 model: page.versions
@@ -95,10 +95,11 @@ Kirigami.Page {
                             elide: Text.ElideRight
                             Layout.fillWidth: true
                         }
-                        Chip {
+                        KanteChip {
+                            interactive: false
                             visible: page.file && ver.modelData.n === page.file.current
                             text: i18n("in use")
-                            tone: ver.highlighted ? KanteStyle.accentForegroundColor : KanteStyle.positiveTextColor
+                            chipColor: ver.highlighted ? KanteStyle.accentForegroundColor : KanteStyle.positiveTextColor
                         }
                         KanteToolButton {
                             visible: page.file && ver.modelData.n > 0 && ver.modelData.n !== page.file.current
@@ -112,7 +113,7 @@ Kirigami.Page {
                 }
             }
 
-            SectionLabel { text: i18n("Rounds about this change"); Layout.margins: Kirigami.Units.largeSpacing; Layout.bottomMargin: 0 }
+            KanteSectionLabel { text: i18n("Rounds about this change"); Layout.margins: Kirigami.Units.largeSpacing; Layout.bottomMargin: 0 }
             ListView {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
@@ -128,11 +129,12 @@ Kirigami.Page {
                     background: Surface { fill: modelData.role === "user" ? KanteStyle.cardColor : KanteStyle.sunkenColor }
                     contentItem: ColumnLayout {
                         RowLayout {
-                            SectionLabel { text: modelData.role === "user" ? i18n("You") : modelData.role === "system" ? i18n("Round") : i18n("AI") }
-                            Chip {
+                            KanteSectionLabel { text: modelData.role === "user" ? i18n("You") : modelData.role === "system" ? i18n("Round") : i18n("AI") }
+                            KanteChip {
+                                interactive: false
                                 visible: modelData.versions && modelData.versions[page.path] !== undefined
                                 text: modelData.versions ? i18n("→ v%1", modelData.versions[page.path]) : ""
-                                tone: KanteStyle.accentTextColor
+                                chipColor: KanteStyle.accentTextColor
                             }
                         }
                         QQC2.Label { text: modelData.text; wrapMode: Text.Wrap; Layout.fillWidth: true }
@@ -155,7 +157,7 @@ Kirigami.Page {
 
             RowLayout {
                 Layout.margins: Kirigami.Units.largeSpacing
-                SectionLabel {
+                KanteSectionLabel {
                     text: page.from === 0 ? i18n("Vault → v%1", page.to) : i18n("v%1 → v%2", page.from, page.to)
                     Layout.fillWidth: true
                 }
