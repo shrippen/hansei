@@ -4,7 +4,6 @@ package demo
 
 import (
 	"context"
-	"path"
 	"regexp"
 	"strings"
 	"time"
@@ -16,28 +15,30 @@ const stepDelay = 450 * time.Millisecond
 
 var (
 	secretLineRe = regexp.MustCompile(`(?m)^(\s*-\s*[^:\n]*(?:Passwort|Token|Key)[^:\n]*:\s*)⟦GEHEIM_\d+⟧`)
-	codeNames    = map[string]string{"SW-NAS01": "Nebelhorn", "SW-VPS": "Feuerschiff", "SW-PI": "Boje"}
 	noteLineRe   = regexp.MustCompile(`(?m)^(\S.*\.md) \(`)
 	batchFileRe  = regexp.MustCompile(`<file path="([^"]+)"`)
 )
 
-var replies = map[string][2]string{
-	"secrets":  {"Klartext-Werte durch Vaultwarden-Verweise ersetzt.", "Replaced plain-text values with Vaultwarden references."},
-	"names":    {"Alte Codenamen durch die Seezeichen-Namen ersetzt.", "Replaced old code names with the sea mark names."},
-	"switch":   {"Switch in der Netzwerkübersicht aktualisiert.", "Updated the switch in the network overview."},
-	"borg":     {"Verstanden. Restic durch Borg auf [[Nebelhorn]] ersetzt.", "Understood. Replaced Restic with Borg to [[Nebelhorn]]."},
-	"generic":  {"Verstanden, in der Demo antwortet eine vorbereitete KI ohne echtes Modell.", "Understood; in the demo a prepared AI answers without a real model."},
-	"question": {"Welche Notizen genau meinst du? Die Demo-KI kennt Secrets, Codenamen und den Switch.", "Which notes exactly? The demo AI knows secrets, code names and the switch."},
+// aiScript is the world's it_docs.ai_script: the demo AI's replies, topics
+// and edits per kind of task.
+type aiScript struct {
+	Replies     map[string]text `json:"replies"`
+	Topics      map[string]text `json:"topics"`
+	SecretValue string          `json:"secret_value"`
+	Switch      struct {
+		From string `json:"from"`
+		To   string `json:"to"`
+	} `json:"switch"`
+	Borg []struct {
+		From string `json:"from"`
+		To   string `json:"to"`
+	} `json:"borg"`
 }
 
 // newScript is the demo AI: deterministic edits for the tasks the demo data invites.
-func newScript(name, lang string) llm.Provider {
-	say := func(key string) string {
-		if lang == "en" {
-			return replies[key][1]
-		}
-		return replies[key][0]
-	}
+func newScript(name, lang string, w world) llm.Provider {
+	script, names := w.IT.Script, codeNames(w)
+	say := func(key string) string { return script.Replies[key].in(lang) }
 	return llm.NewScript(name, func(ctx context.Context, req llm.Request, call llm.CallFunc) (string, error) {
 		step := func() {
 			select {
@@ -92,7 +93,7 @@ func newScript(name, lang string) llm.Provider {
 			if bad {
 				continue
 			}
-			next := edit(kind, content)
+			next := edit(script, names, kind, content)
 			if next == content {
 				continue
 			}
@@ -107,47 +108,44 @@ func newScript(name, lang string) llm.Provider {
 			call("ask_user", map[string]string{"question": say("question")})
 		}
 		title := strings.TrimSpace(strings.SplitN(req.Prompt[strings.LastIndex(req.Prompt, "\n")+1:], ".", 2)[0])
-		call("finish", map[string]string{"title": short(title), "topic": topic(kind, lang), "summary": say(kind), "reply": say(kind)})
+		call("finish", map[string]string{"title": short(title, topic(script, "", lang)), "topic": topic(script, kind, lang), "summary": say(kind), "reply": say(kind)})
 		return say(kind), nil
 	})
 }
 
-func edit(kind, content string) string {
+func edit(script aiScript, names map[string]string, kind, content string) string {
 	switch kind {
 	case "secrets":
-		return secretLineRe.ReplaceAllString(content, "${1}siehe Vaultwarden: Admin")
+		return secretLineRe.ReplaceAllString(content, "${1}"+script.SecretValue)
 	case "names":
-		for old, name := range codeNames {
+		for old, name := range names {
 			content = strings.ReplaceAll(content, old, name)
 		}
 		return content
 	case "switch":
-		return strings.ReplaceAll(content, "Knotenwerk KS-8, 8 Ports, alle belegt.", "Knotenwerk KS-24, 24 Ports.")
+		return strings.ReplaceAll(content, script.Switch.From, script.Switch.To)
 	case "borg":
-		return regexp.MustCompile(`(?m)^Nächtlich mit Restic[^\n]*`).ReplaceAllString(
-			regexp.MustCompile(`(?m)^Nightly with Restic[^\n]*`).ReplaceAllString(content, "Nightly with Borg to [[Nebelhorn]]."),
-			"Nächtlich mit Borg auf [[Nebelhorn]].")
+		// A line that starts with From becomes To (one pair per language).
+		for _, r := range script.Borg {
+			content = regexp.MustCompile(`(?m)^`+regexp.QuoteMeta(r.From)+`[^\n]*`).ReplaceAllLiteralString(content, r.To)
+		}
 	}
 	return content
 }
 
-func topic(kind, lang string) string {
-	t := map[string][2]string{"secrets": {"Secrets", "Secrets"}, "names": {"Namen", "Names"}, "switch": {"Netzwerk", "Network"}, "borg": {"Backup", "Backup"}}[kind]
-	if t[0] == "" {
-		return "Demo"
+func topic(script aiScript, kind, lang string) string {
+	if t, ok := script.Topics[kind]; ok {
+		return t.in(lang)
 	}
-	if lang == "en" {
-		return t[1]
-	}
-	return t[0]
+	return script.Topics["other"].in(lang)
 }
 
-func short(s string) string {
+func short(s, fallback string) string {
 	if r := []rune(s); len(r) > 40 {
 		return string(r[:40]) + "…"
 	}
 	if s == "" {
-		return path.Base("Demo")
+		return fallback
 	}
 	return s
 }
