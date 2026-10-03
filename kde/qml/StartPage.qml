@@ -117,9 +117,16 @@ Kirigami.ScrollablePage {
                 label: i18n("Conforms to rules")
                 value: page.stats.conformity !== undefined ? Math.round(page.stats.conformity * 100) + " %" : "–"
                 detail: page.stats.hasWeekAgo ? i18n("%1 this week", (page.stats.conformity >= page.stats.weekAgo ? "+" : "") + Math.round((page.stats.conformity - page.stats.weekAgo) * 100)) : i18np("One note checked", "%1 notes checked", page.store.home.notes || 0)
-                Sparkline {
+                // Conformity over time: one bar per day, today in the accent; hover reads date and value.
+                KanteBarChart {
+                    compact: true
                     values: page.stats.spark || []
-                    days: page.stats.sparkDays || []
+                    labels: (page.stats.sparkDays || []).map(d => Qt.formatDate(new Date(d + "T12:00:00"), Qt.DefaultLocaleShortDate))
+                    highlight: values.length - 1
+                    series: 3
+                    maxValue: 1
+                    formatter: v => Math.round(v * 100) + " %"
+                    implicitWidth: values.length * Kirigami.Units.gridUnit * 0.7
                     Layout.topMargin: Kirigami.Units.smallSpacing
                 }
                 // The next step that helps most.
@@ -154,32 +161,15 @@ Kirigami.ScrollablePage {
                 label: i18n("Streak")
                 value: page.stats.streak || 0
                 detail: i18np("day in a row", "days in a row", page.stats.streak || 0) + " · " + i18np("one change today", "%1 changes today", page.stats.reviewedToday || 0)
-                // Reviewed changes per day this week.
-                Row {
-                    id: week
-                    readonly property var days: page.stats.week || []
-                    readonly property int most: Math.max(1, ...days)
-                    spacing: 3
+                // Reviewed changes per day this week, today in the accent.
+                KanteBarChart {
+                    compact: true
+                    values: page.stats.week || []
+                    highlight: values.length - 1
+                    series: 3
+                    formatter: v => i18np("one change", "%1 changes", v)
+                    implicitWidth: values.length * Kirigami.Units.gridUnit * 0.7
                     Layout.topMargin: Kirigami.Units.smallSpacing
-                    height: Kirigami.Units.gridUnit * 1.6
-                    Repeater {
-                        model: week.days
-                        delegate: Item {
-                            required property int modelData
-                            required property int index
-                            width: Kirigami.Units.smallSpacing * 2.2
-                            height: week.height
-                            Rectangle {
-                                anchors.bottom: parent.bottom
-                                width: parent.width
-                                height: parent.modelData > 0 ? Math.max(3, parent.height * parent.modelData / week.most) : 2
-                                color: parent.modelData > 0 ? (parent.index === week.days.length - 1 ? KanteStyle.accentColor : Qt.alpha(KanteStyle.positiveTextColor, 0.7)) : KanteStyle.frameColor
-                            }
-                            HoverHandler { id: dayHover }
-                            QQC2.ToolTip.visible: dayHover.hovered
-                            QQC2.ToolTip.text: i18np("one change", "%1 changes", parent.modelData)
-                        }
-                    }
                 }
             }
             Tile {
@@ -220,16 +210,17 @@ Kirigami.ScrollablePage {
                 onClicked: page.openBatch(modelData.id)
                 contentItem: RowLayout {
                     spacing: Kirigami.Units.largeSpacing
-                    Chip { text: waitRow.modelData.topic || i18n("Task"); tone: KanteStyle.tagColor }
+                    KanteChip { text: waitRow.modelData.topic || i18n("Task"); chipColor: KanteStyle.tagColor; interactive: false }
                     QQC2.Label {
                         text: waitRow.modelData.title
                         elide: Text.ElideRight
                         Layout.fillWidth: true
                     }
-                    Chip {
+                    KanteChip {
+                        interactive: false
                         visible: waitRow.modelData.questions > 0
                         text: i18np("one question", "%1 questions", waitRow.modelData.questions)
-                        tone: KanteStyle.neutralTextColor
+                        chipColor: KanteStyle.neutralTextColor
                     }
                     QQC2.Label {
                         readonly property var c: waitRow.modelData.counts
@@ -294,11 +285,8 @@ Kirigami.ScrollablePage {
                     spacing: Kirigami.Units.smallSpacing
                     Repeater {
                         model: page.recentTasks
-                        delegate: Chip {
+                        delegate: KanteChip {
                             required property string modelData
-                            interactive: true
-                            checkable: false
-                            plain: true
                             text: modelData
                             onClicked: { taskField.text = modelData; taskField.forceActiveFocus() }
                         }
@@ -312,11 +300,10 @@ Kirigami.ScrollablePage {
                         spacing: Kirigami.Units.smallSpacing
                         Repeater {
                             model: page.store.status.allowed || []
-                            delegate: Chip {
+                            delegate: KanteChip {
                                 required property string modelData
-                                interactive: true
                                 text: modelData
-                                tone: KanteStyle.tagColor
+                                chipColor: KanteStyle.tagColor
                                 checked: page.quickScope.indexOf(modelData) >= 0
                                 onClicked: {
                                     const s = page.quickScope.filter(f => f !== modelData)
@@ -339,7 +326,7 @@ Kirigami.ScrollablePage {
             }
         }
 
-        SectionLabel { text: i18n("Findings from checks · no AI") }
+        KanteSectionLabel { text: i18n("Findings from checks · no AI") }
 
         Kirigami.PlaceholderMessage {
             visible: page.findings.length === 0
@@ -504,7 +491,7 @@ Kirigami.ScrollablePage {
         background: Surface {}
         contentItem: ColumnLayout {
             spacing: Kirigami.Units.smallSpacing
-            SectionLabel { text: tile.label }
+            KanteSectionLabel { text: tile.label }
             QQC2.Label {
                 text: tile.value
                 font: KanteStyle.monoFont(Kirigami.Theme.defaultFont.pointSize * 2.2, true)

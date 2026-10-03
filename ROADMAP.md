@@ -28,6 +28,7 @@ Konzept und Entwürfe: Artifact „Hansei“ (Konzeptstudie, 27.09.2026). Entsch
 | 03 Prüfregeln | Secrets, Codenamen, Pflicht-Frontmatter, Prüfdatum, tote Links, Compose-Kopien; Befund → Batch; Quote, Serie, Abschluss-Moment | ✓ |
 | 04 Automatisierung | `hansei auftrag`, systemd-Timer (`contrib/`), Statusnotiz für andon (`status_note`) | ✓ Hansei-Seite |
 | 05 Doku-Abgleich mit andon | Feld `Compose`, Bestand nachziehen, Befund-Quelle `andon` (unten) | geplant, Beginn nach der Kante-Überarbeitung |
+| 06 Oberfläche | Kante: eigene Chips, Sparkline, Fortschrittsstreifen und Abschnittslabels durch Kante ersetzt, Gespräch als `KanteMessage`; Landing Page `docs/index.html` nach Kante-Vorlage | ✓ |
 
 ## 05 Doku-Abgleich mit andon (geplant 01.10.2026)
 
@@ -59,6 +60,5 @@ in Homelable. Hansei bleibt das einzige Werkzeug, das in den Vault schreibt.
 - **andon:** Quelle „Obsidian/Hansei“, Abgleich Doku ↔ Compose und Homelable – geplant als Phase 15 in
   `andon/ROADMAP.md`, Gegenstück hier in Phase 05. Abgleich mit Snipe-IT später dort.
 - **KRunner:** „Hansei: Auftrag …“ direkt aus KRunner.
-- **Landing Page:** `docs/index.html` nach Kante-Vorlage, Screenshots über `demo/shots.json`.
 - **Server/Web:** `hansei serve` (HTTP + WebSocket über dasselbe Protokoll) und eine Web-Oberfläche.
 - **Mehrbenutzer:** nicht geplant, solange der Tresor persönlich ist.

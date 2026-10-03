@@ -22,7 +22,7 @@ ListView {
     model: batches
     QQC2.ScrollBar.vertical: QQC2.ScrollBar {}
 
-    header: SectionLabel {
+    header: KanteSectionLabel {
         text: i18n("Batches by topic")
         padding: Kirigami.Units.smallSpacing
         bottomPadding: Kirigami.Units.largeSpacing
@@ -48,9 +48,10 @@ ListView {
         contentItem: ColumnLayout {
             spacing: Kirigami.Units.smallSpacing
 
-            Chip {
+            KanteChip {
+                interactive: false
                 text: item.modelData.topic || i18n("Batch")
-                tone: KanteStyle.tagColor
+                chipColor: KanteStyle.tagColor
             }
             QQC2.Label {
                 text: item.modelData.title
@@ -58,9 +59,17 @@ ListView {
                 font.bold: item.active
                 Layout.fillWidth: true
             }
-            ProgressStrip {
-                counts: item.modelData.counts
+            KanteProgressBar {
+                // Review progress of the batch: accepted, rejected, the rest open.
+                readonly property var counts: item.modelData.counts || ({})
+                readonly property int open: (counts.hunks || 0) - (counts.accepted || 0) - (counts.rejected || 0)
+                parts: counts.hunks ? [{ value: counts.accepted / counts.hunks, color: KanteStyle.positiveTextColor },
+                                       { value: counts.rejected / counts.hunks, color: KanteStyle.negativeTextColor }] : []
                 Layout.fillWidth: true
+                HoverHandler { id: progressHover }
+                QQC2.ToolTip.visible: progressHover.hovered
+                QQC2.ToolTip.delay: Kirigami.Units.toolTipDelay
+                QQC2.ToolTip.text: i18n("%1 accepted · %2 rejected · %3 open", counts.accepted || 0, counts.rejected || 0, open)
             }
             // Figures in mono, on their own line so the topic chip never cuts them.
             QQC2.Label {

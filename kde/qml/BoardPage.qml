@@ -162,31 +162,28 @@ Kirigami.Page {
             height: allChip.height
             verticalAlignment: Text.AlignVCenter
         }
-        Chip {
+        KanteChip {
             id: allChip
-            interactive: true
             text: i18nc("all topics", "All")
             checked: page.topic === "" && page.folder === ""
             onClicked: { page.topic = ""; page.folder = "" }
         }
         Repeater {
             model: page.topics
-            delegate: Chip {
+            delegate: KanteChip {
                 required property string modelData
-                interactive: true
                 text: modelData
-                tone: KanteStyle.tagColor
+                chipColor: KanteStyle.tagColor
                 checked: page.topic === modelData
                 onClicked: page.topic = page.topic === modelData ? "" : modelData
             }
         }
         Repeater {
             model: (page.store.status.allowed || []).length > 1 ? page.store.status.allowed : []
-            delegate: Chip {
+            delegate: KanteChip {
                 required property string modelData
-                interactive: true
                 text: modelData + "/"
-                tone: KanteStyle.mutedTextColor
+                chipColor: KanteStyle.mutedTextColor
                 checked: page.folder === modelData
                 onClicked: page.folder = page.folder === modelData ? "" : modelData
             }
@@ -253,7 +250,7 @@ Kirigami.Page {
                             Layout.alignment: Qt.AlignHCenter
                             implicitWidth: vertical.implicitHeight
                             implicitHeight: vertical.implicitWidth
-                            SectionLabel {
+                            KanteSectionLabel {
                                 id: vertical
                                 text: column.modelData.title
                                 color: column.modelData.tone
@@ -270,7 +267,7 @@ Kirigami.Page {
                         spacing: Kirigami.Units.smallSpacing
 
                         RowLayout {
-                            SectionLabel { text: column.modelData.title; Layout.fillWidth: true }
+                            KanteSectionLabel { text: column.modelData.title; Layout.fillWidth: true }
                             QQC2.Label { text: column.items.length; font: KanteStyle.monoFont(Kirigami.Theme.smallFont.pointSize); color: KanteStyle.mutedTextColor }
                         }
                         Rectangle { Layout.fillWidth: true; implicitHeight: 2; color: column.modelData.tone }
@@ -308,16 +305,18 @@ Kirigami.Page {
                                     spacing: Kirigami.Units.smallSpacing
                                     RowLayout {
                                         visible: !card.modelData.finding
-                                        Chip {
+                                        KanteChip {
+                                            interactive: false
                                             visible: !!card.modelData.topic
                                             text: card.modelData.topic || ""
-                                            tone: KanteStyle.tagColor
+                                            chipColor: KanteStyle.tagColor
                                         }
                                         Item { Layout.fillWidth: true }
-                                        Chip {
+                                        KanteChip {
+                                            interactive: false
                                             visible: card.modelData.questions > 0
                                             text: card.modelData.finding ? "" : i18np("one question", "%1 questions", card.modelData.questions)
-                                            tone: KanteStyle.neutralTextColor
+                                            chipColor: KanteStyle.neutralTextColor
                                         }
                                     }
                                     RowLayout {
@@ -383,10 +382,18 @@ Kirigami.Page {
                                         font: Kirigami.Theme.smallFont
                                         Layout.fillWidth: true
                                     }
-                                    ProgressStrip {
-                                        visible: !card.modelData.finding && card.modelData.counts.hunks > 0
-                                        counts: card.modelData.counts || ({})
+                                    KanteProgressBar {
+                                        // Review progress of the batch: accepted, rejected, the rest open.
+                                        readonly property var counts: card.modelData.counts || ({})
+                                        readonly property int open: (counts.hunks || 0) - (counts.accepted || 0) - (counts.rejected || 0)
+                                        visible: !card.modelData.finding && counts.hunks > 0
+                                        parts: counts.hunks ? [{ value: counts.accepted / counts.hunks, color: KanteStyle.positiveTextColor },
+                                                               { value: counts.rejected / counts.hunks, color: KanteStyle.negativeTextColor }] : []
                                         Layout.fillWidth: true
+                                        HoverHandler { id: progressHover }
+                                        QQC2.ToolTip.visible: progressHover.hovered
+                                        QQC2.ToolTip.delay: Kirigami.Units.toolTipDelay
+                                        QQC2.ToolTip.text: i18n("%1 accepted · %2 rejected · %3 open", counts.accepted || 0, counts.rejected || 0, open)
                                     }
                                     // Age, provider and cost.
                                     RowLayout {

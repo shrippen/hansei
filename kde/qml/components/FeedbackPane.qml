@@ -227,7 +227,7 @@ ColumnLayout {
                 contentItem: ColumnLayout {
                     RowLayout {
                         QQC2.BusyIndicator { running: pane.busy; Layout.preferredHeight: Kirigami.Units.iconSizes.small; Layout.preferredWidth: Layout.preferredHeight }
-                        SectionLabel { text: i18n("AI is working"); Layout.fillWidth: true }
+                        KanteSectionLabel { text: i18n("AI is working"); Layout.fillWidth: true }
                         KanteToolButton {
                             icon.name: "process-stop"
                             text: i18n("Stop")
@@ -256,116 +256,75 @@ ColumnLayout {
     // A round's result: which files got a new version. Click a file to open it.
     Component {
         id: systemLine
-        ColumnLayout {
+        KanteMessage {
             id: sys
             readonly property var m: parent.msg
-            spacing: Kirigami.Units.smallSpacing / 2
-            RowLayout {
-                Layout.fillWidth: true
-                Kirigami.Separator { Layout.fillWidth: true }
-                QQC2.Label {
-                    text: Qt.formatTime(new Date(sys.m.created), Qt.DefaultLocaleShortDate)
-                    font: KanteStyle.monoFont(Kirigami.Theme.smallFont.pointSize)
-                    color: KanteStyle.mutedTextColor
-                }
-                Kirigami.Separator { Layout.fillWidth: true }
-            }
+            width: parent ? parent.width : 0
+            from: KanteMessage.From.System
+            time: Qt.formatTime(new Date(m.created), Qt.DefaultLocaleShortDate)
+            text: m.text
             Flow {
                 Layout.fillWidth: true
                 spacing: Kirigami.Units.smallSpacing
                 Repeater {
                     model: Object.keys(sys.m.versions || {})
-                    delegate: Chip {
+                    delegate: KanteChip {
                         required property string modelData
-                        interactive: true
-                        checkable: false
                         text: i18n("%1 → v%2", pane.store.fileName(modelData), sys.m.versions[modelData])
-                        tone: KanteStyle.accentTextColor
+                        chipColor: KanteStyle.accentTextColor
+                        toolTip: modelData
                         onClicked: pane.jump(modelData, "")
-                        QQC2.ToolTip.visible: hovered
-                        QQC2.ToolTip.text: modelData
                     }
                 }
-            }
-            QQC2.Label {
-                text: sys.m.text
-                font: Kirigami.Theme.smallFont
-                color: KanteStyle.mutedTextColor
-                wrapMode: Text.Wrap
-                horizontalAlignment: Text.AlignHCenter
-                Layout.fillWidth: true
             }
         }
     }
 
+    // One message: yours sit right, the AI's left (Kante's conversation message).
     Component {
         id: bubble
-        QQC2.Control {
+        KanteMessage {
             id: box
-            // Your own messages sit a little to the right, like in a chat.
-            leftInset: mine ? Kirigami.Units.gridUnit : 0
-            leftPadding: Kirigami.Units.largeSpacing + leftInset
             readonly property var m: parent.msg
             readonly property bool mine: m.role === "user"
             readonly property int number: pane.hunkNumber(m.path, m.hunk)
-            padding: Kirigami.Units.largeSpacing
-            background: Surface {
-                fill: box.mine ? (KanteStyle.active ? KanteStyle.cardColor : Kirigami.Theme.alternateBackgroundColor) : KanteStyle.sunkenColor
-            }
-            contentItem: ColumnLayout {
+            width: parent ? parent.width : 0
+            from: mine ? KanteMessage.From.Own : KanteMessage.From.Other
+            author: mine ? i18n("You") : i18n("AI")
+            time: Qt.formatTime(new Date(m.created), Qt.DefaultLocaleShortDate)
+            text: m.text
+            head: [
+                KanteChip {
+                    visible: !!box.m.path && (box.m.scope === "hunk" || box.m.scope === "file")
+                    text: box.number >= 0 ? i18n("Change %1", box.number + 1) : pane.store.fileName(box.m.path)
+                    chipColor: KanteStyle.infoColor
+                    toolTip: box.m.path || ""
+                    onClicked: pane.jump(box.m.path, box.m.hunk || "")
+                },
+                KanteChip {
+                    visible: !!box.m.quick
+                    interactive: false
+                    text: box.m.quick ? pane.quickLabel(box.m.quick) : ""
+                    chipColor: KanteStyle.infoColor
+                },
+                KanteChip {
+                    visible: !!box.m.question && !box.m.answered
+                    interactive: false
+                    text: i18n("question")
+                    chipColor: KanteStyle.neutralTextColor
+                }
+            ]
+            Flow {
+                visible: !box.mine && Object.keys(box.m.versions || {}).length > 0
+                Layout.fillWidth: true
                 spacing: Kirigami.Units.smallSpacing
-                RowLayout {
-                    Layout.fillWidth: true
-                    SectionLabel {
-                        text: box.mine ? i18n("You") : i18n("AI")
-                    }
-                    Chip {
-                        visible: !!box.m.path && (box.m.scope === "hunk" || box.m.scope === "file")
-                        interactive: true
-                        checkable: false
-                        text: box.number >= 0 ? i18n("Change %1", box.number + 1) : pane.store.fileName(box.m.path)
-                        tone: KanteStyle.infoColor
-                        onClicked: pane.jump(box.m.path, box.m.hunk || "")
-                        QQC2.ToolTip.visible: hovered
-                        QQC2.ToolTip.text: box.m.path || ""
-                    }
-                    Chip {
-                        visible: !!box.m.quick
-                        text: pane.quickLabel(box.m.quick)
-                        tone: KanteStyle.infoColor
-                    }
-                    Chip {
-                        visible: !!box.m.question && !box.m.answered
-                        text: i18n("question")
-                        tone: KanteStyle.neutralTextColor
-                    }
-                    Item { Layout.fillWidth: true }
-                    QQC2.Label {
-                        text: Qt.formatTime(new Date(box.m.created), Qt.DefaultLocaleShortDate)
-                        font: KanteStyle.monoFont(Kirigami.Theme.smallFont.pointSize)
-                        color: KanteStyle.mutedTextColor
-                    }
-                }
-                QQC2.Label {
-                    text: box.m.text
-                    wrapMode: Text.Wrap
-                    textFormat: Text.PlainText
-                    Layout.fillWidth: true
-                }
-                Flow {
-                    visible: !box.mine && Object.keys(box.m.versions || {}).length > 0
-                    Layout.fillWidth: true
-                    spacing: Kirigami.Units.smallSpacing
-                    Repeater {
-                        model: Object.keys(box.m.versions || {})
-                        delegate: Chip {
-                            required property string modelData
-                            interactive: true
-                            checkable: false
-                            text: i18n("→ v%1 %2", box.m.versions[modelData], pane.store.fileName(modelData))
-                            tone: KanteStyle.accentTextColor
-                            onClicked: pane.jump(modelData, "")
-                        }
+                Repeater {
+                    model: Object.keys(box.m.versions || {})
+                    delegate: KanteChip {
+                        required property string modelData
+                        text: i18n("→ v%1 %2", box.m.versions[modelData], pane.store.fileName(modelData))
+                        chipColor: KanteStyle.accentTextColor
+                        onClicked: pane.jump(modelData, "")
                     }
                 }
             }

@@ -140,7 +140,7 @@ Kirigami.ScrollablePage {
                         }
                         Repeater {
                             model: [i18n("Allowed"), i18n("Local only"), i18n("Blocked")]
-                            delegate: SectionLabel {
+                            delegate: KanteSectionLabel {
                                 required property string modelData
                                 text: modelData
                                 horizontalAlignment: Text.AlignHCenter
@@ -219,16 +219,12 @@ Kirigami.ScrollablePage {
                                 }
                                 Repeater {
                                     model: page.rulebookOf(folder.modelData.path)
-                                    delegate: Chip {
+                                    delegate: KanteChip {
                                         required property string modelData
-                                        plain: true
-                                        interactive: true
-                                        checkable: false
                                         text: modelData + "  ✕"
-                                        tone: KanteStyle.infoColor
+                                        chipColor: KanteStyle.infoColor
                                         onClicked: page.setRulebook(folder.modelData.path, page.rulebookOf(folder.modelData.path).filter(f => f !== modelData))
-                                        QQC2.ToolTip.visible: hovered
-                                        QQC2.ToolTip.text: i18n("Remove from the rulebook")
+                                        toolTip: i18n("Remove from the rulebook")
                                     }
                                 }
                                 QQC2.Label {
@@ -274,8 +270,8 @@ Kirigami.ScrollablePage {
                 contentItem: ColumnLayout {
                     spacing: Kirigami.Units.smallSpacing
                     RowLayout {
-                        SectionLabel { text: i18n("Old code names"); Layout.fillWidth: true }
-                        SectionLabel { text: i18n("Replace with"); Layout.preferredWidth: Kirigami.Units.gridUnit * 14 }
+                        KanteSectionLabel { text: i18n("Old code names"); Layout.fillWidth: true }
+                        KanteSectionLabel { text: i18n("Replace with"); Layout.preferredWidth: Kirigami.Units.gridUnit * 14 }
                         Item { implicitWidth: Kirigami.Units.iconSizes.medium }
                     }
                     Repeater {
@@ -346,8 +342,8 @@ Kirigami.ScrollablePage {
                     Kirigami.Separator { Layout.fillWidth: true; Layout.topMargin: Kirigami.Units.largeSpacing; Layout.bottomMargin: Kirigami.Units.largeSpacing }
 
                     RowLayout {
-                        SectionLabel { text: i18n("Folder"); Layout.fillWidth: true }
-                        SectionLabel { text: i18n("Required frontmatter fields"); Layout.preferredWidth: Kirigami.Units.gridUnit * 14 }
+                        KanteSectionLabel { text: i18n("Folder"); Layout.fillWidth: true }
+                        KanteSectionLabel { text: i18n("Required frontmatter fields"); Layout.preferredWidth: Kirigami.Units.gridUnit * 14 }
                         Item { implicitWidth: Kirigami.Units.iconSizes.medium }
                     }
                     Repeater {
@@ -467,12 +463,13 @@ Kirigami.ScrollablePage {
                                 elide: Text.ElideRight
                                 Layout.fillWidth: true
                             }
-                            Chip { visible: prov.modelData.local; text: i18n("local"); tone: KanteStyle.neutralTextColor }
+                            KanteChip { visible: prov.modelData.local; text: i18n("local"); chipColor: KanteStyle.neutralTextColor; interactive: false }
                             // Local endpoints usually need no key: only say so for providers that do.
-                            Chip {
+                            KanteChip {
+                                interactive: false
                                 visible: prov.modelData.kind !== "demo" && (prov.modelData.hasKey || !prov.modelData.local)
                                 text: prov.modelData.hasKey ? i18n("key stored") : i18n("no key")
-                                tone: prov.modelData.hasKey ? KanteStyle.positiveTextColor : KanteStyle.mutedTextColor
+                                chipColor: prov.modelData.hasKey ? KanteStyle.positiveTextColor : KanteStyle.mutedTextColor
                             }
                             KanteToolButton {
                                 icon.name: "edit-delete"

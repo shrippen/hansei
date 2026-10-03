@@ -105,7 +105,7 @@ Kirigami.Dialog {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
                 Layout.preferredWidth: 1
-                SectionLabel { text: i18n("In the vault") }
+                KanteSectionLabel { text: i18n("In the vault") }
                 QQC2.ScrollView {
                     Layout.fillWidth: true
                     Layout.fillHeight: true
@@ -124,7 +124,7 @@ Kirigami.Dialog {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
                 Layout.preferredWidth: 1
-                SectionLabel { text: i18n("Your text") }
+                KanteSectionLabel { text: i18n("Your text") }
                 QQC2.ScrollView {
                     Layout.fillWidth: true
                     Layout.fillHeight: true
@@ -142,7 +142,7 @@ Kirigami.Dialog {
                 }
             }
         }
-        SectionLabel { text: i18n("Change against the vault") }
+        KanteSectionLabel { text: i18n("Change against the vault") }
         QQC2.ScrollView {
             Layout.fillWidth: true
             Layout.preferredHeight: Kirigami.Units.gridUnit * 7

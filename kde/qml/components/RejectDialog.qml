@@ -51,9 +51,8 @@ Kirigami.Dialog {
             Layout.fillWidth: true
             Repeater {
                 model: ["wrong-fact", "unneeded", "too-long", "style", "later"]
-                delegate: Chip {
+                delegate: KanteChip {
                     required property string modelData
-                    interactive: true
                     text: dialog.labels[modelData]
                     checked: dialog.quick === modelData
                     onClicked: dialog.quick = dialog.quick === modelData ? "" : modelData

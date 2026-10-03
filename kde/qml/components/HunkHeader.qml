@@ -85,26 +85,24 @@ QQC2.Control {
                 Layout.maximumWidth: Kirigami.Units.gridUnit * 14
             }
             Item { Layout.fillWidth: true }
-            Chip {
+            KanteChip {
                 visible: !!header.hunk.rule && !header.folded
-                plain: true
-                interactive: true
-                checkable: false
                 text: header.hunk.rule || ""
-                tone: KanteStyle.infoColor
+                chipColor: KanteStyle.infoColor
                 onClicked: header.rule(header.hunk.rule)
-                QQC2.ToolTip.visible: hovered
-                QQC2.ToolTip.text: i18n("Show this rule")
+                toolTip: i18n("Show this rule")
             }
-            Chip {
+            KanteChip {
+                interactive: false
                 visible: header.hunk.feedback > 0
                 text: i18np("1 comment", "%1 comments", header.hunk.feedback)
-                tone: KanteStyle.infoColor
+                chipColor: KanteStyle.infoColor
             }
-            Chip {
+            KanteChip {
+                interactive: false
                 visible: !header.pending
                 text: header.stateText
-                tone: header.stateColor
+                chipColor: header.stateColor
             }
         }
 
