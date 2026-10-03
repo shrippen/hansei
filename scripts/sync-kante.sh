@@ -4,12 +4,12 @@
 #   kde/qml/Kante            KanteStyle, wrappers, skins, fonts (the KDE app, via qrc)
 #   tui/kante/palette.json   the token source for the terminal styles
 #
-# Source: KANTE_DS, default ../shrippen.github.io/kante.
+# Source: KANTE_DS, default ../Kante (https://github.com/shrippen/Kante).
 # The copies are not edited here; change the design system and sync again.
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
-DS="${KANTE_DS:-../shrippen.github.io/kante}"
+DS="${KANTE_DS:-../Kante}"
 if [ ! -f "$DS/qml/Kante/qmldir" ] || [ ! -f "$DS/tokens/palette.json" ]; then
     echo "sync-kante: no Kante design system in $DS (set KANTE_DS)" >&2
     exit 1
