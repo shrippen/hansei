@@ -1,8 +1,8 @@
 {
   "meta": {
     "name": "Kante",
-    "version": "1.3.0",
-    "source": "https://github.com/shrippen/shrippen.github.io",
+    "version": "1.10.0",
+    "source": "https://github.com/shrippen/Kante",
     "base": "Gruvbox Dark (morhetz)",
     "formerly": "shrippen Design Default"
   },
@@ -56,6 +56,11 @@
       "bright": "#d3869b",
       "neutral": "#b16286",
       "faded": "#8f3f71"
+    },
+    "cyan": {
+      "bright": "#5ccfc4",
+      "neutral": "#3f9a94",
+      "faded": "#0f6b66"
     }
   },
   "typography": {
@@ -82,14 +87,20 @@
   },
   "badges": {
     "labelColor": "1c1c20",
-    "version": "e8dcc4",
-    "tech": "83a598",
+    "version": "fabd2f",
+    "tech": "5ccfc4",
     "license": "a89984"
   },
   "roles": {
     "field": "bg-hard (dark) / bg1 (light)",
     "score": "yellow",
-    "hl": "orange"
+    "hl": "cyan (current selection)",
+    "focus": "cyan",
+    "link": "cyan",
+    "info": "cyan",
+    "warn": "orange",
+    "danger": "red",
+    "danger-text": "red-text (red that reads as small text on every ground, 4.5:1)"
   },
   "light": {
     "name": "Leinen",
@@ -117,7 +128,8 @@
       "yellow": "#8a5a00",
       "orange": "#af3a03",
       "red": "#9d0006",
-      "purple": "#8f3f71"
+      "purple": "#8f3f71",
+      "cyan": "#0f6b66"
     },
     "alternative": {
       "name": "Sand",
@@ -126,12 +138,34 @@
       "bg1": "#f9f5e8",
       "bg-hard": "#e0d6bb",
       "bg2": "#cdc1a3"
+    },
+    "extra": {
+      "cyan-tint": "#d9ebe4",
+      "primary": "#fabd2f",
+      "on-primary": "#141312",
+      "yellow-hi": "#fcc845",
+      "yellow-lo": "#e5a823",
+      "on-state": "#fbf8ee",
+      "red-text": "#9d0006"
     }
   },
   "shape": {
     "chamfer": 16,
     "chamferSmall": 10,
-    "note": "only the top-right corner is cut; no border radius; buttons are square. Web: --chamfer. Apps: KanteStyle.chamfer / chamferSmall (scaled with the platform grid unit)."
+    "note": "top-right corner cut on surfaces (16), buttons and tiles (10), small parts (6); a second cut bottom-left only on primary and danger buttons, dialogs and the install box. Fields stay rectangular. No border radius except icons (soft signs in hard frames) and Kante Light. Web: --chamfer, --cut-m, --cut-s. Apps: KanteStyle.chamfer / chamferSmall.",
+    "cutM": 10,
+    "cutS": 6,
+    "controlHeights": [
+      32,
+      40,
+      48
+    ],
+    "heights": {
+      "small": 32,
+      "medium": 40,
+      "large": 48
+    },
+    "cutSmall": 6
   },
   "app": {
     "usage": "Qt Quick / Kirigami apps and Plasma widgets (qml/Kante). Surfaces are tints with alpha so a blurred or translucent platform ground shows through; colour only in small opaque areas.",
@@ -143,13 +177,13 @@
       "ground": "bg-hard",
       "accent": "yellow",
       "accentText": "yellow",
-      "accentForeground": "bg-hard",
+      "accentForeground": "bg-void",
       "positive": "aqua",
       "neutral": "orange",
       "negative": "red",
-      "info": "blue",
+      "info": "cyan",
       "tag": "purple",
-      "warning": "yellow",
+      "warning": "orange",
       "card": [
         "bg1",
         0.6
@@ -169,6 +203,15 @@
       "dialog": [
         "bg0",
         0.97
+      ],
+      "focus": "cyan",
+      "selection": "cyan-tint",
+      "accentHover": "yellow-hi",
+      "accentPressed": "yellow-lo",
+      "onState": "bg-void",
+      "scrim": [
+        "bg-void",
+        0.62
       ]
     },
     "light": {
@@ -177,15 +220,15 @@
       "mutedText": "fg2",
       "disabledText": "fg3",
       "ground": "bg-void",
-      "accent": "#d79921",
+      "accent": "#fabd2f",
       "accentText": "yellow",
-      "accentForeground": "fg0",
+      "accentForeground": "#141312",
       "positive": "aqua",
       "neutral": "orange",
       "negative": "red",
-      "info": "blue",
+      "info": "cyan",
       "tag": "purple",
-      "warning": "yellow",
+      "warning": "orange",
       "card": [
         "bg1",
         0.7
@@ -205,11 +248,133 @@
       "dialog": [
         "bg-panel",
         0.98
+      ],
+      "focus": "cyan",
+      "selection": "cyan-tint",
+      "accentHover": "#fcc845",
+      "accentPressed": "#e5a823",
+      "onState": "#fbf8ee",
+      "scrim": [
+        "fg0",
+        0.5
       ]
     },
     "notes": {
       "mutedText": "#bdae93 is fg3 one step lighter, for secondary text on glass (4.5:1 on the darkest tint)",
-      "accent (light)": "#d79921 is yellow neutral: a button fill that works on linen; text in the accent uses accentText (#8a5a00)"
+      "accent (light)": "#fabd2f is the primary fill on linen, as in the dark theme, with ink #141312; text in the accent uses accentText (#8a5a00)"
+    }
+  },
+  "extra": {
+    "cyan-tint": "#1e2b2a",
+    "yellow-hi": "#fdc94a",
+    "yellow-lo": "#e5a823",
+    "red-text": "#ff7d6b"
+  },
+  "motion": {
+    "fast": 120,
+    "base": 200,
+    "slow": 450,
+    "easeOut": "cubic-bezier(.2,.8,.2,1)",
+    "easeSnap": "cubic-bezier(.3,1.5,.5,1)",
+    "note": "warm and mechanical, never glitch; all motion only under prefers-reduced-motion: no-preference"
+  },
+  "data": [
+    "cyan",
+    "yellow",
+    "purple",
+    "aqua",
+    "orange",
+    "fg3"
+  ],
+  "data_note": "Series colours of charts, in this order (red stays danger). Web: --d1..--d6; QML: KanteStyle.dataColor(i).",
+  "knust": {
+    "usage": "Knust (Kimai theme, shrippen/kimai-knust-bundle): kante/tools/build-knust.py writes docs/v1/knust-palette.css from this file, with Knust's --shr-* names",
+    "gray_note": "Tabler's grey scale, 50 to 950, as one warm scale for both themes: Leinen steps at the light end, Gruvbox at the dark end. \"theme.token\" or a hex value (500 is Gruvbox gray)",
+    "gray": {
+      "50": "light.bg-panel",
+      "100": "light.bg-void",
+      "200": "light.bg-hard",
+      "300": "light.bg2",
+      "400": "dark.fg3",
+      "500": "#928374",
+      "600": "light.fg2",
+      "700": "dark.bg2",
+      "800": "dark.bg1",
+      "900": "dark.bg0",
+      "950": "dark.bg-hard"
+    }
+  },
+  "gold": {
+    "name": "Kante Gold",
+    "usage": "opt-in via data-kante=\"gold\"; dark only; Kintsugi only (AGENT-RULE.md)",
+    "backgrounds": {
+      "bg-void": "#14110f",
+      "bg-hard": "#0f0d0b",
+      "bg0": "#1c1815",
+      "bg-panel": "#1c1815",
+      "bg1": "#262019",
+      "bg2": "#3b3229"
+    },
+    "foregrounds": {
+      "fg0": "#faf5e9",
+      "fg1": "#efe8d8",
+      "fg2": "#cdc2ae",
+      "fg3": "#a39885"
+    },
+    "accent": "#e8d4a6",
+    "semantic": {
+      "blue": "#8aa1ab",
+      "blue-hover": "#77909a",
+      "aqua": "#97ad7a",
+      "green": "#a9b26b",
+      "yellow": "#d4a640",
+      "orange": "#d08a55",
+      "red": "#d0705a",
+      "purple": "#c497a8",
+      "cyan": "#8fb8aa"
+    },
+    "extra": {
+      "cyan-n": "#6f9488",
+      "cyan-tint": "#1b2321",
+      "yellow-hi": "#e0b65a",
+      "yellow-lo": "#b88f2f",
+      "red-text": "#e48b74"
+    },
+    "names": {
+      "bg-void": "urushi",
+      "bg-panel": "lacquer",
+      "fg1": "paper",
+      "fg3": "ash",
+      "accent": "pale gold",
+      "yellow": "gold",
+      "cyan": "patina",
+      "aqua": "jade",
+      "orange": "copper",
+      "red": "cinnabar",
+      "purple": "ume",
+      "blue": "slate"
+    },
+    "typography": {
+      "heading": "Spectral",
+      "headingWeights": [
+        400,
+        500,
+        600
+      ],
+      "headingSource": "Google Fonts or fonts.css (woff2, SIL OFL)",
+      "control": "Rajdhani",
+      "headingLetterSpacing": "0.06em"
+    },
+    "shape": {
+      "gild": "1.6px",
+      "bar": "2px",
+      "goldLine": "yellow at 32 %"
+    },
+    "motion": {
+      "fast": "160ms",
+      "base": "280ms",
+      "slow": "700ms",
+      "easeSnap": "cubic-bezier(.2,.8,.2,1)"
     }
   }
 }
