@@ -48,6 +48,21 @@ func init() {
 
 type text map[string]string
 
+// UnmarshalJSON takes {de, en} or a plain string (the same in both languages).
+func (t *text) UnmarshalJSON(b []byte) error {
+	var s string
+	if json.Unmarshal(b, &s) == nil {
+		*t = text{"de": s, "en": s}
+		return nil
+	}
+	var m map[string]string
+	if err := json.Unmarshal(b, &m); err != nil {
+		return err
+	}
+	*t = m
+	return nil
+}
+
 func (t text) in(lang string) string {
 	if v, ok := t[lang]; ok {
 		return v
@@ -71,7 +86,39 @@ type world struct {
 		Batches  []batchDef `json:"batches"`
 		History  []float64  `json:"conformity_history"`
 		Reviewed []int      `json:"reviewed_days"`
+		Script   aiScript   `json:"ai_script"`
+		Review   struct {
+			Field string `json:"field"`
+			Days  int    `json:"days"`
+		} `json:"review"`
+		Providers []struct {
+			Name     string `json:"name"`
+			Kind     string `json:"kind"`
+			Model    string `json:"model"`
+			BaseURL  string `json:"base_url"`
+			Fallback string `json:"fallback"`
+			Local    bool   `json:"local"`
+		} `json:"providers"`
+		Provider     string   `json:"provider"`
+		LocalOnly    []string `json:"local_only"`
+		BatchSpacing int      `json:"batch_spacing_min"`
 	} `json:"it_docs"`
+}
+
+// loadWorld reads the embedded world.
+func loadWorld() (world, error) {
+	var w world
+	err := json.Unmarshal(worldJSON, &w)
+	return w, err
+}
+
+// codeNames maps the hosts' old code names to their sea mark names.
+func codeNames(w world) map[string]string {
+	out := map[string]string{}
+	for _, h := range w.IT.Hosts {
+		out[h.Old] = h.Name
+	}
+	return out
 }
 
 type noteDef struct {
@@ -187,8 +234,12 @@ func open(lang string) (*service.Service, error) {
 	if err != nil {
 		return nil, err
 	}
+	w, err := loadWorld()
+	if err != nil {
+		return nil, err
+	}
 	return service.Open(cfg, service.Options{Lang: lang, Demo: true, Now: now, Version: "demo",
-		Providers: func(p config.Provider) (llm.Provider, error) { return newScript(p.Name, lang), nil }})
+		Providers: func(p config.Provider) (llm.Provider, error) { return newScript(p.Name, lang, w), nil }})
 }
 
 // now honours DEMO_TODAY, keeping the real time of day.
@@ -243,23 +294,20 @@ func Prepare(dir, lang string) error {
 	c.Allow, c.Block, c.Language = w.IT.Allow, w.IT.Block, lang
 	c.DefaultRules = []string{w.IT.Agent.Path}
 	c.Rulebooks = []config.Rulebook{{Folder: "IT", Files: []string{w.IT.Rulebook.Path, w.IT.Agent.Path}}}
-	c.Checks.Codenames = map[string]string{}
-	for _, h := range w.IT.Hosts {
-		c.Checks.Codenames[h.Old] = h.Name
-	}
+	c.Checks.Codenames = codeNames(w)
 	c.Checks.Required = w.IT.Required
-	c.Checks.ReviewField, c.Checks.ReviewDays = "letzte Prüfung", 180
-	c.Providers = []config.Provider{
-		{Name: "studio-ki", Kind: config.KindDemo, Model: "demo", Local: true},
-		{Name: "claude", Kind: config.KindAnthropic, Model: "claude-opus-5", Fallback: "default"},
-		{Name: "ollama", Kind: config.KindOpenAI, Model: "qwen3", BaseURL: "http://localhost:11434/v1", Local: true},
+	c.Checks.ReviewField, c.Checks.ReviewDays = w.IT.Review.Field, w.IT.Review.Days
+	c.Providers = nil
+	for _, p := range w.IT.Providers {
+		c.Providers = append(c.Providers, config.Provider{Name: p.Name, Kind: config.ProviderKind(p.Kind), Model: p.Model,
+			BaseURL: p.BaseURL, Fallback: p.Fallback, Local: p.Local})
 	}
-	c.Provider = "studio-ki"
+	c.Provider = w.IT.Provider
 	// DEMO_THEME picks the style for screenshots; like every install, the default is System.
 	if st := config.Style(os.Getenv("DEMO_THEME")); st == config.StyleKante || st == config.StyleKanteLight {
 		c.Style = st
 	}
-	c.LocalOnly = []string{"IT/Anleitungen"}
+	c.LocalOnly = w.IT.LocalOnly
 	if err := c.Save(); err != nil {
 		return err
 	}
@@ -289,13 +337,13 @@ func seedBatches(w world, data, root, lang string) error {
 	}
 	base := now()
 	for i, bd := range w.IT.Batches {
-		created := base.Add(-time.Duration(len(w.IT.Batches)-i) * 47 * time.Minute)
+		created := base.Add(-time.Duration((len(w.IT.Batches)-i)*w.IT.BatchSpacing) * time.Minute)
 		if bd.Done {
 			created = base.AddDate(0, 0, bd.Day)
 		}
 		b := &batch.Batch{ID: "demo-" + bd.ID, Title: bd.Title.in(lang), Topic: bd.Topic.in(lang),
 			Instruction: bd.Instruction.in(lang), Summary: bd.Summary.in(lang), Source: batch.Source(bd.Source),
-			Provider: "studio-ki", Status: batch.StatusReview, Created: created, Updated: created,
+			Provider: w.IT.Provider, Status: batch.StatusReview, Created: created, Updated: created,
 			Usage: batch.Usage{In: bd.Usage.In, Out: bd.Usage.Out}}
 
 		for _, fd := range bd.Files {
