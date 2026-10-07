@@ -85,3 +85,14 @@ Schnittstelle (Einzelheiten in `andon/ROADMAP.md`, Phase 15):
 - **KRunner:** „Hansei: Auftrag …“ direkt aus KRunner.
 - **Server/Web:** `hansei serve` (HTTP + WebSocket über dasselbe Protokoll) und eine Web-Oberfläche.
 - **Mehrbenutzer:** nicht geplant, solange der Tresor persönlich ist.
+
+## Update-Hinweis
+
+Ein Hinweis, wenn es ein neueres Release gibt, für selbst gebaute und aus Releases installierte Fassungen. Ein Flathub-Build bekommt keinen, dort meldet der Store die Updates. Format, Plattformen und Regeln: `shrippen.github.io/overview/VERSIONS.md`.
+
+- [ ] KDE-App: `KanteUpdateCheck { project: "hansei"; version: …; enabled: … }` mit `KanteCallout` (Link, Ausblenden), `memory` in der App-Konfiguration speichern
+- [ ] TUI: dieselbe Prüfung im Go-Kern (höchstens einmal am Tag, Cache im Konfigurationsordner), eine Zeile in der Statusleiste
+- [ ] Abschaltbar in den Einstellungen und per `HANSEI_UPDATE_CHECK=0`; im Demo-Modus immer aus; Build-Schalter, den ein Flathub-Build ausschaltet
+- [ ] Erscheint in `versions.json` erst mit dem ersten Gitea-Release
+- [ ] README: was abgerufen wird (`https://shrippen.github.io/versions.json` ohne Parameter, höchstens einmal am Tag) und wie man es abschaltet
+- [ ] Nach jedem Release `python3 ../shrippen.github.io/overview/tools/build-versions.py` und `docs/versions.json` dort committen
