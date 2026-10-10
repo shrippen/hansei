@@ -139,3 +139,7 @@ internal/services/scheduler/    Background-Jobs (Ticker je Job, panic-/error-iso
 - Here: `kde/qml/Kante` (KDE app) and `tui/kante/palette.json` (terminal styles) are copied
   from Kante by `scripts/sync-kante.sh`; never edit them.
 - Rule text: https://github.com/shrippen/Kante/blob/main/AGENT-RULE.md
+
+## Repository rule
+
+- PR-Agent (`.gitea/workflows/pr-agent.yml`) reviews every PR before it is merged. Wait for its comment on the PR's latest commit; after further pushes, ask for a new one with a `/review` comment. Fix or answer each finding in the PR, then merge. Without a review (the run skipped for lack of `PR_AGENT_LLM_KEY` or `PR_AGENT_MODEL`, or it failed), do not merge: ask the owner.

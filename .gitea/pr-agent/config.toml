@@ -1,0 +1,47 @@
+# PR-Agent settings for Hansei (.gitea/workflows/pr-agent.yml); the rest
+# are PR-Agent's defaults.
+[config]
+git_provider = "gitea"
+response_language = "de-DE"
+max_model_tokens = 128000
+fallback_models = []
+publish_output_progress = false
+# The repository rules go along as context.
+repo_context_files = ["agent.md"]
+
+[pr_reviewer]
+num_max_findings = 5
+require_can_be_split_review = true
+enable_review_labels_effort = false
+enable_review_labels_security = false
+extra_instructions = """
+You review pull requests of Hansei, an AI that proposes edits to
+Obsidian notes in batches; the user reviews every change as a diff and
+only accepted changes are written. Go core (core/service, JSON-RPC 2.0
+over a Unix socket: vault, journal, batches, rules, agent, llm), a KDE
+app (C++/QML, Kirigami) and a terminal UI. agent.md still holds a
+section "Andon – Projekt-Wissen" from another project; ignore it.
+The PRs are written by an AI agent; review them as a careful second
+reader, not as their author.
+
+Report only findings that matter:
+- Bugs: a concrete input or state and the wrong result or crash it gives.
+  Name file and line.
+- Scope and privacy: blocked folders read (also for the index),
+  local-only folders reaching external providers, secrets not replaced
+  by placeholders before leaving the machine or not masked in the diff.
+- Writes: a write without a journal entry (no undo), or one that is not
+  an accepted change in an allowed folder.
+- Layer breaches: front ends past core/service, code past its layer.
+- Missing tests for new behaviour; demo code in a release build.
+- Breaches of the repository rules (agent.md).
+
+Skip style, naming and formatting (gofmt, go vet and the tests run separately), praise, and
+guesses you cannot back with the diff. When you find nothing that
+matters, say so in one line.
+"""
+
+[pr_code_suggestions]
+extra_instructions = """
+Only suggestions that fix a bug or a missing check; no style.
+"""
