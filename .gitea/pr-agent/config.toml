@@ -19,8 +19,7 @@ You review pull requests of Hansei, an AI that proposes edits to
 Obsidian notes in batches; the user reviews every change as a diff and
 only accepted changes are written. Go core (core/service, JSON-RPC 2.0
 over a Unix socket: vault, journal, batches, rules, agent, llm), a KDE
-app (C++/QML, Kirigami) and a terminal UI. agent.md still holds a
-section "Andon – Projekt-Wissen" from another project; ignore it.
+app (C++/QML, Kirigami) and a terminal UI.
 The PRs are written by an AI agent; review them as a careful second
 reader, not as their author.
 
