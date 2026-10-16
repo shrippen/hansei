@@ -1,37 +1,86 @@
-# Checks on every pull request and on main: gofmt, vet, go test -race (make check) and the
+# Checks on every push: gofmt, vet, go test -race (make check) and the
 # release gate (scripts/check-release.sh: builds the Go binary and the KDE app as they ship and
 # fails on demo leftovers).
 #
 # Arch Linux container: current Go, Qt 6 and KF6 from the packages, as on the development machine.
 #
-# This same file lives in .gitea/workflows and .github/workflows: Gitea reads only .gitea/workflows
-# as soon as it exists, GitHub only ever reads .github/workflows. Kept as two files, so a change
-# here is a reminder to update the other one too.
+# Public mirror: Gitea pushes every branch and tag here on each commit.
+# This runs the checks and reports them back to the commit on Gitea as
+# the status "github / test", where the pull requests live. There are no
+# pull requests on GitHub, so everything runs on push.
+#
+# Needs the secret GITEA_TOKEN: a Gitea token with write access to the
+# repository (commit statuses).
 name: CI
 
 on:
   push:
-    branches: [main]
-  pull_request:
+    branches: ["**"]
 
-# One runner works the queue in order. A newer push to the same branch or PR replaces the
-# older run instead of queueing behind it.
-concurrency:
-  group: ci-${{ github.ref }}
-  cancel-in-progress: true
+# No concurrency group: every commit runs to the end and keeps its own
+# status, a newer push does not cancel an older run.
+
+permissions:
+  contents: read
+
+env:
+  GITEA_STATUS: https://git.arianw.de/api/v1/repos/shrippen/hansei/statuses/${{ github.sha }}
+  RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
 
 jobs:
   check:
     runs-on: ubuntu-latest
     container: archlinux:latest
     timeout-minutes: 40
+    outputs:
+      started: ${{ steps.start.outputs.t }}
     steps:
+      # A missing status is no reason to fail the checks.
+      - id: start
+        name: Report pending to Gitea
+        run: |
+          echo "t=$(date +%s)" >> "$GITHUB_OUTPUT"
+          curl -fsS -X POST "$GITEA_STATUS" \
+            -H "Authorization: token $GITEA_TOKEN" -H "Content-Type: application/json" \
+            -d "{\"state\":\"pending\",\"context\":\"github / test\",\"description\":\"running\",\"target_url\":\"$RUN_URL\"}" \
+            || echo "::warning::Gitea status not reported"
+        env:
+          GITEA_TOKEN: ${{ secrets.GITEA_TOKEN }}
       - name: Tools
         run: |
           pacman -Syu --noconfirm --needed base-devel git nodejs go cmake ninja gettext \
             extra-cmake-modules qt6-base qt6-declarative ki18n kcoreaddons knotifications
       - uses: actions/checkout@v4
+      # The workspace belongs to the runner user, not the container's root: without this, git
+      # refuses the repository and go build cannot stamp the VCS info (exit status 128).
+      - name: Trust the workspace
+        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
       - name: gofmt, vet, tests (make check)
         run: make check
       - name: Release gate (Go binary and KDE app without demo)
         run: scripts/check-release.sh ci
+
+  # Also runs when check failed or was cancelled, so Gitea never keeps a
+  # stale "pending".
+  report:
+    needs: check
+    if: always()
+    timeout-minutes: 5
+    runs-on: ubuntu-latest
+    steps:
+      - name: Report result to Gitea
+        run: |
+          case "$RESULT" in
+            success) state=success ;;
+            failure) state=failure ;;
+            *) state=error ;;
+          esac
+          desc=$RESULT
+          if [ -n "$STARTED" ]; then desc="$RESULT in $(( ($(date +%s) - STARTED) / 60 )) min"; fi
+          curl -fsS -X POST "$GITEA_STATUS" \
+            -H "Authorization: token $GITEA_TOKEN" -H "Content-Type: application/json" \
+            -d "{\"state\":\"$state\",\"context\":\"github / test\",\"description\":\"$desc\",\"target_url\":\"$RUN_URL\"}"
+        env:
+          RESULT: ${{ needs.check.result }}
+          STARTED: ${{ needs.check.outputs.started }}
+          GITEA_TOKEN: ${{ secrets.GITEA_TOKEN }}
