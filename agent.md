@@ -38,7 +38,6 @@ Rule 7: Use the body to explain what and why vs. how. Assume the code explains t
 
 - If the prompt indicates that a bug is being fixed, don't write the fix right away. First write the test. Observe it failing. Then write the fix. And observe the test passing.
 
-- PR-Agent (where set up): If the review fails (an error, no result, e.g. a key or cost limit), ask for it once more with `/review`; if that fails too, green CI is enough to merge (owner, 11.10.2026).
 
 ## GUI rule
 
@@ -67,4 +66,4 @@ Rule 7: Use the body to explain what and why vs. how. Assume the code explains t
 
 ## Repository rule
 
-- PR-Agent (`.gitea/workflows/pr-agent.yml`) reviews every PR before it is merged. Wait for its comment on the PR's latest commit; after further pushes, ask for a new one with a `/review` comment. Fix or answer each finding in the PR, then merge. Without a review (the run skipped for lack of `PR_AGENT_LLM_KEY` or `PR_AGENT_MODEL`, or it failed), do not merge: ask the owner.
+- PR-Agent (`.gitea/workflows/pr-agent.yml`, where set up) runs only when the owner comments `/review` on a PR (owner, 18.10.2026). Sessions do not post `/review`, and no merge waits for it. If it has reviewed a PR, fix or answer its findings in the PR before the merge.
