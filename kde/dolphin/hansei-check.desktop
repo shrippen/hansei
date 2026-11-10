@@ -7,5 +7,5 @@ X-KDE-Priority=TopLevel
 [Desktop Action hanseiTask]
 Name=Review with Hansei…
 Name[de]=Mit Hansei prüfen…
-Icon=org.shrippen.hansei
+Icon=io.github.shrippen.hansei
 Exec=hansei-kde %f

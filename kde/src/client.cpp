@@ -250,7 +250,7 @@ void Client::notify(const QString &title, const QString &text)
     auto *n = new KNotification(QStringLiteral("batchReady"));
     n->setTitle(title);
     n->setText(text);
-    n->setIconName(QStringLiteral("org.shrippen.hansei"));
+    n->setIconName(QStringLiteral("io.github.shrippen.hansei"));
     n->sendEvent();
 }
 

@@ -12,7 +12,7 @@ RowLayout {
     Layout.fillWidth: true
 
     Kirigami.Icon {
-        source: "qrc:/icons/org.shrippen.hansei.svg"
+        source: "qrc:/icons/io.github.shrippen.hansei.svg"
         Layout.preferredWidth: Kirigami.Units.iconSizes.medium
         Layout.preferredHeight: Kirigami.Units.iconSizes.medium
         Layout.margins: Kirigami.Units.smallSpacing
