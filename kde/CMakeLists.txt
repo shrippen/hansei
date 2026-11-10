@@ -33,7 +33,7 @@ qt_add_executable(hansei-kde
 
 # QML, the vendored Kante module (scripts/sync-kante.sh) and icons, served from qrc:/.
 file(GLOB_RECURSE HANSEI_QML RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} CONFIGURE_DEPENDS qml/*.qml qml/*/qmldir qml/*.ttf)
-qt_add_resources(hansei-kde "ui" PREFIX "/" FILES ${HANSEI_QML} icons/org.shrippen.hansei.svg icons/hatch.svg)
+qt_add_resources(hansei-kde "ui" PREFIX "/" FILES ${HANSEI_QML} icons/io.github.shrippen.hansei.svg icons/hatch.svg)
 
 if(HANSEI_DEMO)
     target_sources(hansei-kde PRIVATE demo/shots.cpp demo/shots.h)
@@ -51,10 +51,10 @@ target_link_libraries(hansei-kde PRIVATE
 )
 
 install(TARGETS hansei-kde ${KDE_INSTALL_TARGETS_DEFAULT_ARGS})
-install(FILES org.shrippen.hansei.desktop DESTINATION ${KDE_INSTALL_APPDIR})
-install(FILES org.shrippen.hansei.metainfo.xml DESTINATION ${KDE_INSTALL_METAINFODIR})
+install(FILES io.github.shrippen.hansei.desktop DESTINATION ${KDE_INSTALL_APPDIR})
+install(FILES io.github.shrippen.hansei.metainfo.xml DESTINATION ${KDE_INSTALL_METAINFODIR})
 install(FILES hansei.notifyrc DESTINATION ${KDE_INSTALL_KNOTIFYRCDIR})
-install(FILES icons/org.shrippen.hansei.svg DESTINATION ${KDE_INSTALL_FULL_ICONDIR}/hicolor/scalable/apps)
+install(FILES icons/io.github.shrippen.hansei.svg DESTINATION ${KDE_INSTALL_FULL_ICONDIR}/hicolor/scalable/apps)
 install(FILES dolphin/hansei-check.desktop DESTINATION ${KDE_INSTALL_DATADIR}/kio/servicemenus
         PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
 

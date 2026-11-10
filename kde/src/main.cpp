@@ -29,10 +29,10 @@ int main(int argc, char *argv[])
     KAboutData about(QStringLiteral("hansei"), i18n("Hansei"), QStringLiteral(HANSEI_VERSION),
                      i18n("Review AI edits of your Obsidian notes, batch by batch"), KAboutLicense::GPL_V3,
                      QStringLiteral("© 2026 Arian"));
-    about.setDesktopFileName(QStringLiteral("org.shrippen.hansei"));
+    about.setDesktopFileName(QStringLiteral("io.github.shrippen.hansei"));
     about.setOrganizationDomain("shrippen.github.io");
     KAboutData::setApplicationData(about);
-    QApplication::setWindowIcon(QIcon::fromTheme(QStringLiteral("org.shrippen.hansei"), QIcon(QStringLiteral(":/icons/org.shrippen.hansei.svg"))));
+    QApplication::setWindowIcon(QIcon::fromTheme(QStringLiteral("io.github.shrippen.hansei"), QIcon(QStringLiteral(":/icons/io.github.shrippen.hansei.svg"))));
 
     // The platform style is the default; Kante is an opt-in style drawn by the Kante module.
     if (qEnvironmentVariableIsEmpty("QT_QUICK_CONTROLS_STYLE")) {
