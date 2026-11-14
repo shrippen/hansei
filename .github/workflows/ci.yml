@@ -48,13 +48,15 @@ jobs:
           GITEA_TOKEN: ${{ secrets.GITEA_TOKEN }}
       - name: Tools
         run: |
-          pacman -Syu --noconfirm --needed base-devel git nodejs go cmake ninja gettext \
+          pacman -Syu --noconfirm --needed base-devel git python-pipx nodejs go cmake ninja gettext \
             extra-cmake-modules qt6-base qt6-declarative ki18n kcoreaddons knotifications
       - uses: actions/checkout@v4
       # The workspace belongs to the runner user, not the container's root: without this, git
       # refuses the repository and go build cannot stamp the VCS info (exit status 128).
       - name: Trust the workspace
         run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
+      - name: Structure limits
+        run: pipx run tools/structure-check.py
       - name: gofmt, vet, tests (make check)
         run: make check
       - name: Release gate (Go binary and KDE app without demo)

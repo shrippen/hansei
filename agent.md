@@ -15,6 +15,6 @@ the owner's machine has the rules through the global `CLAUDE.md` already and rea
 ## Repository (this project)
 
 - CI runs on the GitHub mirror (`.github/workflows/ci.yml`, since 16.10.2026) and reports back to Gitea as the commit status `github / test`.
-- The merge waits for: CI is green on the PR's latest commit: the newest `github / test` status there (`.github/workflows/ci.yml` on the GitHub mirror: `make check` and the release gate `scripts/check-release.sh`, on every push, no path filter) is success.
+- The merge waits for: CI is green on the PR's latest commit: the newest `github / test` status there (`.github/workflows/ci.yml` on the GitHub mirror: the structure limits (`tools/structure-check.py`), `make check` and the release gate `scripts/check-release.sh`, on every push, no path filter) is success.
 - The owner also confirms: a PR that changes `scripts/check-release.sh`.
 - Everything else: `RULES.md` (Repository) and the skill `pr-review`.
