@@ -20,12 +20,12 @@ a terminal interface and scripts are its front ends.
 | `core/journal/` | The record of every write to the vault, for undo. |
 | `core/batch/` | Proposals grouped by topic: files, versions, decisions per change, the thread with the AI; their store on disk. |
 | `core/diff/` | Comparing two texts into changes and rows a front end can draw. |
-| `core/agent/`, `core/llm/` | Turning a task or feedback into proposals; the providers (Claude, OpenAI-compatible, the scripted one of the demo). The agent reads the vault, never writes. |
+| `core/agent/`, `core/llm/` | Turning a task or feedback into proposals; the providers (Claude, OpenAI-compatible, a scripted one without a model for tests). The agent reads the vault, never writes. |
 | `core/rules/`, `core/redact/` | The checks without AI and the rulebook notes; finding and masking secrets before text leaves the machine. |
 | `core/config/`, `core/secrets/`, `core/stats/`, `core/i18n/` | Settings file; API keys in the keyring; the daily history; the few texts the core itself produces. |
 | `core/testvault/` | Small vaults for tests. |
 | `tui/` | The terminal interface: screens, keys, drawing. `tui/kante/` is a synced copy of the palette. |
-| `kde/src/`, `kde/qml/` | The KDE app: the C++ client of the socket, the pages and their components. `kde/qml/Kante/` is a synced copy of the design system, never edited here. |
+| `kde/src/`, `kde/qml/`, `kde/po/` | The KDE app: the C++ client of the socket, the pages and their components, its translations. `kde/qml/Kante/` is a synced copy of the design system, never edited here. |
 | `cmd/hansei/`, `internal/cli/` | The program `hansei`: daemon, terminal interface and the commands for scripts; the hook for extra commands. |
 | `internal/demo/`, `demo/`, `kde/demo/` | The demo world with a scripted AI, only in a demo build; its start and screenshots. |
 | `contrib/`, `kde/dolphin/`, `scripts/`, `docs/`, `tools/` | systemd units; the Dolphin action; release gate and Kante sync; landing page; the structure check (synced copy). |
@@ -53,6 +53,9 @@ a terminal interface and scripts are its front ends.
 - A front end knows the core through `service.API` only, in process or over the
   socket. The types of `core/batch` and `core/diff` are the words both sides share;
   a front end calls none of their functions that read or write.
+- `cmd/hansei` starts the program: it loads the settings, builds the service and
+  opens or dials the socket. `hansei init` writes the first settings file itself,
+  because no service exists before it.
 - A front end displays and takes input. Every decision about the review (which
   change comes next, which file opens, what is folded, which reasons exist) is made
   in the core and comes with the answer; the two front ends do not each rebuild it.
@@ -60,7 +63,8 @@ a terminal interface and scripts are its front ends.
   folders out. The service records every write in the journal, with the text before
   and after.
 - The agent proposes and never writes; only an accepted change reaches the vault,
-  through the service.
+  through the service. One exception: the status note for Andon, which the service
+  rewrites itself after a review, without a journal entry.
 - Text is redacted before it leaves the machine; only `core/llm` talks to a provider.
 - `API`, the method list of `core/rpc` and the client stay equal: a new call is added
   to all three.
@@ -78,7 +82,8 @@ a terminal interface and scripts are its front ends.
 | A new check without AI | `core/rules/`, with a test |
 | A new AI provider | `core/llm/` |
 | A new tool the AI may use | `core/agent/tools.go`; it reads through `core/vault` |
-| A new setting | `core/config/`, `core/service/settings.go`, the settings page in `kde/qml/` and `tui/settings.go` |
+| A new setting | `core/config/`, `core/service/settings.go` and `views.go`, the settings page in `kde/qml/` and `tui/settings.go` |
+| A text | In the KDE app with `i18n`, then `kde/po/`; in the terminal interface `tui/text.go`; a text the core produces in `core/i18n/` |
 | A new screen | A page in `kde/qml/` and a file in `tui/` |
 | A new command for scripts | `cmd/hansei/` |
 | A design element that is missing | Kante, then `scripts/sync-kante.sh`; never the copies here |
@@ -92,7 +97,10 @@ a terminal interface and scripts are its front ends.
 - Saving the settings carries every value over twice by hand (`AUDIT.md`, finding 3).
 - The folder tree of the settings reads the vault from disk itself, past `core/vault`
   (`AUDIT.md`, finding 4).
-- Errors while saving a batch are dropped in seven places (`AUDIT.md`, finding 5).
+- Errors while saving a batch are dropped in seven places (`AUDIT.md`, finding 5);
+  so is an error while writing the status note (not in `AUDIT.md`).
+- `hansei import` takes a text from `core/i18n` itself instead of from the service
+  (not in `AUDIT.md`).
 - `tui/update.go` holds the keys of all screens, `tui/parity.go` parts of five
   screens (`AUDIT.md`, finding 7).
 - `core/service/tasks.go` holds AI runs and, beside them, findings, start page and
