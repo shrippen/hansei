@@ -13,7 +13,8 @@ kde:              ## the KDE app into kde/build/bin/
 test:
 	go test ./...
 
-check:            ## gofmt, vet, tests
+check:            ## structure limits, gofmt, vet, tests
+	pipx run tools/structure-check.py
 	test -z "$$(gofmt -l core tui cmd internal)"
 	go vet ./... && go vet -tags demo ./...
 	go test -race ./...

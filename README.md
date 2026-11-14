@@ -59,7 +59,7 @@ socket: `$XDG_RUNTIME_DIR/hansei.sock` (`HANSEI_SOCKET`).
 ## Develop
 
 ```sh
-make check          # gofmt, vet, go test -race
+make check          # structure limits, gofmt, vet, go test -race
 make release        # scripts/check-release.sh: builds what ships, fails on demo leftovers
 scripts/sync-kante.sh   # vendors the Kante QML module and palette
 kde/Messages.sh     # extracts strings; German in kde/po/de/hansei.po

@@ -1,0 +1,21 @@
+# What is over a structure limit today (tools/structure-check.py). An entry may shrink,
+# never grow; a raised or new entry needs its reason in the PR. Rewrite with --update.
+# Lines: exclude<TAB>glob | path<TAB>function or - for the file<TAB>metric=value ...
+exclude	kde/qml/Kante/*
+core/rpc/rpc_test.go	TestRoundTrip	ccn=17
+core/service/service_test.go	TestTaskReviewUndo	ccn=19
+core/service/settings.go	SetSettings	ccn=19
+core/service/tasks.go	-	lines=807
+internal/demo/demo.go	seedBatches	ccn=16
+internal/demo/script.go	anonymous__1	ccn=25
+kde/qml/ReviewPage.qml	-	lines=911
+kde/qml/components/DiffView.qml	computePlan	ccn=21
+kde/qml/components/RenderedView.qml	parse	ccn=19
+tui/settings.go	onSettingsKey	ccn=25
+tui/settings.go	viewSettings	ccn=21 length=86
+tui/update.go	-	lines=1016
+tui/update.go	Update	ccn=27 length=83
+tui/update.go	onKey	ccn=33 length=83
+tui/update.go	onReviewKey	ccn=37 length=94
+tui/update.go	onTaskKey	ccn=19 nesting=6
+tui/view.go	viewThread	ccn=21
